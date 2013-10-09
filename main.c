@@ -36,6 +36,14 @@ const char *getToken(TokensStream *stream)
         stream->position = i + 1;
         return "\n";
     }
+    if(stream->source[i] == '('){
+        stream->position = i + 1;
+        return "(";
+    }
+    if(stream->source[i] == ')'){
+        stream->position = i + 1;
+        return ")";
+    }
 
     int spaceCount = 0;
     while(stream->source[i] == ' '){
@@ -52,6 +60,8 @@ const char *getToken(TokensStream *stream)
     while(!found){
       if(
          stream->source[i] == ' '  ||
+         stream->source[i] == '('  ||
+         stream->source[i] == ')'  ||
          stream->source[i] == '\t' ||
          stream->source[i] == '\n' ||
          stream->source[i] == '\0' 
@@ -78,6 +88,7 @@ void testGetToken(const char *source){
 int main(int argc, char **argv)
 {
     testGetToken("   def    say\n\tdo");
+    testGetToken("(def func (+ 10 11))");
     return 0;
 }
 
