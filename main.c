@@ -202,7 +202,7 @@ int main(int argc, char **argv)
     //printf("def func \n\t+ \n\t\t10 \n\t\t11\n");
     testParseFirst("def func (+ 10 11)");
     testParseFirst("def func \n\t+ \n\t\t10 \n\t\t11");
-    testParseFirst("def func \n\t+ 10 11");
+    testParseFirst("def func \n\t+ 10 11\n\t (- 2 9)\n");
     return 0;
 }
 
