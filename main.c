@@ -103,6 +103,10 @@ void fillTokenStream(TokensStream *ts, CodeStream *cs){
     }
 }
 
+const char *lookToken(TokensStream *ts, int shift){
+    return ts->tokens[ts->position + shift];
+}
+
 const char *nextToken(TokensStream *ts){
     return ts->tokens[ts->position++];
 }
@@ -116,19 +120,34 @@ Node parse(TokensStream *ts, int shift){
     if(isEndOfStream(ts)) 
         return res;
     const char *token = nextToken(ts);
+    while(strcmp(token, "\t") == 0)
+        token = nextToken(ts);
 
     res.name = token;
     while(!isEndOfStream(ts)){
         token = nextToken(ts);
         if(strcmp(token, ")") == 0) break;
+        if(strcmp(token, "\t") == 0) continue;
+        bool readGroup = false;  //make it beauty
+        if(strcmp(token, "\n") == 0){
+            const char *tmp_token = lookToken(ts, 0);
+            int shift_count = 0;
+            while(strcmp(tmp_token, "\t") == 0){
+                shift_count++;
+                tmp_token = lookToken(ts, shift_count);
+            }
+            readGroup = shift_count == shift + 1;
+            if(!readGroup)
+                break;
+        }
         res.childs_length++;
         res.childs = (Node *)realloc(res.childs, res.childs_length * sizeof(Node));
-        if(strcmp(token, "(") != 0){
+        if(strcmp(token, "(") != 0 && !readGroup){
             res.childs[res.childs_length - 1].name = token;
             res.childs[res.childs_length - 1].childs_length = 0;
         }
         else
-            res.childs[res.childs_length - 1] = parse(ts, shift);
+            res.childs[res.childs_length - 1] = parse(ts, (readGroup ? shift + 1 : shift));
     }
 
     return res;
@@ -164,7 +183,11 @@ int main(int argc, char **argv)
 {
     //testGetToken("   def    say\n\tdo");
     //testGetToken("(def func (+ 10 11))");
+    //printf("def func \n\t+ 10 11\n");
+    //printf("def func \n\t+ \n\t\t10 \n\t\t11\n");
     testParseFirst("def func (+ 10 11)");
+    testParseFirst("def func \n\t+ \n\t\t10 \n\t\t11");
+    testParseFirst("def func \n\t+ 10 11");
     return 0;
 }
 
