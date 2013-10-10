@@ -99,6 +99,7 @@ void fillTokenStream(TokensStream *ts, const char *source){
     ts->position = 0;
     ts->length = 0;
     ts->tokens = 0;
+    
     while(!isEndOfCode(&ts->codeStream)){
         const char *t = getToken(&ts->codeStream);
         ts->length++;
@@ -108,11 +109,22 @@ void fillTokenStream(TokensStream *ts, const char *source){
 }
 
 const char *lookToken(TokensStream *ts, int shift){
+    if(ts->position + shift >= ts->length){
+        int diff_length = ts->position + shift - ts->length + 1;
+        for(int i = 0; i < diff_length && !isEndOfCode(&ts->codeStream); i++){
+            const char *t = getToken(&ts->codeStream);
+            ts->length++;
+            ts->tokens = (const char **)realloc(ts->tokens, ts->length * sizeof(const char *));
+            ts->tokens[ts->length - 1] = t;
+        }
+    }
     return ts->tokens[ts->position + shift];
 }
 
 const char *nextToken(TokensStream *ts){
-    return ts->tokens[ts->position++];
+    const char *res = lookToken(ts, 0);
+    ts->position++;
+    return res;
 }
 
 bool isEndOfStream(TokensStream *ts){
