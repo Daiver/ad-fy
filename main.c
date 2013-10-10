@@ -85,18 +85,20 @@ bool isEndOfCode(CodeStream *ts)
 
 struct TTokenStream
 {
+    CodeStream codeStream;
     const char **tokens;
     unsigned int length;
     unsigned int position;  
 };
 typedef struct TTokenStream TokensStream;
 
-void fillTokenStream(TokensStream *ts, CodeStream *cs){
+void fillTokenStream(TokensStream *ts, const char *source){
+    fs->codeStream = {source, 0};
     ts->position = 0;
     ts->length = 0;
     ts->tokens = 0;
-    while(!isEndOfCode(cs)){
-        const char *t = getToken(cs);
+    while(!isEndOfCode(ts->codeStream)){
+        const char *t = getToken(codeStream);
         ts->length++;
         ts->tokens = (const char **)realloc(ts->tokens, ts->length * sizeof(const char *));
         ts->tokens[ts->length - 1] = t;
@@ -172,9 +174,8 @@ void testGetToken(const char *source){
 
 void testParseFirst(const char *source)
 {
-    CodeStream cs = {source, 0};
     TokensStream ts;
-    fillTokenStream(&ts, &cs);
+    fillTokenStream(&ts, source);
     Node head = parse(&ts, 0);
     printTree(head, 0);
 }
