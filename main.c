@@ -14,14 +14,15 @@ struct TNode
 }; 
 typedef struct TNode Node;
 
-struct TTokensStream
+struct TCodeStream
 {
     const char *source;
     unsigned int position;
 };
-typedef struct TTokensStream TokensStream;
+typedef struct TCodeStream CodeStream;
 
-const char *getToken(TokensStream *stream)
+
+const char *getToken(CodeStream *stream)
 {
     int i = stream->position;
     int spaceCount = 0;
@@ -77,18 +78,48 @@ const char *getToken(TokensStream *stream)
     return t;
 }
 
-bool isEndOfStream(TokensStream *ts)
+bool isEndOfCode(CodeStream *ts)
 {
     return ts->source[ts->position] == '\0';
 }
 
-Node parse(TokensStream *ts){
-    const char *token = getToken(ts);
+struct TTokenStream
+{
+    const char **tokens;
+    unsigned int length;
+    unsigned int position;  
+};
+typedef struct TTokenStream TokensStream;
+
+void fillTokenStream(TokensStream *ts, CodeStream *cs){
+    ts->position = 0;
+    ts->length = 0;
+    ts->tokens = 0;
+    while(!isEndOfCode(cs)){
+        const char *t = getToken(cs);
+        ts->length++;
+        ts->tokens = (const char **)realloc(ts->tokens, ts->length * sizeof(const char *));
+        ts->tokens[ts->length - 1] = t;
+    }
+}
+
+const char *nextToken(TokensStream *ts){
+    return ts->tokens[ts->position++];
+}
+
+bool isEndOfStream(TokensStream *ts){
+    return ts->position == ts->length;
+}
+
+Node parse(TokensStream *ts, int shift){
     Node res = {0, 0, 0};
+    if(isEndOfStream(ts)) 
+        return res;
+    const char *token = nextToken(ts);
 
     res.name = token;
     while(!isEndOfStream(ts)){
-        token = getToken(ts);
+        token = nextToken(ts);
         if(strcmp(token, ")") == 0) break;
         res.childs_length++;
         res.childs = (Node *)realloc(res.childs, res.childs_length * sizeof(Node));
@@ -97,7 +128,7 @@ Node parse(TokensStream *ts){
             res.childs[res.childs_length - 1].childs_length = 0;
         }
         else
-            res.childs[res.childs_length - 1] = parse(ts);
+            res.childs[res.childs_length - 1] = parse(ts, shift);
     }
 
     return res;
@@ -114,7 +145,7 @@ void printTree(Node node, int shift)
 
 //TESTS
 void testGetToken(const char *source){
-  TokensStream ts = {source, 0};
+  CodeStream ts = {source, 0};
   const char *tk;
   while((tk = getToken(&ts)))
       printf("[%s]\n", tk);
@@ -122,8 +153,10 @@ void testGetToken(const char *source){
 
 void testParseFirst(const char *source)
 {
-    TokensStream ts = {source, 0};
-    Node head = parse(&ts);
+    CodeStream cs = {source, 0};
+    TokensStream ts;
+    fillTokenStream(&ts, &cs);
+    Node head = parse(&ts, 0);
     printTree(head, 0);
 }
 
