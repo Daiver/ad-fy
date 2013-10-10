@@ -1,2 +1,2 @@
-main:
-	clang -o main main.c
+bin/main:
+	clang -o bin/main main.c
