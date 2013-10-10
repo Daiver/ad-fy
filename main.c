@@ -93,12 +93,14 @@ struct TTokenStream
 typedef struct TTokenStream TokensStream;
 
 void fillTokenStream(TokensStream *ts, const char *source){
-    fs->codeStream = {source, 0};
+    ts->codeStream.source = source;
+    ts->codeStream.position = 0;
+
     ts->position = 0;
     ts->length = 0;
     ts->tokens = 0;
-    while(!isEndOfCode(ts->codeStream)){
-        const char *t = getToken(codeStream);
+    while(!isEndOfCode(&ts->codeStream)){
+        const char *t = getToken(&ts->codeStream);
         ts->length++;
         ts->tokens = (const char **)realloc(ts->tokens, ts->length * sizeof(const char *));
         ts->tokens[ts->length - 1] = t;
