@@ -8,9 +8,9 @@
 
 #define devel
 #ifdef devel
-#define LOG(a) printf(a);
+#define LOG(where, what) printf("\n=====[%s] %s\n", where, what);
 #else
-#define LOG(a)
+#define LOG(where, what)
 #endif
 
 struct TNode{
@@ -131,15 +131,15 @@ const char *nextToken(TokensStream *ts){
 }
 
 bool isEndOfStream(TokensStream *ts){
-    return ts->position == ts->length;
+    return ts->position >= ts->length;
 }
 
 Node parse(TokensStream *ts, int shift){
-    LOG("\n=====[parse] begin\n");
+    LOG("parse", "begin");
     Node res = {0, 0, 0};
     if(isEndOfStream(ts)) 
         return res;
-    LOG("\n=====[parse] not eos\n");
+    LOG("parse", "not eos");
     const char *token = nextToken(ts);
     while(strcmp(token, "\t") == 0)
         token = nextToken(ts);
@@ -149,32 +149,30 @@ Node parse(TokensStream *ts, int shift){
         token = nextToken(ts);
         if(strcmp(token, ")") == 0) break;
         if(strcmp(token, "\t") == 0) continue;
-        bool readGroup = false;  //make it beauty
+        bool readGroup = false;
         if(strcmp(token, "\n") == 0){
-            const char *tmp_token = lookToken(ts, 0);
             int shift_count = 0;
-            while(strcmp(tmp_token, "\t") == 0){
-                shift_count++;
-                tmp_token = lookToken(ts, shift_count);
-            }
+            while(strcmp(lookToken(ts, shift_count), "\t") == 0)
+                ++shift_count;
             readGroup = shift_count == shift + 1;
             if(!readGroup)
                 break;
         }
         res.childs_length++;
         res.childs = (Node *) realloc(res.childs, res.childs_length * sizeof(Node));
-        LOG("\n=====[parse] Checking on ( and readGroup\n");
+        LOG("parse", "checking if ( or readGroup");
         if(strcmp(token, "(") == 0 || readGroup){
-            LOG("\n=====[parse] true\n");
+            LOG("parse", "true");
             res.childs[res.childs_length - 1] = parse(ts, (readGroup ? shift + 1 : shift));
         }
         else{
-            LOG("\n=====[parse] false\n");
+            LOG("parse", "false");
             res.childs[res.childs_length - 1].name = token;
             res.childs[res.childs_length - 1].childs_length = 0;
         }
     }
 
+    LOG("parse", "Native end");
     return res;
 }
 
@@ -196,7 +194,6 @@ void testGetToken(const char *source){
 
 void testParseFirst(const char *source){
     TokensStream ts;
-    LOG("\n=====BPA=====\n");
     fillTokenStream(&ts, source);
     Node head = parse(&ts, 0);
     printTree(head, 0);
@@ -211,8 +208,8 @@ int main(int argc, char **argv){
 //    printf("def func \n\t+ \n\t\t10 \n\t\t11\n");
     testParseFirst("def func (+ 10 11)");
 
-    testParseFirst("def func \n"
-		   "\t(+ 10 11)\n");
+//    testParseFirst("def func \n"
+		   //"\t(+ 10 11)\n");
 
 //    testParseFirst("def func \n"
 //		   "\t+\n"
