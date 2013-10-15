@@ -6,6 +6,13 @@
 #define true 1
 #define false !true
 
+#define devel
+#ifdef devel
+#define LOG(a) printf(a);
+#else
+#define LOG(a)
+#endif
+
 struct TNode{
     const char *name;
     unsigned int childs_length;
@@ -183,19 +190,30 @@ void testGetToken(const char *source){
 
 void testParseFirst(const char *source){
     TokensStream ts;
+	LOG("\n=====BPA=====\n");
     fillTokenStream(&ts, source);
     Node head = parse(&ts, 0);
     printTree(head, 0);
 }
 
 int main(int argc, char **argv){
-    //testGetToken("   def    say\n\tdo");
-    //testGetToken("(def func (+ 10 11))");
-    //printf("def func \n\t+ 10 11\n");
-    //printf("def func \n\t+ \n\t\t10 \n\t\t11\n");
-    testParseFirst("def func (+ 10 11)");
-    testParseFirst("def func \n\t+ \n\t\t10 \n\t\t11");
-    testParseFirst("def func \n\t+ 10 11\n\t (- 2 9)\n");
+//    testGetToken("   def    say\n\tdo");
+//    testGetToken("(def func (+ 10 11))");
+//    printf("def func \n\t+ 10 11\n");
+//    printf("def func \n\t+ \n\t\t10 \n\t\t11\n");
+//    testParseFirst("def func (+ 10 11)");
+
+    testParseFirst("def func \n"
+		   "\t(+ 10 11)\n");
+
+//    testParseFirst("def func \n"
+//		   "\t+\n"
+//                 "\t\t10"
+//                   "\n\t\t11");
+
+//    testParseFirst("def func \n"
+//		   "\t(+ 10 11)\n"
+//		   "\t(- 2 9)\n");
     return 0;
 }
 
