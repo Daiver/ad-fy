@@ -195,6 +195,7 @@ Node parse(TokensStream *ts, int shift){
 void printTree(Node node, int shift){
     for(int i = 0; i < shift; i++)
         printf("  ");
+    printf("%d ", node.childs_length);
     printf("%s\n", node.name);
     for(int i = 0; i < node.childs_length; i++)
         printTree(node.childs[i], shift + 1);
@@ -227,7 +228,7 @@ int main(int argc, char **argv){
 //    testParseFirst("");
 
 
-//    testParseFirst("def func (+ 10 11) ");
+    testParseFirst("def func (+ 10 11) ");
 
 //    testParseFirst("def func \n"
 //		   "\t(+ 10 11)\n");
@@ -237,9 +238,9 @@ int main(int argc, char **argv){
 //                 "\t\t10"
 //                   "\n\t\t11");
 
-    testParseFirst("def func \n"
-		   "\t(+ 10 11)\n"
-		   "\t(- 2 9)\n");
+//    testParseFirst("def func \n"
+//		   "\t(+ 10 11)\n"
+//		   "\t(- 2 9)\n");
     return 0;
 }
 
