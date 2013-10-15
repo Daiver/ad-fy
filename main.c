@@ -111,15 +111,22 @@ void fillTokenStream(TokensStream *ts, const char *source){
 }
 
 const char *lookToken(TokensStream *ts, int shift){
-    if(ts->position + shift >= ts->length){
-        int diff_length = ts->position + shift - ts->length + 1;
-        for(int i = 0; i < diff_length && !isEndOfCode(&ts->codeStream); i++){
-            const char *t = getToken(&ts->codeStream);
-            ts->length++;
-            ts->tokens = (const char **)realloc(ts->tokens, ts->length * sizeof(const char *));
-            ts->tokens[ts->length - 1] = t;
-        }
-    }
+
+//Are you shure it is a good idea to perform such corretions? 
+//If (shift > ts->length) it is more likely that shift is incorrect
+
+//    if(ts->position + shift >= ts->length){
+//        int diff_length = ts->position + shift - ts->length + 1;
+//        for(int i = 0; i < diff_length && !isEndOfCode(&ts->codeStream); i++){
+//            const char *t = getToken(&ts->codeStream);
+//            ts->length++;
+//            ts->tokens = (const char **)realloc(ts->tokens, ts->length * sizeof(const char *));
+//            ts->tokens[ts->length - 1] = t;
+//        }
+//    }
+
+
+    if(ts->position + shift >= ts->length) return "";
     return ts->tokens[ts->position + shift];
 }
 
@@ -151,11 +158,13 @@ Node parse(TokensStream *ts, int shift){
         LOG("parse", "child token");
         token = nextToken(ts);
         LOG("parse", token);
-       if(!token) return res;
+        if(!token) return res;
         LOG("parse", "checking if )");
         if(strcmp(token, ")") == 0) break;
+        LOG("parse", "checking if tab");
         if(strcmp(token, "\t") == 0) continue;
         bool readGroup = false;
+        LOG("parse", "checking if end of line");
         if(strcmp(token, "\n") == 0){
             int shift_count = 0;
             while(strcmp(lookToken(ts, shift_count), "\t") == 0)
@@ -164,6 +173,7 @@ Node parse(TokensStream *ts, int shift){
             if(!readGroup)
                 break;
         }
+        LOG("parse", "childs memory reallocation");
         res.childs_length++;
         res.childs = (Node *) realloc(res.childs, res.childs_length * sizeof(Node));
         LOG("parse", "checking if ( or readGroup");
@@ -214,10 +224,10 @@ int main(int argc, char **argv){
 //    printf("def func \n\t+ \n\t\t10 \n\t\t11\n");
 //    testParseFirst(" ");
 //    testParseFirst("\n");
-    testParseFirst("");
+//    testParseFirst("");
 
 
-    testParseFirst("def func (+ 10 11) ");
+//    testParseFirst("def func (+ 10 11) ");
 
 //    testParseFirst("def func \n"
 //		   "\t(+ 10 11)\n");
@@ -227,9 +237,9 @@ int main(int argc, char **argv){
 //                 "\t\t10"
 //                   "\n\t\t11");
 
-//    testParseFirst("def func \n"
-//		   "\t(+ 10 11)\n"
-//		   "\t(- 2 9)\n");
+    testParseFirst("def func \n"
+		   "\t(+ 10 11)\n"
+		   "\t(- 2 9)\n");
     return 0;
 }
 
