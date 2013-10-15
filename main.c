@@ -41,7 +41,7 @@ const char *getToken(CodeStream *stream){
     stream->position = i;
     if(stream->source[i] == '\0'){
         stream->position = i;
-        return NULL;
+        return "";
     }
     if(stream->source[i] == '\t'){
         stream->position = i + 1;
@@ -101,8 +101,7 @@ void fillTokenStream(TokensStream *ts, const char *source){
 
     ts->position = 0;
     ts->length = 0;
-    ts->tokens = 0;
-    
+    ts->tokens = 0;    
     while(!isEndOfCode(&ts->codeStream)){
         const char *t = getToken(&ts->codeStream);
         ts->length++;
@@ -137,16 +136,23 @@ bool isEndOfStream(TokensStream *ts){
 Node parse(TokensStream *ts, int shift){
     LOG("parse", "begin");
     Node res = {0, 0, 0};
+    LOG("parse", "checking if eos");
     if(isEndOfStream(ts)) 
         return res;
-    LOG("parse", "not eos");
     const char *token = nextToken(ts);
     while(strcmp(token, "\t") == 0)
         token = nextToken(ts);
 
+    LOG("parse", "token");
     res.name = token;
+    LOG("parse", token);
+    if(!token) return res;
     while(!isEndOfStream(ts)){
+        LOG("parse", "child token");
         token = nextToken(ts);
+        LOG("parse", token);
+       if(!token) return res;
+        LOG("parse", "checking if )");
         if(strcmp(token, ")") == 0) break;
         if(strcmp(token, "\t") == 0) continue;
         bool readGroup = false;
@@ -172,7 +178,7 @@ Node parse(TokensStream *ts, int shift){
         }
     }
 
-    LOG("parse", "Native end");
+    LOG("parse", "native end");
     return res;
 }
 
@@ -188,7 +194,7 @@ void printTree(Node node, int shift){
 void testGetToken(const char *source){
   CodeStream ts = {source, 0};
   const char *tk;
-  while((tk = getToken(&ts)))
+  while( strcmp((tk = getToken(&ts)), ""))
       printf("[%s]\n", tk);
 }
 
@@ -196,7 +202,7 @@ void testParseFirst(const char *source){
     TokensStream ts;
     fillTokenStream(&ts, source);
     Node head = parse(&ts, 0);
-    printTree(head, 0);
+//    printTree(head, 0);
 }
 
 
@@ -206,10 +212,15 @@ int main(int argc, char **argv){
 //    testGetToken("(def func (+ 10 11))");
 //    printf("def func \n\t+ 10 11\n");
 //    printf("def func \n\t+ \n\t\t10 \n\t\t11\n");
-    testParseFirst("def func (+ 10 11)");
+//    testParseFirst(" ");
+//    testParseFirst("\n");
+    testParseFirst("");
+
+
+    testParseFirst("def func (+ 10 11) ");
 
 //    testParseFirst("def func \n"
-		   //"\t(+ 10 11)\n");
+//		   "\t(+ 10 11)\n");
 
 //    testParseFirst("def func \n"
 //		   "\t+\n"
