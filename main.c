@@ -6,24 +6,21 @@
 #define true 1
 #define false !true
 
-struct TNode
-{
+struct TNode{
     const char *name;
     unsigned int childs_length;
     struct TNode *childs;
 }; 
 typedef struct TNode Node;
 
-struct TCodeStream
-{
+struct TCodeStream{
     const char *source;
     unsigned int position;
 };
 typedef struct TCodeStream CodeStream;
 
 
-const char *getToken(CodeStream *stream)
-{
+const char *getToken(CodeStream *stream){
     int i = stream->position;
     int spaceCount = 0;
     while(stream->source[i] == ' '){
@@ -83,8 +80,7 @@ bool isEndOfCode(CodeStream *ts)
     return ts->source[ts->position] == '\0';
 }
 
-struct TTokenStream
-{
+struct TTokenStream{
     CodeStream codeStream;
     const char **tokens;
     unsigned int length;
@@ -169,8 +165,7 @@ Node parse(TokensStream *ts, int shift){
     return res;
 }
 
-void printTree(Node node, int shift)
-{
+void printTree(Node node, int shift){
     for(int i = 0; i < shift; i++)
         printf("  ");
     printf("%s\n", node.name);
@@ -186,16 +181,14 @@ void testGetToken(const char *source){
       printf("[%s]\n", tk);
 }
 
-void testParseFirst(const char *source)
-{
+void testParseFirst(const char *source){
     TokensStream ts;
     fillTokenStream(&ts, source);
     Node head = parse(&ts, 0);
     printTree(head, 0);
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv){
     //testGetToken("   def    say\n\tdo");
     //testGetToken("(def func (+ 10 11))");
     //printf("def func \n\t+ 10 11\n");
