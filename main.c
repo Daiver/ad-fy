@@ -135,7 +135,7 @@ bool isEndOfStream(TokensStream *ts){
 
 Node parse(TokensStream *ts, int shift){
     LOG("parse", "begin");
-    Node res = {0, 0, 0};
+    Node res = {"", 0, 0};
     LOG("parse", "checking if eos");
     if(isEndOfStream(ts)) 
         return res;
@@ -202,7 +202,7 @@ void testParseFirst(const char *source){
     TokensStream ts;
     fillTokenStream(&ts, source);
     Node head = parse(&ts, 0);
-//    printTree(head, 0);
+    printTree(head, 0);
 }
 
 
