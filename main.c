@@ -135,9 +135,11 @@ bool isEndOfStream(TokensStream *ts){
 }
 
 Node parse(TokensStream *ts, int shift){
+    LOG("\n=====[parse] begin\n");
     Node res = {0, 0, 0};
     if(isEndOfStream(ts)) 
         return res;
+    LOG("\n=====[parse] not eos\n");
     const char *token = nextToken(ts);
     while(strcmp(token, "\t") == 0)
         token = nextToken(ts);
@@ -160,13 +162,17 @@ Node parse(TokensStream *ts, int shift){
                 break;
         }
         res.childs_length++;
-        res.childs = (Node *)realloc(res.childs, res.childs_length * sizeof(Node));
-        if(strcmp(token, "(") != 0 && !readGroup){
+        res.childs = (Node *) realloc(res.childs, res.childs_length * sizeof(Node));
+        LOG("\n=====[parse] Checking on ( and readGroup\n");
+        if(strcmp(token, "(") == 0 || readGroup){
+            LOG("\n=====[parse] true\n");
+            res.childs[res.childs_length - 1] = parse(ts, (readGroup ? shift + 1 : shift));
+        }
+        else{
+            LOG("\n=====[parse] false\n");
             res.childs[res.childs_length - 1].name = token;
             res.childs[res.childs_length - 1].childs_length = 0;
         }
-        else
-            res.childs[res.childs_length - 1] = parse(ts, (readGroup ? shift + 1 : shift));
     }
 
     return res;
@@ -190,18 +196,20 @@ void testGetToken(const char *source){
 
 void testParseFirst(const char *source){
     TokensStream ts;
-	LOG("\n=====BPA=====\n");
+    LOG("\n=====BPA=====\n");
     fillTokenStream(&ts, source);
     Node head = parse(&ts, 0);
     printTree(head, 0);
 }
 
+
+//MAIN
 int main(int argc, char **argv){
 //    testGetToken("   def    say\n\tdo");
 //    testGetToken("(def func (+ 10 11))");
 //    printf("def func \n\t+ 10 11\n");
 //    printf("def func \n\t+ \n\t\t10 \n\t\t11\n");
-//    testParseFirst("def func (+ 10 11)");
+    testParseFirst("def func (+ 10 11)");
 
     testParseFirst("def func \n"
 		   "\t(+ 10 11)\n");
