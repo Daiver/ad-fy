@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define devel
+//#define devel
 #include "logging.h"
 #include "common.h"
 
@@ -71,6 +71,7 @@ const char *getToken(CodeStream *stream){
     int len = i - stream->position;
     char *t = (char *) malloc((len+1) * sizeof(char));
     strncpy(t, stream->source + stream->position, len);    
+    t[len] = '\0';
     stream->position = i;
     return t;
 }
@@ -140,6 +141,8 @@ Node parse(TokensStream *ts, int shift){
     if(isEndOfStream(ts)) 
         return res;
     const char *token = nextToken(ts);
+    while(strcmp(token, "\n") == 0)
+        token = nextToken(ts);
     while(strcmp(token, "\t") == 0)
         token = nextToken(ts);
 
@@ -211,14 +214,22 @@ void testParseFirst(const char *source){
 
 int main(int argc, char **argv)
 {
+
+    if(argc > 1){
+        printf("Reading from file [%s]...\n", argv[1]);
+        const char *src = readFileAsLine(argv[1]);
+
+        printf("{-\n%s\n-}\n", src);
+        testParseFirst(src);
+    }
     //testGetToken("   def    say\n\tdo");
     //testGetToken("(def func (+ 10 11))");
     //printf("def func \n\t+ 10 11\n");
     //printf("def func \n\t+ \n\t\t10 \n\t\t11\n");
-    testParseFirst("def func (+ 10 11)");
-    testParseFirst("def func \n\t+ \n\t\t10 \n\t\t11");
-    printf("def func \n\t+ \n\t\t10 \n\t\t11\n");
-    testParseFirst("def func \n\t+ 10 11\n\t (- 2 9)");
+    //testParseFirst("def func (+ 10 11)");
+    //testParseFirst("def func \n\t+ \n\t\t10 \n\t\t11");
+    //printf("def func \n\t+ \n\t\t10 \n\t\t11\n");
+    //testParseFirst("def func \n    + 10 11\n    - 2 9");
     //MAIN
     //    testGetToken("   def    say\n\tdo");
     //    testGetToken("(def func (+ 10 11))");
