@@ -163,8 +163,19 @@ Node parse(TokensStream *ts, int shift){
         LOG("parse", "checking if end of line");
         if(strcmp(token, "\n") == 0){
             int shift_count = 0;
-            while(strcmp(lookToken(ts, shift_count), "\t") == 0)
-                ++shift_count;
+            bool end_big_cycle = false;
+            while(!end_big_cycle){
+                shift_count = 0;
+                while(strcmp(lookToken(ts, shift_count), "\t") == 0){
+                    ++shift_count;
+                }
+                if(strcmp(lookToken(ts, shift_count), "\n") == 0){
+                    token = lookToken(ts, shift_count);
+                    ts->position += shift_count + 1;
+                }
+                else
+                    end_big_cycle = true;
+            }
             readGroup = shift_count == shift + 1;
             if(!readGroup){
                 ts->position--;
