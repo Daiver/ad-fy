@@ -6,24 +6,28 @@
 #define true 1
 #define false !true
 
-struct TNode
-{
+#define devel
+#ifdef devel
+#define LOG(where, what) printf("\n=====[%s] %s\n", where, what);
+#else
+#define LOG(where, what)
+#endif
+
+struct TNode{
     const char *name;
     unsigned int childs_length;
     struct TNode *childs;
 }; 
 typedef struct TNode Node;
 
-struct TCodeStream
-{
+struct TCodeStream{
     const char *source;
     unsigned int position;
 };
 typedef struct TCodeStream CodeStream;
 
 
-const char *getToken(CodeStream *stream)
-{
+const char *getToken(CodeStream *stream){
     int i = stream->position;
     int spaceCount = 0;
     while(stream->source[i] == ' '){
@@ -37,7 +41,7 @@ const char *getToken(CodeStream *stream)
     stream->position = i;
     if(stream->source[i] == '\0'){
         stream->position = i;
-        return NULL;
+        return "";
     }
     if(stream->source[i] == '\t'){
         stream->position = i + 1;
@@ -83,8 +87,7 @@ bool isEndOfCode(CodeStream *ts)
     return ts->source[ts->position] == '\0';
 }
 
-struct TTokenStream
-{
+struct TTokenStream{
     CodeStream codeStream;
     const char **tokens;
     unsigned int length;
@@ -98,8 +101,7 @@ void fillTokenStream(TokensStream *ts, const char *source){
 
     ts->position = 0;
     ts->length = 0;
-    ts->tokens = 0;
-    
+    ts->tokens = 0;    
     while(!isEndOfCode(&ts->codeStream)){
         const char *t = getToken(&ts->codeStream);
         ts->length++;
@@ -109,15 +111,22 @@ void fillTokenStream(TokensStream *ts, const char *source){
 }
 
 const char *lookToken(TokensStream *ts, int shift){
-    if(ts->position + shift >= ts->length){
-        int diff_length = ts->position + shift - ts->length + 1;
-        for(int i = 0; i < diff_length && !isEndOfCode(&ts->codeStream); i++){
-            const char *t = getToken(&ts->codeStream);
-            ts->length++;
-            ts->tokens = (const char **)realloc(ts->tokens, ts->length * sizeof(const char *));
-            ts->tokens[ts->length - 1] = t;
-        }
-    }
+
+//Are you shure it is a good idea to perform such corretions? 
+//If (shift > ts->length) it is more likely that shift is incorrect
+
+//    if(ts->position + shift >= ts->length){
+//        int diff_length = ts->position + shift - ts->length + 1;
+//        for(int i = 0; i < diff_length && !isEndOfCode(&ts->codeStream); i++){
+//            const char *t = getToken(&ts->codeStream);
+//            ts->length++;
+//            ts->tokens = (const char **)realloc(ts->tokens, ts->length * sizeof(const char *));
+//            ts->tokens[ts->length - 1] = t;
+//        }
+//    }
+
+
+    if(ts->position + shift >= ts->length) return "";
     return ts->tokens[ts->position + shift];
 }
 
@@ -128,51 +137,65 @@ const char *nextToken(TokensStream *ts){
 }
 
 bool isEndOfStream(TokensStream *ts){
-    return ts->position == ts->length;
+    return ts->position >= ts->length;
 }
 
 Node parse(TokensStream *ts, int shift){
-    Node res = {0, 0, 0};
+    LOG("parse", "begin");
+    Node res = {"", 0, 0};
+    LOG("parse", "checking if eos");
     if(isEndOfStream(ts)) 
         return res;
     const char *token = nextToken(ts);
     while(strcmp(token, "\t") == 0)
         token = nextToken(ts);
 
+    LOG("parse", "token");
     res.name = token;
+    LOG("parse", token);
+    if(!token) return res;
     while(!isEndOfStream(ts)){
+        LOG("parse", "child token");
         token = nextToken(ts);
+        LOG("parse", token);
+        if(!token) return res;
+        LOG("parse", "checking if )");
         if(strcmp(token, ")") == 0) break;
+        LOG("parse", "checking if tab");
         if(strcmp(token, "\t") == 0) continue;
-        bool readGroup = false;  //make it beauty
+        bool readGroup = false;
+        LOG("parse", "checking if end of line");
         if(strcmp(token, "\n") == 0){
-            const char *tmp_token = lookToken(ts, 0);
             int shift_count = 0;
-            while(strcmp(tmp_token, "\t") == 0){
-                shift_count++;
-                tmp_token = lookToken(ts, shift_count);
-            }
+            while(strcmp(lookToken(ts, shift_count), "\t") == 0)
+                ++shift_count;
             readGroup = shift_count == shift + 1;
             if(!readGroup)
                 break;
         }
+        LOG("parse", "childs memory reallocation");
         res.childs_length++;
-        res.childs = (Node *)realloc(res.childs, res.childs_length * sizeof(Node));
-        if(strcmp(token, "(") != 0 && !readGroup){
+        res.childs = (Node *) realloc(res.childs, res.childs_length * sizeof(Node));
+        LOG("parse", "checking if ( or readGroup");
+        if(strcmp(token, "(") == 0 || readGroup){
+            LOG("parse", "true");
+            res.childs[res.childs_length - 1] = parse(ts, (readGroup ? shift + 1 : shift));
+        }
+        else{
+            LOG("parse", "false");
             res.childs[res.childs_length - 1].name = token;
             res.childs[res.childs_length - 1].childs_length = 0;
         }
-        else
-            res.childs[res.childs_length - 1] = parse(ts, (readGroup ? shift + 1 : shift));
     }
 
+    LOG("parse", "native end");
     return res;
 }
 
-void printTree(Node node, int shift)
-{
+void printTree(Node node, int shift){
     for(int i = 0; i < shift; i++)
         printf("  ");
+    printf("%d ", node.childs_length);
     printf("%s\n", node.name);
     for(int i = 0; i < node.childs_length; i++)
         printTree(node.childs[i], shift + 1);
@@ -182,7 +205,7 @@ void printTree(Node node, int shift)
 void testGetToken(const char *source){
   CodeStream ts = {source, 0};
   const char *tk;
-  while((tk = getToken(&ts)))
+  while( strcmp((tk = getToken(&ts)), ""))
       printf("[%s]\n", tk);
 }
 
@@ -203,6 +226,25 @@ int main(int argc, char **argv)
     testParseFirst("def func \n\t+ \n\t\t10 \n\t\t11");
     printf("def func \n\t+ \n\t\t10 \n\t\t11\n");
     testParseFirst("def func \n\t+ 10 11\n\t (- 2 9)");
+    //MAIN
+    //    testGetToken("   def    say\n\tdo");
+    //    testGetToken("(def func (+ 10 11))");
+    //    printf("def func \n\t+ 10 11\n");
+    //    printf("def func \n\t+ \n\t\t10 \n\t\t11\n");
+    //    testParseFirst(" ");
+    //    testParseFirst("\n");
+    //    testParseFirst("");
+    //    testParseFirst("def func \n"
+    //		   "\t(+ 10 11)\n");
+
+    //    testParseFirst("def func \n"
+    //		   "\t+\n"
+    //                 "\t\t10"
+    //                   "\n\t\t11");
+
+    //    testParseFirst("def func \n"
+    //		   "\t(+ 10 11)\n"
+    //		   "\t(- 2 9)\n");
     return 0;
 }
 
