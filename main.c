@@ -4,16 +4,7 @@
 
 #define devel
 #include "logging.h"
-
-#define bool char
-#define true 1
-#define false !true
-
-//#ifdef devel
-/*#define LOG(where, what) printf("\n=====[%s] %s\n", where, what);
-#else
-#define LOG(where, what)
-#endif*/
+#include "common.h"
 
 struct TNode{
     const char *name;
