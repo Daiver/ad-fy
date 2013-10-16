@@ -210,6 +210,17 @@ void printTree(Node node, int shift){
         printTree(node.childs[i], shift + 1);
 }
 
+int execute(Node node){
+    if(node.childs_length == 0)
+        return atoi(node.name);
+    if(strcmp(node.name, "*") == 0){
+        return execute(node.childs[0]) * execute(node.childs[1]);
+    }
+    if(strcmp(node.name, "+") == 0){
+        return execute(node.childs[0]) + execute(node.childs[1]);
+    }
+}
+
 //TESTS
 void testGetToken(const char *source){
   CodeStream ts = {source, 0};
@@ -225,6 +236,15 @@ void testParseFirst(const char *source){
     printTree(head, 0);
 }
 
+void testExecuteFirst(const char *source){
+    TokensStream ts;
+    fillTokenStream(&ts, source);
+    Node head = parse(&ts, 0);
+    printTree(head, 0);
+    printf("res>%d\n", execute(head));
+}
+
+
 int main(int argc, char **argv)
 {
 
@@ -233,7 +253,8 @@ int main(int argc, char **argv)
         const char *src = readFileAsLine(argv[1]);
 
         printf("{-\n%s\n-}\n", src);
-        testParseFirst(src);
+        //testParseFirst(src);
+        testExecuteFirst(src);
     }
     //testGetToken("   def    say\n\tdo");
     //testGetToken("(def func (+ 10 11))");
