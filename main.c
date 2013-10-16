@@ -137,7 +137,7 @@ bool isEndOfStream(TokensStream *ts){
 Node parse(TokensStream *ts, int shift){
     LOG("parse", "begin");
     Node res = {"", 0, 0};
-    LOG("parse", "checking if eos");
+    LOG("parse", "checking end of stream");
     if(isEndOfStream(ts)) 
         return res;
     const char *token = nextToken(ts);
@@ -166,8 +166,10 @@ Node parse(TokensStream *ts, int shift){
             while(strcmp(lookToken(ts, shift_count), "\t") == 0)
                 ++shift_count;
             readGroup = shift_count == shift + 1;
-            if(!readGroup)
+            if(!readGroup){
+                ts->position--;
                 break;
+            }
         }
         LOG("parse", "childs memory reallocation");
         res.childs_length++;
