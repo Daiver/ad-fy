@@ -211,14 +211,22 @@ void printTree(Node node, int shift){
 }
 
 int execute(Node node){
+    int res = 0;
     if(node.childs_length == 0)
-        return atoi(node.name);
+        res = atoi(node.name);
     if(strcmp(node.name, "*") == 0){
-        return execute(node.childs[0]) * execute(node.childs[1]);
+        res = execute(node.childs[0]) * execute(node.childs[1]);
+    }    
+    if(strcmp(node.name, "/") == 0){
+        res = execute(node.childs[0]) / execute(node.childs[1]);
+    }
+    if(strcmp(node.name, "-") == 0){
+        res = execute(node.childs[0]) - execute(node.childs[1]);
     }
     if(strcmp(node.name, "+") == 0){
-        return execute(node.childs[0]) + execute(node.childs[1]);
+        res = execute(node.childs[0]) + execute(node.childs[1]);
     }
+    return res;
 }
 
 //TESTS
