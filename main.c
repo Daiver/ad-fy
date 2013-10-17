@@ -240,8 +240,33 @@ int execute(hashtable_t *hashtable, Node *node){
 }
 
 int op_Plus(hashtable_t *hashtable, Node *node){
-    return execute(hashtable, &node->childs[0]) + execute(hashtable, &node->childs[1]);
+    int res = 0;
+    for(int i = 0; i < node->childs_length; i++)
+        res += execute(hashtable, &node->childs[i]);
+    return res;
 }
+
+int op_Mul(hashtable_t *hashtable, Node *node){
+    int res = 1;
+    for(int i = 0; i < node->childs_length; i++)
+        res *= execute(hashtable, &node->childs[i]);
+    return res;
+}
+
+int op_Minus(hashtable_t *hashtable, Node *node){
+    int res = execute(hashtable, &node->childs[0]);
+    for(int i = 1; i < node->childs_length; i++)
+        res -= execute(hashtable, &node->childs[i]);
+    return res;
+}
+
+int op_Div(hashtable_t *hashtable, Node *node){
+    int res = execute(hashtable, &node->childs[0]);
+    for(int i = 1; i < node->childs_length; i++)
+        res /= execute(hashtable, &node->childs[i]);
+    return res;
+}
+
 
 //TESTS
 void testGetToken(const char *source){
@@ -265,6 +290,9 @@ void testExecuteFirst(const char *source){
     printTree(head, 0);
     hashtable_t *hashtable = ht_create( 65536 ); 
     ht_set(hashtable, "+", (char *)&op_Plus);
+    ht_set(hashtable, "-", (char *)&op_Minus);
+    ht_set(hashtable, "*", (char *)&op_Mul);
+    ht_set(hashtable, "/", (char *)&op_Div);
 
     printf("res>%d\n", execute(hashtable, &head));
 }
