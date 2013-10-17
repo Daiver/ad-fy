@@ -401,6 +401,13 @@ ObjectNode *op_Quote(hashtable_t *hashtable, Node *node){
     return ht_get(hashtable, node->childs[0].name);
 }
 
+ObjectNode *op_If(hashtable_t *hashtable, Node *node){
+    ObjectNode *p = execute(hashtable, &node->childs[0]);
+    if(p->value != 0)
+        return execute(hashtable, &node->childs[1]);
+    return execute(hashtable, &node->childs[2]);
+}
+
 void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "+", (char *)newObjectNode(1, &op_Plus));
     ht_set(hashtable, "-", (char *)newObjectNode(1, &op_Minus));
@@ -412,6 +419,7 @@ void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "deffn", (char *)newObjectNode(1, &op_DefFn));
     ht_set(hashtable, "'", (char *)newObjectNode(1, &op_Quote));
     ht_set(hashtable, "id", (char *)newObjectNode(1, &op_Quote));
+    ht_set(hashtable, "if", (char *)newObjectNode(1, &op_If));
 }
 
 //TESTS
