@@ -211,10 +211,24 @@ void printTree(Node node, int shift){
         printTree(node.childs[i], shift + 1);
 }
 
+bool isDigit(const char *s){
+    const char *str = s;
+    if(*str == '-'){
+        str++;
+        if(*str == '\0')
+            return false;
+    }
+    while (*str != '\0'){
+        if (*str < 48 || *str > 57) 
+            return false;
+        str++;
+    }
+    return true;
+}
 
 int execute(hashtable_t *hashtable, Node *node){
     int res = 0;
-    if(node->childs_length == 0)
+    if(isDigit(node->name))
         res = atoi(node->name);
     else{
         int (*fp)(hashtable_t *hashtable, Node *node) = ht_get(hashtable, node->name);
@@ -224,18 +238,6 @@ int execute(hashtable_t *hashtable, Node *node){
         }
         res = fp(hashtable, node);
     }
-    /*if(strcmp(node.name, "*") == 0){
-        res = execute(node.childs[0]) * execute(node.childs[1]);
-    }    
-    if(strcmp(node.name, "/") == 0){
-        res = execute(node.childs[0]) / execute(node.childs[1]);
-    }
-    if(strcmp(node.name, "-") == 0){
-        res = execute(node.childs[0]) - execute(node.childs[1]);
-    }
-    if(strcmp(node.name, "+") == 0){
-        res = execute(node.childs[0]) + execute(node.childs[1]);
-    }*/
     return res;
 }
 
@@ -267,6 +269,12 @@ int op_Div(hashtable_t *hashtable, Node *node){
     return res;
 }
 
+void fillOpTable(hashtable_t *hashtable){
+    ht_set(hashtable, "+", (char *)&op_Plus);
+    ht_set(hashtable, "-", (char *)&op_Minus);
+    ht_set(hashtable, "*", (char *)&op_Mul);
+    ht_set(hashtable, "/", (char *)&op_Div);
+}
 
 //TESTS
 void testGetToken(const char *source){
@@ -289,11 +297,7 @@ void testExecuteFirst(const char *source){
     Node head = parse(&ts, 0);
     printTree(head, 0);
     hashtable_t *hashtable = ht_create( 65536 ); 
-    ht_set(hashtable, "+", (char *)&op_Plus);
-    ht_set(hashtable, "-", (char *)&op_Minus);
-    ht_set(hashtable, "*", (char *)&op_Mul);
-    ht_set(hashtable, "/", (char *)&op_Div);
-
+    fillOpTable(hashtable);
     printf("res>%d\n", execute(hashtable, &head));
 }
 
