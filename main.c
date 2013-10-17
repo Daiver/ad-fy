@@ -229,6 +229,9 @@ bool isDigit(const char *s){
 struct TObjectNode{
     //types :
     //1 - built-in function 
+    //2 - node
+    //
+    //101 - int
     unsigned char type;
     void *value;
 };
@@ -241,67 +244,82 @@ ObjectNode *newObjectNode(unsigned char type, void *value){
     return obj;
 }
 
-int execute(hashtable_t *hashtable, Node *node){
-    int res = 0;
-    if(isDigit(node->name))
-        res = atoi(node->name);
+ObjectNode *execute(hashtable_t *hashtable, Node *node){
+    ObjectNode *res = newObjectNode(0, 0);
+    if(isDigit(node->name)){
+        res->type = 101;
+        res->value = (void *)atoi(node->name);
+    }
     else{
         ObjectNode *obj = ht_get(hashtable, node->name);
         if(obj == NULL){
             printf("EXECTE ERROR obj [%s] does not exists\n", node->name);
-            return 0;
+            return res;
         }
         if(obj->type == 1){
-            int (*fp)(hashtable_t *hashtable, Node *node) = obj->value;
+            ObjectNode *(*fp)(hashtable_t *hashtable, Node *node) = obj->value;
             res = fp(hashtable, node);
         }else if(obj->type == 2){
             return execute(hashtable, obj->value);
+        }else if(obj->type == 101){
+            return obj;
         }
         else{
             printf("EXECTE ERROR type [%d] does not exists\n", obj->type);
-            return 0;
+            return res;
         }
     }
     return res;
 }
 
-int op_Plus(hashtable_t *hashtable, Node *node){
+ObjectNode *op_Plus(hashtable_t *hashtable, Node *node){
     int res = 0;
-    for(int i = 0; i < node->childs_length; i++)
-        res += execute(hashtable, &node->childs[i]);
-    return res;
+    for(int i = 0; i < node->childs_length; i++){
+        ObjectNode *tmp = execute(hashtable, &node->childs[i]);
+        res += (int)tmp->value;
+    }
+    return newObjectNode(101, res);
 }
 
-int op_Mul(hashtable_t *hashtable, Node *node){
+ObjectNode *op_Mul(hashtable_t *hashtable, Node *node){
     int res = 1;
-    for(int i = 0; i < node->childs_length; i++)
-        res *= execute(hashtable, &node->childs[i]);
-    return res;
+    for(int i = 0; i < node->childs_length; i++){
+        ObjectNode *tmp = execute(hashtable, &node->childs[i]);
+        res *= (int)tmp->value;
+    }
+    return newObjectNode(101, res);
 }
 
-int op_Minus(hashtable_t *hashtable, Node *node){
-    int res = execute(hashtable, &node->childs[0]);
-    for(int i = 1; i < node->childs_length; i++)
-        res -= execute(hashtable, &node->childs[i]);
-    return res;
+ObjectNode *op_Minus(hashtable_t *hashtable, Node *node){
+    ObjectNode *tmp = execute(hashtable, &node->childs[0]);
+    int res = tmp->value;
+    for(int i = 1; i < node->childs_length; i++){
+        ObjectNode *tmp = execute(hashtable, &node->childs[i]);
+        res -= (int)tmp->value;
+    }
+    return newObjectNode(101, res);
 }
 
-int op_Div(hashtable_t *hashtable, Node *node){
-    int res = execute(hashtable, &node->childs[0]);
-    for(int i = 1; i < node->childs_length; i++)
-        res /= execute(hashtable, &node->childs[i]);
-    return res;
+ObjectNode *op_Div(hashtable_t *hashtable, Node *node){
+    ObjectNode *tmp = execute(hashtable, &node->childs[0]);
+    int res = tmp->value;
+    for(int i = 1; i < node->childs_length; i++){
+        ObjectNode *tmp = execute(hashtable, &node->childs[i]);
+        res /= (int)tmp->value;
+    }
+    return newObjectNode(101, res);
 }
 
-int op_Help(hashtable_t *hashtable, Node *node){
+ObjectNode *op_Help(hashtable_t *hashtable, Node *node){
     printf("\nThis is small lisp like language interpreter by Victor Muzychenko and Kirill Klimov\n");
-    return 0;
+    return newObjectNode(0, 0);
 }
 
-int op_Define(hashtable_t *hashtable, Node *node){// FIX IT!
+ObjectNode *op_Define(hashtable_t *hashtable, Node *node){// FIX IT!
     const char *func_name = node->childs[0].name; 
-    ht_set(hashtable, func_name, (char *)newObjectNode(2, &node->childs[1]));
-    return 0;
+    ObjectNode *tmp = (char *)newObjectNode(2, &node->childs[1]);
+    ht_set(hashtable, func_name, tmp);
+    return tmp;
 }
 
 void fillOpTable(hashtable_t *hashtable){
@@ -336,7 +354,10 @@ void testExecuteFirst(const char *source){
     while(!isEndOfStream(&ts)){
         Node head = parse(&ts, 0);
         printTree(head, 0);
-        printf("res>%d\n", execute(hashtable, &head));
+        ObjectNode *node = execute(hashtable, &head);
+        if(node->type == 101){
+            printf("res>%d\n", node->value);
+        }
     }
 }
 
@@ -349,36 +370,8 @@ int main(int argc, char **argv)
         const char *src = readFileAsLine(argv[1]);
 
         printf("{-\n%s\n-}\n", src);
-        //testParseFirst(src);
         testExecuteFirst(src);
     }
-    //testGetToken("   def    say\n\tdo");
-    //testGetToken("(def func (+ 10 11))");
-    //printf("def func \n\t+ 10 11\n");
-    //printf("def func \n\t+ \n\t\t10 \n\t\t11\n");
-    //testParseFirst("def func (+ 10 11)");
-    //testParseFirst("def func \n\t+ \n\t\t10 \n\t\t11");
-    //printf("def func \n\t+ \n\t\t10 \n\t\t11\n");
-    //testParseFirst("def func \n    + 10 11\n    - 2 9");
-    //MAIN
-    //    testGetToken("   def    say\n\tdo");
-    //    testGetToken("(def func (+ 10 11))");
-    //    printf("def func \n\t+ 10 11\n");
-    //    printf("def func \n\t+ \n\t\t10 \n\t\t11\n");
-    //    testParseFirst(" ");
-    //    testParseFirst("\n");
-    //    testParseFirst("");
-    //    testParseFirst("def func \n"
-    //		   "\t(+ 10 11)\n");
-
-    //    testParseFirst("def func \n"
-    //		   "\t+\n"
-    //                 "\t\t10"
-    //                   "\n\t\t11");
-
-    //    testParseFirst("def func \n"
-    //		   "\t(+ 10 11)\n"
-    //		   "\t(- 2 9)\n");
     return 0;
 }
 
