@@ -372,10 +372,10 @@ ObjectNode *op_Fn(hashtable_t *hashtable, Node *node){
     for(int i = 0; i < fo->args_length; i++){
         fo->args[i] = node->childs[0].childs[i].name;
     }
-    fo->node_length = node->childs_length - 1
+    fo->node_length = node->childs_length - 1;
     fo->nodes = malloc(sizeof(Node *) * fo->node_length);
     for(int i = 1; i < node->childs_length; i++)
-        fo->nodes[i - 1] = node->childs[i];
+        fo->nodes[i - 1] = &node->childs[i];
     return newObjectNode(3, (void *)fo);
 }
 
@@ -388,10 +388,10 @@ ObjectNode *op_DefFn(hashtable_t *hashtable, Node *node){
     for(int i = 0; i < fo->args_length; i++){
         fo->args[i] = node->childs[1].childs[i].name;
     }
-    fo->node_length = node->childs_length - 1
+    fo->node_length = node->childs_length - 2;
     fo->nodes = malloc(sizeof(Node *) * fo->node_length);
-    for(int i = 1; i < node->childs_length; i++)
-        fo->nodes[i - 1] = node->childs[i];
+    for(int i = 2; i < node->childs_length; i++)
+        fo->nodes[i - 2] = &node->childs[i];
     ObjectNode *tmp = newObjectNode(3, (void *)fo);
     ht_set(hashtable, func_name, tmp);
     return tmp;
