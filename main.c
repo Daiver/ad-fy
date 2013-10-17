@@ -248,6 +248,7 @@ ObjectNode *newObjectNode(unsigned char type, void *value){
 
 struct TFunctionObj{
     int args_length;
+    const char *prefix;
     char **args;
     Node *node;
 };
@@ -273,7 +274,12 @@ ObjectNode *execute(hashtable_t *hashtable, Node *node){
         }else if(obj->type == 2){
             return execute(hashtable, obj->value);
         }else if(obj->type == 3){
-            printf("FN NOT IMPLEMENTED\n");
+            FunctionObj *foo = (FunctionObj *)obj->value;
+            for(int i = 0; i < foo->args_length; i++){
+                ht_set(hashtable, foo->args[i], execute(hashtable, &node->childs[i]));
+            }
+            printf("FN NOT IMPELEMENTED\n");
+            return execute(hashtable, foo->node);
             return res;
         }else if(obj->type == 101){
             return obj;
@@ -293,6 +299,7 @@ ObjectNode *op_Fn(hashtable_t *hashtable, Node *node){
     for(int i = 0; i < fo->args_length; i++){
         fo->args[i] = node->childs[0].childs[i].name;
     }
+    fo->node = &node->childs[1];
     return newObjectNode(3, (void *)fo);
 }
 
