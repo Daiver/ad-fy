@@ -381,7 +381,7 @@ ObjectNode *op_DefFn(hashtable_t *hashtable, Node *node){
     return tmp;
 }
 
-ObjectNode *op_ID(hashtable_t *hashtable, Node *node){
+ObjectNode *op_Quote(hashtable_t *hashtable, Node *node){
     return ht_get(hashtable, node->childs[0].name);
 }
 
@@ -394,7 +394,7 @@ void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "define", (char *)newObjectNode(1, &op_Define));
     ht_set(hashtable, "lambda", (char *)newObjectNode(1, &op_Fn));
     ht_set(hashtable, "deffn", (char *)newObjectNode(1, &op_DefFn));
-    ht_set(hashtable, "id", (char *)newObjectNode(1, &op_ID));
+    ht_set(hashtable, "'", (char *)newObjectNode(1, &op_Quote));
 }
 
 //TESTS

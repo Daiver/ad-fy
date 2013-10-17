@@ -7,4 +7,4 @@ deffn example
     f arg
 
 square 100
-example (id square) 2
+example (' square) 2
