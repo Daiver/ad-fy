@@ -295,17 +295,6 @@ ObjectNode *execute(hashtable_t *hashtable, Node *node){
     return res;
 }
 
-ObjectNode *op_Fn(hashtable_t *hashtable, Node *node){
-    FunctionObj *fo = (FunctionObj *)malloc(sizeof(FunctionObj));
-    fo->args_length = node->childs[0].childs_length;
-    fo->args = (char **)malloc(sizeof(char *) * fo->args_length);
-    for(int i = 0; i < fo->args_length; i++){
-        fo->args[i] = node->childs[0].childs[i].name;
-    }
-    fo->node = &node->childs[1];
-    return newObjectNode(3, (void *)fo);
-}
-
 ObjectNode *op_Plus(hashtable_t *hashtable, Node *node){
     int res = 0;
     for(int i = 0; i < node->childs_length; i++){
@@ -356,6 +345,32 @@ ObjectNode *op_Define(hashtable_t *hashtable, Node *node){// FIX IT!
     return tmp;
 }
 
+ObjectNode *op_Fn(hashtable_t *hashtable, Node *node){
+    FunctionObj *fo = (FunctionObj *)malloc(sizeof(FunctionObj));
+    fo->args_length = node->childs[0].childs_length;
+    fo->args = (char **)malloc(sizeof(char *) * fo->args_length);
+    for(int i = 0; i < fo->args_length; i++){
+        fo->args[i] = node->childs[0].childs[i].name;
+    }
+    fo->node = &node->childs[1];
+    return newObjectNode(3, (void *)fo);
+}
+
+
+ObjectNode *op_DefFn(hashtable_t *hashtable, Node *node){
+    const char *func_name = node->childs[0].name; 
+    FunctionObj *fo = (FunctionObj *)malloc(sizeof(FunctionObj));
+    fo->args_length = node->childs[1].childs_length;
+    fo->args = (char **)malloc(sizeof(char *) * fo->args_length);
+    for(int i = 0; i < fo->args_length; i++){
+        fo->args[i] = node->childs[1].childs[i].name;
+    }
+    fo->node = &node->childs[2];
+    ObjectNode *tmp = newObjectNode(3, (void *)fo);
+    ht_set(hashtable, func_name, tmp);
+    return tmp;
+}
+
 void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "+", (char *)newObjectNode(1, &op_Plus));
     ht_set(hashtable, "-", (char *)newObjectNode(1, &op_Minus));
@@ -364,6 +379,7 @@ void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "help", (char *)newObjectNode(1, &op_Help));
     ht_set(hashtable, "define", (char *)newObjectNode(1, &op_Define));
     ht_set(hashtable, "lambda", (char *)newObjectNode(1, &op_Fn));
+    ht_set(hashtable, "deffn", (char *)newObjectNode(1, &op_DefFn));
 }
 
 //TESTS
