@@ -5,6 +5,7 @@
 //#define devel
 #include "logging.h"
 #include "common.h"
+#include "hashtable.h"
 
 struct TNode{
     const char *name;
@@ -210,11 +211,20 @@ void printTree(Node node, int shift){
         printTree(node.childs[i], shift + 1);
 }
 
-int execute(Node node){
+
+int execute(hashtable_t *hashtable, Node *node){
     int res = 0;
-    if(node.childs_length == 0)
-        res = atoi(node.name);
-    if(strcmp(node.name, "*") == 0){
+    if(node->childs_length == 0)
+        res = atoi(node->name);
+    else{
+        int (*fp)(hashtable_t *hashtable, Node *node) = ht_get(hashtable, node->name);
+        if(fp == NULL){
+            printf("ERROR [%s] does not exists\n", node->name);
+            return 0;
+        }
+        res = fp(hashtable, node);
+    }
+    /*if(strcmp(node.name, "*") == 0){
         res = execute(node.childs[0]) * execute(node.childs[1]);
     }    
     if(strcmp(node.name, "/") == 0){
@@ -225,8 +235,12 @@ int execute(Node node){
     }
     if(strcmp(node.name, "+") == 0){
         res = execute(node.childs[0]) + execute(node.childs[1]);
-    }
+    }*/
     return res;
+}
+
+int op_Plus(hashtable_t *hashtable, Node *node){
+    return execute(hashtable, &node->childs[0]) + execute(hashtable, &node->childs[1]);
 }
 
 //TESTS
@@ -249,7 +263,10 @@ void testExecuteFirst(const char *source){
     fillTokenStream(&ts, source);
     Node head = parse(&ts, 0);
     printTree(head, 0);
-    printf("res>%d\n", execute(head));
+    hashtable_t *hashtable = ht_create( 65536 ); 
+    ht_set(hashtable, "+", (char *)&op_Plus);
+
+    printf("res>%d\n", execute(hashtable, &head));
 }
 
 
