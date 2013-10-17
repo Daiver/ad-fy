@@ -273,14 +273,24 @@ ObjectNode *execute(hashtable_t *hashtable, Node *node){
             res = fp(hashtable, node);
         }else if(obj->type == 2){
             return execute(hashtable, obj->value);
-        }else if(obj->type == 3){
+        }else if(obj->type == 3){// MAKE ITBETTER. PLEASE ='(
             FunctionObj *foo = (FunctionObj *)obj->value;
+            void **backup = malloc(sizeof(void *) * foo->args_length);
             for(int i = 0; i < foo->args_length; i++){
+                void *tmp = ht_get(hashtable, foo->args[i]);
+                if(tmp != NULL){
+                    backup[i] = tmp;
+                    ht_del(hashtable, foo->args[i]);
+                }
+                else
+                    backup[i] = NULL;
                 ht_set(hashtable, foo->args[i], execute(hashtable, &node->childs[i]));
             }
             res = execute(hashtable, foo->node);
             for(int i = 0; i < foo->args_length; i++){
                 ht_del(hashtable, foo->args[i]);
+                if(backup[i] != NULL)
+                    ht_set(hashtable, foo->args[i], backup[i]);
             }
            
             return res;
