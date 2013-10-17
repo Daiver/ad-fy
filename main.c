@@ -278,8 +278,11 @@ ObjectNode *execute(hashtable_t *hashtable, Node *node){
             for(int i = 0; i < foo->args_length; i++){
                 ht_set(hashtable, foo->args[i], execute(hashtable, &node->childs[i]));
             }
-            printf("FN NOT IMPELEMENTED\n");
-            return execute(hashtable, foo->node);
+            res = execute(hashtable, foo->node);
+            for(int i = 0; i < foo->args_length; i++){
+                ht_del(hashtable, foo->args[i]);
+            }
+           
             return res;
         }else if(obj->type == 101){
             return obj;
