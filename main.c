@@ -272,6 +272,9 @@ ObjectNode *execute(hashtable_t *hashtable, Node *node){
             res = fp(hashtable, node);
         }else if(obj->type == 2){
             return execute(hashtable, obj->value);
+        }else if(obj->type == 3){
+            printf("FN NOT IMPLEMENTED\n");
+            return res;
         }else if(obj->type == 101){
             return obj;
         }
@@ -283,10 +286,14 @@ ObjectNode *execute(hashtable_t *hashtable, Node *node){
     return res;
 }
 
-ObjectNode *op_Fn(hashtable_t hashtable, Node *node){
+ObjectNode *op_Fn(hashtable_t *hashtable, Node *node){
     FunctionObj *fo = (FunctionObj *)malloc(sizeof(FunctionObj));
     fo->args_length = node->childs[0].childs_length;
     fo->args = (char **)malloc(sizeof(char *) * fo->args_length);
+    for(int i = 0; i < fo->args_length; i++){
+        fo->args[i] = node->childs[0].childs[i].name;
+    }
+    return newObjectNode(3, (void *)fo);
 }
 
 ObjectNode *op_Plus(hashtable_t *hashtable, Node *node){
@@ -334,7 +341,7 @@ ObjectNode *op_Help(hashtable_t *hashtable, Node *node){
 
 ObjectNode *op_Define(hashtable_t *hashtable, Node *node){// FIX IT!
     const char *func_name = node->childs[0].name; 
-    ObjectNode *tmp = (char *)newObjectNode(2, &node->childs[1]);
+    ObjectNode *tmp = execute(hashtable, &node->childs[1]); //(char *)newObjectNode(2, &node->childs[1]);
     ht_set(hashtable, func_name, tmp);
     return tmp;
 }
@@ -346,6 +353,7 @@ void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "/", (char *)newObjectNode(1, &op_Div));
     ht_set(hashtable, "help", (char *)newObjectNode(1, &op_Help));
     ht_set(hashtable, "define", (char *)newObjectNode(1, &op_Define));
+    ht_set(hashtable, "lambda", (char *)newObjectNode(1, &op_Fn));
 }
 
 //TESTS
