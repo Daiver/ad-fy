@@ -275,6 +275,10 @@ ObjectNode *execute(hashtable_t *hashtable, Node *node){
             return execute(hashtable, obj->value);
         }else if(obj->type == 3){// MAKE ITBETTER. PLEASE ='(
             FunctionObj *foo = (FunctionObj *)obj->value;
+            ObjectNode **objs = malloc(sizeof(ObjectNode *) * node->childs_length);
+            for(int i = 0; i < node->childs_length; i++){
+                objs[i] = execute(hashtable, &node->childs[i]);
+            }
             void **backup = malloc(sizeof(void *) * foo->args_length);
             for(int i = 0; i < foo->args_length; i++){
                 void *tmp = ht_get(hashtable, foo->args[i]);
@@ -284,15 +288,18 @@ ObjectNode *execute(hashtable_t *hashtable, Node *node){
                 }
                 else
                     backup[i] = NULL;
-                ht_set(hashtable, foo->args[i], execute(hashtable, &node->childs[i]));
+                ht_set(hashtable, foo->args[i], objs[i]);
+                //ht_set(hashtable, foo->args[i], execute(hashtable, &node->childs[i]));
             }
             res = execute(hashtable, foo->node);
             for(int i = 0; i < foo->args_length; i++){
                 ht_del(hashtable, foo->args[i]);
-                if(backup[i] != NULL)
+                if(backup[i] != NULL){
                     ht_set(hashtable, foo->args[i], backup[i]);
+                }
             }
-           
+            free(backup); 
+            free(objs);
             return res;
         }else if(obj->type == 101){
             return obj;
@@ -395,6 +402,7 @@ void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "lambda", (char *)newObjectNode(1, &op_Fn));
     ht_set(hashtable, "deffn", (char *)newObjectNode(1, &op_DefFn));
     ht_set(hashtable, "'", (char *)newObjectNode(1, &op_Quote));
+    ht_set(hashtable, "id", (char *)newObjectNode(1, &op_Quote));
 }
 
 //TESTS

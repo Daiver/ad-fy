@@ -8,3 +8,4 @@ deffn example
 
 square 100
 example (' square) 2
+example (id square) 2
