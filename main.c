@@ -298,7 +298,7 @@ int op_Help(hashtable_t *hashtable, Node *node){
     return 0;
 }
 
-int op_Def(hashtable_t *hashtable, Node *node){// FIX IT!
+int op_Define(hashtable_t *hashtable, Node *node){// FIX IT!
     const char *func_name = node->childs[0].name; 
     ht_set(hashtable, func_name, (char *)newObjectNode(2, &node->childs[1]));
     return 0;
@@ -310,7 +310,7 @@ void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "*", (char *)newObjectNode(1, &op_Mul));
     ht_set(hashtable, "/", (char *)newObjectNode(1, &op_Div));
     ht_set(hashtable, "help", (char *)newObjectNode(1, &op_Help));
-    ht_set(hashtable, "def", (char *)newObjectNode(1, &op_Def));
+    ht_set(hashtable, "define", (char *)newObjectNode(1, &op_Define));
 }
 
 //TESTS
