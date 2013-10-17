@@ -269,11 +269,17 @@ int op_Div(hashtable_t *hashtable, Node *node){
     return res;
 }
 
+int op_Help(hashtable_t *hashtable, Node *node){
+    printf("\nThis is small lisp like language interpreter by Victor Muzychenko and Kirill Klimov\n");
+    return 0;
+}
+
 void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "+", (char *)&op_Plus);
     ht_set(hashtable, "-", (char *)&op_Minus);
     ht_set(hashtable, "*", (char *)&op_Mul);
     ht_set(hashtable, "/", (char *)&op_Div);
+    ht_set(hashtable, "help", (char *)&op_Help);
 }
 
 //TESTS
@@ -294,11 +300,13 @@ void testParseFirst(const char *source){
 void testExecuteFirst(const char *source){
     TokensStream ts;
     fillTokenStream(&ts, source);
-    Node head = parse(&ts, 0);
-    printTree(head, 0);
     hashtable_t *hashtable = ht_create( 65536 ); 
     fillOpTable(hashtable);
-    printf("res>%d\n", execute(hashtable, &head));
+    while(!isEndOfStream(&ts)){
+        Node head = parse(&ts, 0);
+        printTree(head, 0);
+        printf("res>%d\n", execute(hashtable, &head));
+    }
 }
 
 
