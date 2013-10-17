@@ -254,6 +254,8 @@ int execute(hashtable_t *hashtable, Node *node){
         if(obj->type == 1){
             int (*fp)(hashtable_t *hashtable, Node *node) = obj->value;
             res = fp(hashtable, node);
+        }else if(obj->type == 2){
+            return execute(hashtable, obj->value);
         }
         else{
             printf("EXECTE ERROR type [%d] does not exists\n", obj->type);
@@ -298,7 +300,7 @@ int op_Help(hashtable_t *hashtable, Node *node){
 
 int op_Def(hashtable_t *hashtable, Node *node){// FIX IT!
     const char *func_name = node->childs[0].name; 
-
+    ht_set(hashtable, func_name, (char *)newObjectNode(2, &node->childs[1]));
     return 0;
 }
 
@@ -308,6 +310,7 @@ void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "*", (char *)newObjectNode(1, &op_Mul));
     ht_set(hashtable, "/", (char *)newObjectNode(1, &op_Div));
     ht_set(hashtable, "help", (char *)newObjectNode(1, &op_Help));
+    ht_set(hashtable, "def", (char *)newObjectNode(1, &op_Def));
 }
 
 //TESTS
