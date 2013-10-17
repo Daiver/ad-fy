@@ -274,6 +274,11 @@ int op_Help(hashtable_t *hashtable, Node *node){
     return 0;
 }
 
+int op_Def(hashtable_t, *hashtable, Node *node){// FIX IT!
+    const char *func_name = node->childs[0].name; 
+    return 0;
+}
+
 void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "+", (char *)&op_Plus);
     ht_set(hashtable, "-", (char *)&op_Minus);
