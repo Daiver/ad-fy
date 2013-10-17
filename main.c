@@ -250,7 +250,8 @@ struct TFunctionObj{
     int args_length;
     const char *prefix;
     char **args;
-    Node *node;
+    int node_length;
+    Node **nodes;
 };
 typedef struct TFunctionObj FunctionObj;
 
@@ -291,7 +292,9 @@ ObjectNode *execute(hashtable_t *hashtable, Node *node){
                 ht_set(hashtable, foo->args[i], objs[i]);
                 //ht_set(hashtable, foo->args[i], execute(hashtable, &node->childs[i]));
             }
-            res = execute(hashtable, foo->node);
+            for(int i = 0; i < foo->node_length; i++){
+                res = execute(hashtable, foo->nodes[i]);
+            }
             for(int i = 0; i < foo->args_length; i++){
                 ht_del(hashtable, foo->args[i]);
                 if(backup[i] != NULL){
@@ -369,7 +372,10 @@ ObjectNode *op_Fn(hashtable_t *hashtable, Node *node){
     for(int i = 0; i < fo->args_length; i++){
         fo->args[i] = node->childs[0].childs[i].name;
     }
-    fo->node = &node->childs[1];
+    fo->node_length = node->childs_length - 1
+    fo->nodes = malloc(sizeof(Node *) * fo->node_length);
+    for(int i = 1; i < node->childs_length; i++)
+        fo->nodes[i - 1] = node->childs[i];
     return newObjectNode(3, (void *)fo);
 }
 
@@ -382,7 +388,10 @@ ObjectNode *op_DefFn(hashtable_t *hashtable, Node *node){
     for(int i = 0; i < fo->args_length; i++){
         fo->args[i] = node->childs[1].childs[i].name;
     }
-    fo->node = &node->childs[2];
+    fo->node_length = node->childs_length - 1
+    fo->nodes = malloc(sizeof(Node *) * fo->node_length);
+    for(int i = 1; i < node->childs_length; i++)
+        fo->nodes[i - 1] = node->childs[i];
     ObjectNode *tmp = newObjectNode(3, (void *)fo);
     ht_set(hashtable, func_name, tmp);
     return tmp;
