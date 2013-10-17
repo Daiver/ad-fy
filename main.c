@@ -228,8 +228,10 @@ bool isDigit(const char *s){
 
 struct TObjectNode{
     //types :
+    //0 - none
     //1 - built-in function 
     //2 - node
+    //3 - function
     //
     //101 - int
     unsigned char type;
@@ -243,6 +245,15 @@ ObjectNode *newObjectNode(unsigned char type, void *value){
     obj->value = value;
     return obj;
 }
+
+struct TFunctionObj{
+    int args_length;
+    char **args;
+    Node *node;
+};
+typedef struct TFunctionObj FunctionObj;
+
+//FunctionObj *newFunctionObj()
 
 ObjectNode *execute(hashtable_t *hashtable, Node *node){
     ObjectNode *res = newObjectNode(0, 0);
@@ -270,6 +281,12 @@ ObjectNode *execute(hashtable_t *hashtable, Node *node){
         }
     }
     return res;
+}
+
+ObjectNode *op_Fn(hashtable_t hashtable, Node *node){
+    FunctionObj *fo = (FunctionObj *)malloc(sizeof(FunctionObj));
+    fo->args_length = node->childs[0].childs_length;
+    fo->args = (char **)malloc(sizeof(char *) * fo->args_length);
 }
 
 ObjectNode *op_Plus(hashtable_t *hashtable, Node *node){
