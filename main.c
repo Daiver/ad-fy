@@ -226,17 +226,39 @@ bool isDigit(const char *s){
     return true;
 }
 
+struct TObjectNode{
+    //types :
+    //1 - built-in function 
+    unsigned char type;
+    void *value;
+};
+typedef struct TObjectNode ObjectNode;
+
+ObjectNode *newObjectNode(unsigned char type, void *value){
+    ObjectNode *obj = (ObjectNode *) malloc( sizeof(ObjectNode));
+    obj->type = type;
+    obj->value = value;
+    return obj;
+}
+
 int execute(hashtable_t *hashtable, Node *node){
     int res = 0;
     if(isDigit(node->name))
         res = atoi(node->name);
     else{
-        int (*fp)(hashtable_t *hashtable, Node *node) = ht_get(hashtable, node->name);
-        if(fp == NULL){
-            printf("ERROR [%s] does not exists\n", node->name);
+        ObjectNode *obj = ht_get(hashtable, node->name);
+        if(obj == NULL){
+            printf("EXECTE ERROR obj [%s] does not exists\n", node->name);
             return 0;
         }
-        res = fp(hashtable, node);
+        if(obj->type == 1){
+            int (*fp)(hashtable_t *hashtable, Node *node) = obj->value;
+            res = fp(hashtable, node);
+        }
+        else{
+            printf("EXECTE ERROR type [%d] does not exists\n", obj->type);
+            return 0;
+        }
     }
     return res;
 }
@@ -281,11 +303,11 @@ int op_Def(hashtable_t *hashtable, Node *node){// FIX IT!
 }
 
 void fillOpTable(hashtable_t *hashtable){
-    ht_set(hashtable, "+", (char *)&op_Plus);
-    ht_set(hashtable, "-", (char *)&op_Minus);
-    ht_set(hashtable, "*", (char *)&op_Mul);
-    ht_set(hashtable, "/", (char *)&op_Div);
-    ht_set(hashtable, "help", (char *)&op_Help);
+    ht_set(hashtable, "+", (char *)newObjectNode(1, &op_Plus));
+    ht_set(hashtable, "-", (char *)newObjectNode(1, &op_Minus));
+    ht_set(hashtable, "*", (char *)newObjectNode(1, &op_Mul));
+    ht_set(hashtable, "/", (char *)newObjectNode(1, &op_Div));
+    ht_set(hashtable, "help", (char *)newObjectNode(1, &op_Help));
 }
 
 //TESTS
