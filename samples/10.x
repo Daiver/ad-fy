@@ -1,3 +1,3 @@
-import samples/stl.x
+import stl.x
 
 inc 2
