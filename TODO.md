@@ -2,7 +2,7 @@
 
 ## Pending
 - parse for string constants
-- parse for comments
+- parse for comments (maybe useless)
 - parse error handling
 - testing system
 - split program to modules
