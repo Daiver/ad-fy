@@ -9,21 +9,6 @@
 #include "lexer.h"
 #include "parser.h"
 
-bool isDigit(const char *s){
-    const char *str = s;
-    if(*str == '-'){
-        str++;
-        if(*str == '\0')
-            return false;
-    }
-    while (*str != '\0'){
-        if (*str < 48 || *str > 57) 
-            return false;
-        str++;
-    }
-    return true;
-}
-
 struct TObjectNode{
     //types :
     //0 - none
@@ -269,13 +254,11 @@ void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "lambda", (char *)newObjectNode(1, &op_Fn));
     ht_set(hashtable, "alias", (char *)newObjectNode(1, &op_Alias));
     ht_set(hashtable, "deffn", (char *)newObjectNode(1, &op_DefFn));
-    //ht_set(hashtable, "'", (char *)newObjectNode(1, &op_Quote));
     ht_set(hashtable, "id", (char *)newObjectNode(1, &op_Quote));
     ht_set(hashtable, "if", (char *)newObjectNode(1, &op_If));
     ht_set(hashtable, "import", (char *)newObjectNode(1, &op_Import));
     ht_set(hashtable, "print", (char *)newObjectNode(1, &op_Print));
     ht_set(hashtable, "comment", (char *)newObjectNode(1, &op_Comment));
-    //ht_set(hashtable, ";", (char *)newObjectNode(1, &op_Comment));
 }
 
 //TESTS

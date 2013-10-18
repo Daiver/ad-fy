@@ -11,6 +11,21 @@
 #include<malloc.h>
 #include<string.h>
 
+bool isDigit(const char *s){
+    const char *str = s;
+    if(*str == '-'){
+        str++;
+        if(*str == '\0')
+            return false;
+    }
+    while (*str != '\0'){
+        if (*str < 48 || *str > 57) 
+            return false;
+        str++;
+    }
+    return true;
+}
+
 char *readFileAsLine(char *input_file_name){
     char *file_contents;
     long input_file_size;
