@@ -446,7 +446,7 @@ ObjectNode *op_Comment(hashtable_t *hashtable, Node *node){
 ObjectNode *op_Print(hashtable_t *hashtable, Node *node){
     ObjectNode *res = execute(hashtable, &node->childs[0]);
     if(res->type == 101){
-        printf(">%d\n", res->value);
+        printf("stdout>%d\n", res->value);
     }
     return newObjectNode(0, 0);
 }
@@ -485,8 +485,6 @@ void testParseFirst(const char *source){
     printTree(head, 0);
 }
 
-
-
 void testExecuteFirst(const char *source){
     TokensStream ts;
     fillTokenStream(&ts, source);
@@ -502,6 +500,21 @@ void testExecuteFirst(const char *source){
     }
 }
 
+void testExecuteSecond(const char *source){
+    TokensStream ts;
+    fillTokenStream(&ts, source);
+    hashtable_t *hashtable = ht_create( 65536 ); 
+    fillOpTable(hashtable);
+    import(hashtable, "stl.x");
+    while(!isEndOfStream(&ts)){
+        Node head = parse(&ts, 0);
+        printTree(head, 0);
+        ObjectNode *node = execute(hashtable, &head);
+        if(node->type == 101){
+            printf("res>%d\n", node->value);
+        }
+    }
+}
 
 int main(int argc, char **argv)
 {
@@ -511,7 +524,7 @@ int main(int argc, char **argv)
         const char *src = readFileAsLine(argv[1]);
 
         printf("{-\n%s\n-}\n", src);
-        testExecuteFirst(src);
+        testExecuteSecond(src);
     }
     return 0;
 }
