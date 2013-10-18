@@ -7,6 +7,7 @@
 #include "common.h"
 #include "hashtable.h"
 #include "lexer.h"
+#include "parser.h"
 
 /*
 struct TCodeStream{
@@ -77,6 +78,7 @@ bool isEndOfCode(CodeStream *ts)
 }
 */
 
+/*
 struct TTokenStream{
     CodeStream codeStream;
     const char **tokens;
@@ -212,7 +214,7 @@ void printTree(Node node, int shift){
     for(int i = 0; i < node.childs_length; i++)
         printTree(node.childs[i], shift + 1);
 }
-
+*/
 bool isDigit(const char *s){
     const char *str = s;
     if(*str == '-'){
