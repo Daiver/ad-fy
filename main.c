@@ -6,20 +6,14 @@
 #include "logging.h"
 #include "common.h"
 #include "hashtable.h"
+#include "lexer.h"
 
-struct TNode{
-    const char *name;
-    unsigned int childs_length;
-    struct TNode *childs;
-}; 
-typedef struct TNode Node;
-
+/*
 struct TCodeStream{
     const char *source;
     unsigned int position;
 };
 typedef struct TCodeStream CodeStream;
-
 
 const char *getToken(CodeStream *stream){
     int i = stream->position;
@@ -81,6 +75,7 @@ bool isEndOfCode(CodeStream *ts)
 {
     return ts->source[ts->position] == '\0';
 }
+*/
 
 struct TTokenStream{
     CodeStream codeStream;
@@ -134,6 +129,13 @@ const char *nextToken(TokensStream *ts){
 bool isEndOfStream(TokensStream *ts){
     return ts->position >= ts->length;
 }
+
+struct TNode{
+    const char *name;
+    unsigned int childs_length;
+    struct TNode *childs;
+}; 
+typedef struct TNode Node;
 
 Node parse(TokensStream *ts, int shift){
     LOG("parse", "begin");
