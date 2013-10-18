@@ -5,7 +5,7 @@
 - parse for comments (maybe useless)
 - parse error handling
 - testing system
-- split program to modules
+- split program to modules (partial done)
 - more tests
 - improve executing systems to enable lazy eval by user functions
 - fix memory leaks
@@ -15,6 +15,7 @@
 - review built-in functions (!)
 - improve application if possible
 - fix lexer/parser error on files without \n in the end
+- switch .x for some beautyfull
 
 
 ## Done
