@@ -43,6 +43,7 @@ typedef struct TFunctionObj FunctionObj;
 
 ObjectNode *execute(hashtable_t *hashtable, Node *node){
     ObjectNode *res = newObjectNode(0, 0);
+    //printf("[%s]\n", node->name);
     if(isDigit(node->name)){
         res->type = 101;
         res->value = (void *)atoi(node->name);
