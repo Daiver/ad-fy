@@ -1,6 +1,8 @@
 #To do
 
 ## Pending
+- parse for string constants
+- parse for comments
 - parse error handling
 - testing system
 - split program to modules

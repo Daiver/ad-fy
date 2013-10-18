@@ -1,3 +1,5 @@
+; importing standart library
+
 import stl.x
 
 inc 2

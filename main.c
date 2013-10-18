@@ -423,6 +423,10 @@ ObjectNode *op_Import(hashtable_t *hashtable, Node *node){
     return newObjectNode(0, 0);
 }
 
+ObjectNode *op_Comment(hashtable_t *hashtable, Node *node){
+    return newObjectNode(0, 0);
+}
+
 ObjectNode *op_Print(hashtable_t *hashtable, Node *node){
     ObjectNode *res = execute(hashtable, &node->childs[0]);
     if(res->type == 101){
@@ -446,6 +450,8 @@ void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "if", (char *)newObjectNode(1, &op_If));
     ht_set(hashtable, "import", (char *)newObjectNode(1, &op_Import));
     ht_set(hashtable, "print", (char *)newObjectNode(1, &op_Print));
+    ht_set(hashtable, "comment", (char *)newObjectNode(1, &op_Comment));
+    ht_set(hashtable, ";", (char *)newObjectNode(1, &op_Comment));
 }
 
 //TESTS
