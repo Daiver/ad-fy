@@ -258,6 +258,7 @@ void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "help", (char *)newObjectNode(1, &op_Help));
     ht_set(hashtable, "define", (char *)newObjectNode(1, &op_Define));
     ht_set(hashtable, "lambda", (char *)newObjectNode(1, &op_Fn));
+    ht_set(hashtable, "\\", (char *)newObjectNode(1, &op_Fn));
     ht_set(hashtable, "deffn", (char *)newObjectNode(1, &op_DefFn));
     ht_set(hashtable, "'", (char *)newObjectNode(1, &op_Quote));
     ht_set(hashtable, "id", (char *)newObjectNode(1, &op_Quote));
