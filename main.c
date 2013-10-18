@@ -173,6 +173,15 @@ ObjectNode *op_Define(hashtable_t *hashtable, Node *node){// FIX IT!
     return tmp;
 }
 
+ObjectNode *op_Alias(hashtable_t *hashtable, Node *node){// FIX IT!
+    const char *func_name = node->childs[0].name; 
+    ObjectNode *tmp = ht_get(hashtable, node->childs[1].name); //(char *)newObjectNode(2, &node->childs[1]);
+    ht_set(hashtable, func_name, tmp);
+    return tmp;
+}
+
+
+
 ObjectNode *op_Fn(hashtable_t *hashtable, Node *node){
     FunctionObj *fo = (FunctionObj *)malloc(sizeof(FunctionObj));
     int starts_with = 0;
@@ -258,15 +267,15 @@ void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "help", (char *)newObjectNode(1, &op_Help));
     ht_set(hashtable, "define", (char *)newObjectNode(1, &op_Define));
     ht_set(hashtable, "lambda", (char *)newObjectNode(1, &op_Fn));
-    ht_set(hashtable, "\\", (char *)newObjectNode(1, &op_Fn));
+    ht_set(hashtable, "alias", (char *)newObjectNode(1, &op_Alias));
     ht_set(hashtable, "deffn", (char *)newObjectNode(1, &op_DefFn));
-    ht_set(hashtable, "'", (char *)newObjectNode(1, &op_Quote));
+    //ht_set(hashtable, "'", (char *)newObjectNode(1, &op_Quote));
     ht_set(hashtable, "id", (char *)newObjectNode(1, &op_Quote));
     ht_set(hashtable, "if", (char *)newObjectNode(1, &op_If));
     ht_set(hashtable, "import", (char *)newObjectNode(1, &op_Import));
     ht_set(hashtable, "print", (char *)newObjectNode(1, &op_Print));
     ht_set(hashtable, "comment", (char *)newObjectNode(1, &op_Comment));
-    ht_set(hashtable, ";", (char *)newObjectNode(1, &op_Comment));
+    //ht_set(hashtable, ";", (char *)newObjectNode(1, &op_Comment));
 }
 
 //TESTS

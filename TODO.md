@@ -15,7 +15,8 @@
 - review built-in functions (!)
 - improve application if possible
 - fix lexer/parser error on files without \n in the end
-- switch .x for some beautyfull
+- switch .x for some beauty
+- make define and other local
 
 
 ## Done
