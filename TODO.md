@@ -5,7 +5,16 @@
 - testing system
 - split program to modules
 - more tests
+- improve executing systems to enable lazy eval by user functions
+- fix memory leaks
+- test and/or improve hashtable
+- improve object system if it possible
+- partial application for function
+- review built-in functions (!)
+- improve application if possible
+- fix lexer/parser error on files without \n in the end
 
 
 ## Done
 - parsing with tabs
+- first version of executor
