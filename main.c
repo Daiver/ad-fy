@@ -17,6 +17,7 @@ struct TObjectNode{
     //3 - function
     //
     //101 - int
+    //105 - bool
     unsigned char type;
     void *value;
 };
@@ -87,7 +88,7 @@ ObjectNode *execute(hashtable_t *hashtable, Node *node){
             free(backup); 
             free(objs);
             return res;
-        }else if(obj->type == 101){
+        }else if(obj->type > 100){
             return obj;
         }
         else{
@@ -135,6 +136,13 @@ ObjectNode *op_Minus(hashtable_t *hashtable, Node *node){
     }
     return newObjectNode(101, res);
 }
+
+ObjectNode *op_Eq(hashtable_t *hashtable, Node *node){
+    ObjectNode *tmp1 = execute(hashtable, &node->childs[0]);
+    ObjectNode *tmp2 = execute(hashtable, &node->childs[1]);
+    return newObjectNode(105, tmp1->value == tmp2->value);
+}
+
 
 ObjectNode *op_Div(hashtable_t *hashtable, Node *node){
     ObjectNode *tmp = execute(hashtable, &node->childs[0]);
@@ -249,6 +257,7 @@ void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "-", (char *)newObjectNode(1, &op_Minus));
     ht_set(hashtable, "*", (char *)newObjectNode(1, &op_Mul));
     ht_set(hashtable, "/", (char *)newObjectNode(1, &op_Div));
+    ht_set(hashtable, "==", (char *)newObjectNode(1, &op_Eq));
     ht_set(hashtable, "help", (char *)newObjectNode(1, &op_Help));
     ht_set(hashtable, "define", (char *)newObjectNode(1, &op_Define));
     ht_set(hashtable, "lambda", (char *)newObjectNode(1, &op_Fn));
