@@ -315,6 +315,16 @@ ObjectNode *execute(hashtable_t *hashtable, Node *node){
     return res;
 }
 
+void import(hashtable_t *hashtable, const char *fname){
+    const char *source = readFileAsLine(fname);
+    TokensStream ts;
+    fillTokenStream(&ts, source);
+    while(!isEndOfStream(&ts)){
+        Node head = parse(&ts, 0);
+        ObjectNode *node = execute(hashtable, &head);
+    }
+}
+
 ObjectNode *op_Plus(hashtable_t *hashtable, Node *node){
     int res = 0;
     for(int i = 0; i < node->childs_length; i++){
@@ -408,6 +418,11 @@ ObjectNode *op_If(hashtable_t *hashtable, Node *node){
     return execute(hashtable, &node->childs[2]);
 }
 
+ObjectNode *op_Import(hashtable_t *hashtable, Node *node){
+    import(hashtable, node->childs[0].name);
+    return newObjectNode(0, 0);
+}
+
 void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "+", (char *)newObjectNode(1, &op_Plus));
     ht_set(hashtable, "-", (char *)newObjectNode(1, &op_Minus));
@@ -420,6 +435,7 @@ void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "'", (char *)newObjectNode(1, &op_Quote));
     ht_set(hashtable, "id", (char *)newObjectNode(1, &op_Quote));
     ht_set(hashtable, "if", (char *)newObjectNode(1, &op_If));
+    ht_set(hashtable, "import", (char *)newObjectNode(1, &op_Import));
 }
 
 //TESTS
@@ -436,6 +452,8 @@ void testParseFirst(const char *source){
     Node head = parse(&ts, 0);
     printTree(head, 0);
 }
+
+
 
 void testExecuteFirst(const char *source){
     TokensStream ts;
