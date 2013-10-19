@@ -18,3 +18,8 @@ define s4 (slice 3 5 s3)
 print 
     length s4
     length s3
+
+head s3
+head s4
+tail s3
+tail s4
