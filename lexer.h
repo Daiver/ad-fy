@@ -63,6 +63,8 @@ const char *getToken(CodeStream *stream){
         ++i;
     }
     int len = i - stream->position;
+    if(len + stream->position >= strlen(stream->source))
+        len = strlen(stream->source) - stream->position - 1;
     char *t = (char *) malloc((len+1) * sizeof(char));
     strncpy(t, stream->source + stream->position, len);    
     t[len] = '\0';

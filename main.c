@@ -328,9 +328,11 @@ int main(int argc, char **argv)
     if(argc > 1){
         printf("Reading from file [%s]...\n", argv[1]);
         const char *src = readFileAsLine(argv[1]);
-
         printf("{-\n%s\n-}\n", src);
         testExecuteSecond(src);
+    }
+    else{
+        printf("USAGE ./main source_file");
     }
     return 0;
 }
