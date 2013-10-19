@@ -258,7 +258,8 @@ void printObjectNode(ObjectNode *obj){
         printf("[");
         for(int i = 0; i < li->length; i++){
             printObjectNode(&li->items[i]);
-            printf(" ");
+            if(i < li->length - 1)
+                printf(" ");
         }
         printf("]");
     }
@@ -288,6 +289,7 @@ ObjectNode *op_Elem(hashtable_t *hashtable, Node *node){
     return &((ObjectList *)res->value)->items[(int)index->value];
 }
 
+// keep it less than 30
 void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "+", (char *)newObjectNode(1, &op_Plus));
     ht_set(hashtable, "-", (char *)newObjectNode(1, &op_Minus));
