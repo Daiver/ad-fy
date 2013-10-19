@@ -46,6 +46,13 @@ struct TObjectList{
 };
 typedef struct TObjectList ObjectList;
 
+ObjectList *newObjectList(int length, ObjectNode *items){
+    ObjectList *res = (ObjectList *)malloc(sizeof(ObjectList));
+    res->length = length;
+    res->items = items;
+    return res;
+}
+
 ObjectNode *execute(hashtable_t *hashtable, Node *node){
     ObjectNode *res = newObjectNode(0, 0);
     //printf("[%s]\n", node->name);
@@ -288,8 +295,22 @@ ObjectNode *op_List(hashtable_t *hashtable, Node *node){
 ObjectNode *op_Elem(hashtable_t *hashtable, Node *node){
     ObjectNode *index = execute(hashtable, &node->childs[0]);
     ObjectNode *res = execute(hashtable, &node->childs[1]);
+    if(index->value >= ((ObjectList *)res->value)->length)
+        return newObjectNode(0, 0);
     return &((ObjectList *)res->value)->items[(int)index->value];
 }
+
+ObjectNode *op_Slice(hashtable_t *hashtable, Node *node){
+    ObjectNode *start_index = execute(hashtable, &node->childs[0]);
+    ObjectNode *end_index = execute(hashtable, &node->childs[1]);
+    ObjectNode *li = execute(hashtable, &node->childs[2]);
+
+    ObjectList *tmp = ((ObjectList *)li->value);
+    ObjectNode *slice = tmp->items + (int)start_index->value;
+    ObjectList *res = newObjectList(end_index->value - start_index->value, slice);
+    return newObjectNode(110, res);
+}
+
 
 // keep it less than 30
 void fillOpTable(hashtable_t *hashtable){
@@ -310,6 +331,7 @@ void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "comment", (char *)newObjectNode(1, &op_Comment));
     ht_set(hashtable, "list", (char *)newObjectNode(1, &op_List));
     ht_set(hashtable, "[]", (char *)newObjectNode(1, &op_Elem));
+    ht_set(hashtable, "slice", (char *)newObjectNode(1, &op_Slice));
 }
 
 //TESTS
