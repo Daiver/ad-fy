@@ -263,13 +263,15 @@ void printObjectNode(ObjectNode *obj){
         }
         printf("]");
     }
-
 }
 
 ObjectNode *op_Print(hashtable_t *hashtable, Node *node){
-    ObjectNode *res = execute(hashtable, &node->childs[0]);
     printf("stdout>");
-    printObjectNode(res);
+    for(int i = 0; i < node->childs_length; i++){
+        ObjectNode *res = execute(hashtable, &node->childs[i]);
+        printObjectNode(res);
+        printf(" ");
+    }
     printf("\n");
     return newObjectNode(0, 0);
 }
