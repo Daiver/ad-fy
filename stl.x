@@ -21,5 +21,18 @@ deffn foldl
             f initial (head li)
             tail li
 
+deffn map_tmp
+    args f li res
+    if (== 0 (length li))
+        res
+        map_tmp 
+            ' f
+            tail li
+            cons (f (head li)) res
+
+deffn map
+    args f li
+    map_tmp (' f) li list
+
 deffn sum (args li) (foldl (' +) 0 li)
 deffn product (args li) (foldl (' *) 1 li)
