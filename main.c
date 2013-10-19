@@ -311,6 +311,16 @@ ObjectNode *op_Slice(hashtable_t *hashtable, Node *node){
     return newObjectNode(110, res);
 }
 
+ObjectNode *op_Cons(hashtable_t *hashtable, Node *node){
+    ObjectNode *elem = execute(hashtable, &node->childs[0]);
+    ObjectNode *li = execute(hashtable, &node->childs[1]);
+    ObjectNode *items = malloc(sizeof(ObjectNode) * (((ObjectList *)li->value)->length + 1));// fix fix fix
+    for(int i = 0; i < ((ObjectList *)li->value)->length; i++){
+        items[i] = ((ObjectList *)li->value)->items[i];
+    }
+    items[((ObjectList *)li->value)->length] = *elem;
+    return newObjectNode(110, newObjectList(((ObjectList *)li->value)->length + 1, items));
+}
 
 // keep it less than 30
 void fillOpTable(hashtable_t *hashtable){
@@ -332,6 +342,7 @@ void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "list", (char *)newObjectNode(1, &op_List));
     ht_set(hashtable, "[]", (char *)newObjectNode(1, &op_Elem));
     ht_set(hashtable, "slice", (char *)newObjectNode(1, &op_Slice));
+    ht_set(hashtable, "cons", (char *)newObjectNode(1, &op_Cons));
 }
 
 //TESTS

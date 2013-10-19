@@ -10,3 +10,8 @@ define s
 
 print
     list 1 2 3 (list 13 13 13) 5 6 7 (list -1 -2 -3) 9
+
+define s1 (cons 999 s)
+define s2 (cons 999 s1)
+define s3 (cons 333 s2)
+define s4 (slice 3 5 s3)
