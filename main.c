@@ -18,6 +18,7 @@ struct TObjectNode{
     //
     //101 - int
     //105 - bool
+    //110 - list
     unsigned char type;
     void *value;
 };
@@ -250,7 +251,7 @@ ObjectNode *op_Comment(hashtable_t *hashtable, Node *node){
 
 void printObjectNode(ObjectNode *obj){
     if(obj->type == 101){
-        printf("%d\n", obj->value);
+        printf("%d", obj->value);
     }
     if(obj->type == 110){
         ObjectList *li = (ObjectList *)obj->value;
@@ -272,6 +273,14 @@ ObjectNode *op_Print(hashtable_t *hashtable, Node *node){
     return newObjectNode(0, 0);
 }
 
+ObjectNode *op_List(hashtable_t *hashtable, Node *node){
+    ObjectList *res = (ObjectList *)malloc(sizeof(ObjectList));
+    res->length = node->childs_length;
+    res->items = (ObjectNode *)malloc(sizeof(ObjectNode) * res->length);
+    for(int i = 0; i < res->length; i++)
+        res->items[i] = *(execute(hashtable, &node->childs[i]));
+    return newObjectNode(110, res);
+}
 
 void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "+", (char *)newObjectNode(1, &op_Plus));
@@ -289,6 +298,7 @@ void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "import", (char *)newObjectNode(1, &op_Import));
     ht_set(hashtable, "print", (char *)newObjectNode(1, &op_Print));
     ht_set(hashtable, "comment", (char *)newObjectNode(1, &op_Comment));
+    ht_set(hashtable, "list", (char *)newObjectNode(1, &op_List));
 }
 
 //TESTS
