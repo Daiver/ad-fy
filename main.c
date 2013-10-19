@@ -39,7 +39,11 @@ struct TFunctionObj{
 };
 typedef struct TFunctionObj FunctionObj;
 
-//FunctionObj *newFunctionObj()
+struct TObjectList{
+    int length;
+    ObjectNode *items;
+};
+typedef struct TObjectList ObjectList;
 
 ObjectNode *execute(hashtable_t *hashtable, Node *node){
     ObjectNode *res = newObjectNode(0, 0);
@@ -271,6 +275,22 @@ void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "comment", (char *)newObjectNode(1, &op_Comment));
 }
 
+void printObjectNode(ObjectNode *obj){
+    if(obj->type == 101){
+        printf("%d\n", obj->value);
+    }
+    if(obj->type == 110){
+        ObjectList *li = (ObjectList *)obj->value;
+        printf("[");
+        for(int i = 0; i < li->length; i++){
+            printObjectNode(&li->items[i]);
+            printf(" ");
+        }
+        printf("]");
+    }
+
+}
+
 //TESTS
 void testGetToken(const char *source){
   CodeStream ts = {source, 0};
@@ -286,21 +306,6 @@ void testParseFirst(const char *source){
     printTree(head, 0);
 }
 
-void testExecuteFirst(const char *source){
-    TokensStream ts;
-    fillTokenStream(&ts, source);
-    hashtable_t *hashtable = ht_create( 65536 ); 
-    fillOpTable(hashtable);
-    while(!isEndOfStream(&ts)){
-        Node head = parse(&ts, 0);
-        printTree(head, 0);
-        ObjectNode *node = execute(hashtable, &head);
-        if(node->type == 101){
-            printf("res>%d\n", node->value);
-        }
-    }
-}
-
 void testExecuteSecond(const char *source){
     TokensStream ts;
     fillTokenStream(&ts, source);
@@ -311,9 +316,9 @@ void testExecuteSecond(const char *source){
         Node head = parse(&ts, 0);
         printTree(head, 0);
         ObjectNode *node = execute(hashtable, &head);
-        if(node->type == 101){
-            printf("res>%d\n", node->value);
-        }
+        printf("res>");
+        printObjectNode(node);
+        printf("\n");
     }
 }
 
