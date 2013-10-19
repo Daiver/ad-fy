@@ -23,3 +23,7 @@ head s3
 head s4
 tail s3
 tail s4
+init s3
+init s4
+last s3
+last s4
