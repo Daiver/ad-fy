@@ -322,6 +322,10 @@ ObjectNode *op_Cons(hashtable_t *hashtable, Node *node){
     return newObjectNode(110, newObjectList(((ObjectList *)li->value)->length + 1, items));
 }
 
+ObjectNode *op_Length(hashtable_t *hashtable, Node *node){
+    ObjectNode *res = execute(hashtable, &node->childs[0]);
+    return newObjectNode(101, ((ObjectList *)res->value)->length);
+}
 // keep it less than 30
 void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "+", (char *)newObjectNode(1, &op_Plus));
@@ -343,6 +347,7 @@ void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "[]", (char *)newObjectNode(1, &op_Elem));
     ht_set(hashtable, "slice", (char *)newObjectNode(1, &op_Slice));
     ht_set(hashtable, "cons", (char *)newObjectNode(1, &op_Cons));
+    ht_set(hashtable, "length", (char *)newObjectNode(1, &op_Length));
 }
 
 //TESTS

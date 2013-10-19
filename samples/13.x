@@ -15,3 +15,6 @@ define s1 (cons 999 s)
 define s2 (cons 999 s1)
 define s3 (cons 333 s2)
 define s4 (slice 3 5 s3)
+print 
+    length s4
+    length s3
