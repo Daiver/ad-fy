@@ -27,3 +27,4 @@ init s3
 init s4
 last s3
 last s4
+tail (list)
