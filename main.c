@@ -248,11 +248,27 @@ ObjectNode *op_Comment(hashtable_t *hashtable, Node *node){
     return newObjectNode(0, 0);
 }
 
+void printObjectNode(ObjectNode *obj){
+    if(obj->type == 101){
+        printf("%d\n", obj->value);
+    }
+    if(obj->type == 110){
+        ObjectList *li = (ObjectList *)obj->value;
+        printf("[");
+        for(int i = 0; i < li->length; i++){
+            printObjectNode(&li->items[i]);
+            printf(" ");
+        }
+        printf("]");
+    }
+
+}
+
 ObjectNode *op_Print(hashtable_t *hashtable, Node *node){
     ObjectNode *res = execute(hashtable, &node->childs[0]);
-    if(res->type == 101){
-        printf("stdout>%d\n", res->value);
-    }
+    printf("stdout>");
+    printObjectNode(res);
+    printf("\n");
     return newObjectNode(0, 0);
 }
 
@@ -273,22 +289,6 @@ void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "import", (char *)newObjectNode(1, &op_Import));
     ht_set(hashtable, "print", (char *)newObjectNode(1, &op_Print));
     ht_set(hashtable, "comment", (char *)newObjectNode(1, &op_Comment));
-}
-
-void printObjectNode(ObjectNode *obj){
-    if(obj->type == 101){
-        printf("%d\n", obj->value);
-    }
-    if(obj->type == 110){
-        ObjectList *li = (ObjectList *)obj->value;
-        printf("[");
-        for(int i = 0; i < li->length; i++){
-            printObjectNode(&li->items[i]);
-            printf(" ");
-        }
-        printf("]");
-    }
-
 }
 
 //TESTS
