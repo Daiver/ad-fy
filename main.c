@@ -282,6 +282,12 @@ ObjectNode *op_List(hashtable_t *hashtable, Node *node){
     return newObjectNode(110, res);
 }
 
+ObjectNode *op_Elem(hashtable_t *hashtable, Node *node){
+    ObjectNode *index = execute(hashtable, &node->childs[0]);
+    ObjectNode *res = execute(hashtable, &node->childs[1]);
+    return &((ObjectList *)res->value)->items[(int)index->value];
+}
+
 void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "+", (char *)newObjectNode(1, &op_Plus));
     ht_set(hashtable, "-", (char *)newObjectNode(1, &op_Minus));
@@ -299,6 +305,7 @@ void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "print", (char *)newObjectNode(1, &op_Print));
     ht_set(hashtable, "comment", (char *)newObjectNode(1, &op_Comment));
     ht_set(hashtable, "list", (char *)newObjectNode(1, &op_List));
+    ht_set(hashtable, "[]", (char *)newObjectNode(1, &op_Elem));
 }
 
 //TESTS
