@@ -5,4 +5,4 @@ deffn fac (args n)
             n
             fac (- n 1)
 
-fac 5
+fac 12
