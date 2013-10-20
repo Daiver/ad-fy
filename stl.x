@@ -50,8 +50,15 @@ deffn range_tmp (args start_range end_range arr)
             inc start_range
             end_range
             cons start_range arr
-; (range_tmp start_range end_range list)
 deffn range (args st_range e_range) (range_tmp st_range e_range list)
 
 deffn sum (args li) (foldl (' +) 0 li)
 deffn product (args li) (foldl (' *) 1 li)
+
+deffn reverse (args some_list)
+    deffn reverse_tmp (args sl ls)
+        if (== 0 (length ls))
+            sl
+            reverse_tmp (cons (last ls) sl) (init ls)
+    reverse_tmp list some_list
+
