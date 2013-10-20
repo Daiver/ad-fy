@@ -43,5 +43,15 @@ deffn filter
             l
     foldl (' inner_foo) list li
 
+deffn range_tmp (args start_range end_range arr)
+    if (== 0 (- start_range end_range))
+        arr
+        range_tmp
+            inc start_range
+            end_range
+            cons start_range arr
+; (range_tmp start_range end_range list)
+deffn range (args st_range e_range) (range_tmp st_range e_range list)
+
 deffn sum (args li) (foldl (' +) 0 li)
 deffn product (args li) (foldl (' *) 1 li)
