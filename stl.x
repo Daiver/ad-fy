@@ -72,3 +72,9 @@ deffn ++ (args l1 l2)
         ++
             cons (head l2) l1
             tail l2
+
+deffn call (args some_lambda) some_lambda
+deffn while (args while_predicate while_body)
+    if (not while_predicate )
+        0
+        call (\ (while_body) (while while_predicate while_body))

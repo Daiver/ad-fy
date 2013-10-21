@@ -329,6 +329,12 @@ ObjectNode *op_Length(hashtable_t *hashtable, Node *node){
     ObjectNode *res = execute(hashtable, &node->childs[0]);
     return newObjectNode(101, ((ObjectList *)res->value)->length);
 }
+
+//ObjectNode *op_Block(hashtable_t *hashtable, Node *node){
+//    ObjectNode *res = newObjectNode(0, 0);
+//    for(int i = 0; i < )
+//}
+
 // keep it less than 30
 void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "+", (char *)newObjectNode(1, &op_Plus));
