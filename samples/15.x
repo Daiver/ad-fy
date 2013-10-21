@@ -12,3 +12,4 @@ deffn ident (args x) x
 define func_list (list (' inc) (' dec) (' ident)) 
 map (' applyer) func_list
 reverse x
+average (list 5 2 3 4)

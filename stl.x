@@ -62,3 +62,4 @@ deffn reverse (args some_list)
             reverse_tmp (cons (last ls) sl) (init ls)
     reverse_tmp list some_list
 
+deffn average (args li) (/ (sum li) (length li))
