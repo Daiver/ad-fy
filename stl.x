@@ -14,6 +14,8 @@ deffn tail (args li) (slice 1 (length li) li)
 deffn last (args li) ([] (dec (length li)) li)
 deffn init (args li) (slice 0 (dec (length li)) li)
 
+deffn empty (args li) (== 0 (length li))
+
 deffn foldl 
     args foldl_function initial li
     if (== 0 (length li))
@@ -63,3 +65,10 @@ deffn reverse (args some_list)
     reverse_tmp list some_list
 
 deffn average (args li) (/ (sum li) (length li))
+
+deffn ++ (args l1 l2)
+    if (empty l2)
+        l1
+        ++
+            cons (head l2) l1
+            tail l2

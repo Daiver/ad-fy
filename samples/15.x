@@ -13,3 +13,8 @@ define func_list (list (' inc) (' dec) (' ident))
 map (' applyer) func_list
 reverse x
 average (list 5 2 3 4)
+
+define y (list (list 1 2 3) (list 4 5 6))
+
+deffn cons2 (args li item) (cons item li)
+foldl (' ++) list y
