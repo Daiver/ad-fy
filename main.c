@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-//#define devel
 #include "logging.h"
 #include "common.h"
 #include "hashtable.h"
