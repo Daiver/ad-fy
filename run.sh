@@ -1,5 +1,5 @@
 #!/bin/bash
 clear
 if [ "$(make)" ]; then
-  bin/main
+  bin/main $1
 fi

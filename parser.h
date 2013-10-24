@@ -140,7 +140,6 @@ Node parse(TokensStream *ts, int shift){
 void printTree(Node node, int shift){
     for(int i = 0; i < shift; i++)
         printf("  ");
-    printf("%d ", node.childs_length);
     printf("%s\n", node.name);
     for(int i = 0; i < node.childs_length; i++)
         printTree(node.childs[i], shift + 1);

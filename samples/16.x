@@ -1,4 +1,4 @@
-define x 10
-
-while (not (== 0 x))
-    \ (print x) (define x 0)
+define i 10
+while
+    \ (== i 10)
+    \ (define i (dec i))

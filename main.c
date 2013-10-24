@@ -175,6 +175,8 @@ ObjectNode *op_Help(hashtable_t *hashtable, Node *node){
 ObjectNode *op_Define(hashtable_t *hashtable, Node *node){// FIX IT!
     const char *func_name = node->childs[0].name; 
     ObjectNode *tmp = execute(hashtable, &node->childs[1]); //(char *)newObjectNode(2, &node->childs[1]);
+    ht_del(hashtable, func_name);
+    printf("LOLOLOLOLOLLOLOLOL=%d\n", tmp->value);
     ht_set(hashtable, func_name, tmp);
     return tmp;
 }
@@ -390,9 +392,7 @@ void testExecuteSecond(const char *source){
     }
 }
 
-int main(int argc, char **argv)
-{
-
+int main(int argc, char **argv){
     if(argc > 1){
         printf("Reading from file [%s]...\n", argv[1]);
         const char *src = readFileAsLine(argv[1]);
