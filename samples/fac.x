@@ -3,6 +3,6 @@ deffn fac (args n)
         1
         *
             n
-            fac (- n 1)
+            fac (- n 1 ) 
 
 fac 12

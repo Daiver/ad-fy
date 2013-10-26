@@ -4,6 +4,20 @@
 #include "logging.h"
 #include "lexer.h"
 
+const char *stopchars[] = {"\0", "\t", "\n", "(", ")"};
+const int stopchars_length = sizeof(stopchars)/sizeof(char *);
+
+const char *stopChar(char c, bool *isstopch){
+  for(int i = 0; i < stopchars_length; ++i){
+    if(*stopchars[i] == c){
+        *isstopch = true;
+	return stopchars[i];
+    }
+  }
+  isstopch = false;
+  return NULL;
+}
+
 const char *getToken(CodeStream *stream){
     int i = stream->position;
     int spaceCount = 0;
@@ -16,40 +30,17 @@ const char *getToken(CodeStream *stream){
         }
     }
     stream->position = i;
-    if(stream->source[i] == '\0'){
-        stream->position = i;
-        return "";
+    bool isstopch = false;
+    const char *ch = stopChar(stream->source[i], &isstopch);
+    if(isstopch){
+        stream->position = i + (ch != '\0');
+        return ch;
     }
-    if(stream->source[i] == '\t'){
-        stream->position = i + 1;
-        return "\t";
-    }
-    if(stream->source[i] == '\n'){
-        stream->position = i + 1;
-        return "\n";
-    }
-    if(stream->source[i] == '('){
-        stream->position = i + 1;
-        return "(";
-    }
-    if(stream->source[i] == ')'){
-        stream->position = i + 1;
-        return ")";
-    }
-
-
     bool found = false;
     while(!found){
-      if(
-         stream->source[i] == ' '  ||
-         stream->source[i] == '('  ||
-         stream->source[i] == ')'  ||
-         stream->source[i] == '\t' ||
-         stream->source[i] == '\n' ||
-         stream->source[i] == '\0' 
-      )
-        found = true;
-      else
+      stopChar(stream->source[i], &isstopch);
+      found = isstopch || stream->source[i] == ' ';
+      if(!found)
         ++i;
     }
     int len = i - stream->position;
