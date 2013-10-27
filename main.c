@@ -360,12 +360,6 @@ void fillOpTable(hashtable_t *hashtable){
 }
 
 //TESTS
-void testGetToken(const char *source){
-  CodeStream ts = {source, 0};
-  const char *tk;
-  while( strcmp((tk = getToken(&ts)), ""))
-      printf("[%s]\n", tk);
-}
 
 void testParseFirst(const char *source){
     TokenStream ts;
