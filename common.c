@@ -6,6 +6,8 @@
 #include "common.h"
 
 bool isDigit(const char *s){
+    if(strlen(s) == 0)
+        return false;
     const char *str = s;
     if(*str == '-'){
         str++;
