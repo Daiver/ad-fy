@@ -7,16 +7,15 @@
 #include "lexer.h"
 #include "parser.h"
 
+#define NTYPE_NONE 0
+#define NTYPE_BUILTIN_FUNC 1
+#define NTYPE_NODE 2
+#define NTYPE_FUNC 3
+#define NTYPE_INT 101
+#define NTYPE_BOOL 105
+#define NTYPE_LIST 110
+
 struct TObjectNode{
-    //types :
-    //0 - none
-    //1 - built-in function 
-    //2 - node
-    //3 - function
-    //
-    //101 - int
-    //105 - bool
-    //110 - list
     unsigned char type;
     void *value;
 };
@@ -52,7 +51,7 @@ ObjectList *newObjectList(int length, ObjectNode *items){
 }
 
 ObjectNode *execute(hashtable_t *hashtable, Node *node){
-    ObjectNode *res = newObjectNode(0, 0);
+    ObjectNode *res = newObjectNode(NTYPE_NONE, 0);
     //printf("[%s]\n", node->name);
     if(isDigit(node->name)){
         res->type = 101;
@@ -126,7 +125,7 @@ ObjectNode *op_Plus(hashtable_t *hashtable, Node *node){
         ObjectNode *tmp = execute(hashtable, &node->childs[i]);
         res += (int)tmp->value;
     }
-    return newObjectNode(101, res);
+    return newObjectNode(NTYPE_INT, res);
 }
 
 ObjectNode *op_Mul(hashtable_t *hashtable, Node *node){
@@ -135,7 +134,7 @@ ObjectNode *op_Mul(hashtable_t *hashtable, Node *node){
         ObjectNode *tmp = execute(hashtable, &node->childs[i]);
         res *= (int)tmp->value;
     }
-    return newObjectNode(101, res);
+    return newObjectNode(NTYPE_INT, res);
 }
 
 ObjectNode *op_Minus(hashtable_t *hashtable, Node *node){
@@ -145,13 +144,13 @@ ObjectNode *op_Minus(hashtable_t *hashtable, Node *node){
         ObjectNode *tmp = execute(hashtable, &node->childs[i]);
         res -= (int)tmp->value;
     }
-    return newObjectNode(101, res);
+    return newObjectNode(NTYPE_INT, res);
 }
 
 ObjectNode *op_Eq(hashtable_t *hashtable, Node *node){
     ObjectNode *tmp1 = execute(hashtable, &node->childs[0]);
     ObjectNode *tmp2 = execute(hashtable, &node->childs[1]);
-    return newObjectNode(105, tmp1->value == tmp2->value);
+    return newObjectNode(NTYPE_BOOL, tmp1->value == tmp2->value);
 }
 
 
@@ -162,12 +161,12 @@ ObjectNode *op_Div(hashtable_t *hashtable, Node *node){
         ObjectNode *tmp = execute(hashtable, &node->childs[i]);
         res /= (int)tmp->value;
     }
-    return newObjectNode(101, res);
+    return newObjectNode(NTYPE_INT, res);
 }
 
 ObjectNode *op_Help(hashtable_t *hashtable, Node *node){
     printf("\nThis is small lisp like language interpreter by Victor Muzychenko and Kirill Klimov\n");
-    return newObjectNode(0, 0);
+    return newObjectNode(NTYPE_NONE, 0);
 }
 
 ObjectNode *op_Define(hashtable_t *hashtable, Node *node){// FIX IT!
@@ -207,7 +206,7 @@ ObjectNode *op_Fn(hashtable_t *hashtable, Node *node){
     fo->nodes = malloc(sizeof(Node *) * fo->node_length);
     for(int i = starts_with; i < node->childs_length; i++)
         fo->nodes[i - starts_with] = &node->childs[i];
-    return newObjectNode(3, (void *)fo);
+    return newObjectNode(NTYPE_FUNC, (void *)fo);
 }
 
 
@@ -231,7 +230,7 @@ ObjectNode *op_DefFn(hashtable_t *hashtable, Node *node){
     fo->nodes = malloc(sizeof(Node *) * fo->node_length);
     for(int i = starts_with; i < node->childs_length; i++)
         fo->nodes[i - starts_with] = &node->childs[i];
-    ObjectNode *tmp = newObjectNode(3, (void *)fo);
+    ObjectNode *tmp = newObjectNode(NTYPE_FUNC, (void *)fo);
     ht_set(hashtable, func_name, tmp);
     return tmp;
 }
@@ -249,11 +248,11 @@ ObjectNode *op_If(hashtable_t *hashtable, Node *node){
 
 ObjectNode *op_Import(hashtable_t *hashtable, Node *node){
     import(hashtable, node->childs[0].name);
-    return newObjectNode(0, 0);
+    return newObjectNode(NTYPE_NONE, 0);
 }
 
 ObjectNode *op_Comment(hashtable_t *hashtable, Node *node){
-    return newObjectNode(0, 0);
+    return newObjectNode(NTYPE_NONE, 0);
 }
 
 void printObjectNode(ObjectNode *obj){
@@ -282,7 +281,7 @@ ObjectNode *op_Print(hashtable_t *hashtable, Node *node){
     }
     printf("\n");
     if(res == NULL)
-        return newObjectNode(0, 0);
+        return newObjectNode(NTYPE_NONE, 0);
     return res;
 }
 
@@ -292,14 +291,14 @@ ObjectNode *op_List(hashtable_t *hashtable, Node *node){
     res->items = (ObjectNode *)malloc(sizeof(ObjectNode) * res->length);
     for(int i = 0; i < res->length; i++)
         res->items[i] = *(execute(hashtable, &node->childs[i]));
-    return newObjectNode(110, res);
+    return newObjectNode(NTYPE_LIST, res);
 }
 
 ObjectNode *op_Elem(hashtable_t *hashtable, Node *node){
     ObjectNode *index = execute(hashtable, &node->childs[0]);
     ObjectNode *res = execute(hashtable, &node->childs[1]);
     if(index->value >= ((ObjectList *)res->value)->length)
-        return newObjectNode(0, 0);
+        return newObjectNode(NTYPE_NONE, 0);
     return &((ObjectList *)res->value)->items[(int)index->value];
 }
 
@@ -311,7 +310,7 @@ ObjectNode *op_Slice(hashtable_t *hashtable, Node *node){
     ObjectList *tmp = ((ObjectList *)li->value);
     ObjectNode *slice = tmp->items + (int)start_index->value;
     ObjectList *res = newObjectList(end_index->value - start_index->value, slice);
-    return newObjectNode(110, res);
+    return newObjectNode(NTYPE_LIST, res);
 }
 
 ObjectNode *op_Cons(hashtable_t *hashtable, Node *node){
@@ -322,12 +321,12 @@ ObjectNode *op_Cons(hashtable_t *hashtable, Node *node){
         items[i] = ((ObjectList *)li->value)->items[i];
     }
     items[((ObjectList *)li->value)->length] = *elem;
-    return newObjectNode(110, newObjectList(((ObjectList *)li->value)->length + 1, items));
+    return newObjectNode(NTYPE_LIST, newObjectList(((ObjectList *)li->value)->length + 1, items));
 }
 
 ObjectNode *op_Length(hashtable_t *hashtable, Node *node){
     ObjectNode *res = execute(hashtable, &node->childs[0]);
-    return newObjectNode(101, ((ObjectList *)res->value)->length);
+    return newObjectNode(NTYPE_INT, ((ObjectList *)res->value)->length);
 }
 
 //ObjectNode *op_Block(hashtable_t *hashtable, Node *node){
@@ -357,15 +356,6 @@ void fillOpTable(hashtable_t *hashtable){
     ht_set(hashtable, "slice", (char *)newObjectNode(1, &op_Slice));
     ht_set(hashtable, "cons", (char *)newObjectNode(1, &op_Cons));
     ht_set(hashtable, "length", (char *)newObjectNode(1, &op_Length));
-}
-
-//TESTS
-
-void testParseFirst(const char *source){
-    TokenStream ts;
-    fillTokenStream(&ts, source);
-    Node head = parse(&ts, 0);
-    printTree(head, 0);
 }
 
 void testExecuteSecond(const char *source){
