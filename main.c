@@ -335,27 +335,34 @@ ObjectNode *op_Length(hashtable_t *hashtable, Node *node){
 //}
 
 // keep it less than 30
-void fillOpTable(hashtable_t *hashtable){
-    ht_set(hashtable, "+", (char *)newObjectNode(1, &op_Plus));
-    ht_set(hashtable, "-", (char *)newObjectNode(1, &op_Minus));
-    ht_set(hashtable, "*", (char *)newObjectNode(1, &op_Mul));
-    ht_set(hashtable, "/", (char *)newObjectNode(1, &op_Div));
-    ht_set(hashtable, "==", (char *)newObjectNode(1, &op_Eq));
-    ht_set(hashtable, "help", (char *)newObjectNode(1, &op_Help));
-    ht_set(hashtable, "define", (char *)newObjectNode(1, &op_Define));
-    ht_set(hashtable, "lambda", (char *)newObjectNode(1, &op_Fn));
-    ht_set(hashtable, "alias", (char *)newObjectNode(1, &op_Alias));
-    ht_set(hashtable, "deffn", (char *)newObjectNode(1, &op_DefFn));
-    ht_set(hashtable, "id", (char *)newObjectNode(1, &op_Quote));
-    ht_set(hashtable, "if", (char *)newObjectNode(1, &op_If));
-    ht_set(hashtable, "import", (char *)newObjectNode(1, &op_Import));
-    ht_set(hashtable, "print", (char *)newObjectNode(1, &op_Print));
-    ht_set(hashtable, "comment", (char *)newObjectNode(1, &op_Comment));
-    ht_set(hashtable, "list", (char *)newObjectNode(1, &op_List));
-    ht_set(hashtable, "[]", (char *)newObjectNode(1, &op_Elem));
-    ht_set(hashtable, "slice", (char *)newObjectNode(1, &op_Slice));
-    ht_set(hashtable, "cons", (char *)newObjectNode(1, &op_Cons));
-    ht_set(hashtable, "length", (char *)newObjectNode(1, &op_Length));
+
+typedef ObjectNode*(*OpHandler)(hashtable_t, Node *);
+
+void addOp(hashtable_t *hashtable, char *token, OpHandler handler){
+    ht_set(hashtable, token, (char *) newObjectNode(NTYPE_BUILTIN_FUNC, handler));
+}
+
+void fillOpTable(hashtable_t *operators){
+    addOp(operators, "+", &op_Plus);
+    addOp(operators, "-", &op_Minus);
+    addOp(operators, "*", &op_Mul);
+    addOp(operators, "/", &op_Div);
+    addOp(operators, "==", &op_Eq);
+    addOp(operators, "help", &op_Help);
+    addOp(operators, "define", &op_Define);
+    addOp(operators, "lambde", &op_Fn);
+    addOp(operators, "alias", &op_Alias);
+    addOp(operators, "deffn", &op_DefFn);
+    addOp(operators, "print", &op_Print);
+    addOp(operators, "import", &op_Import);
+    addOp(operators, "if", &op_If);
+    addOp(operators, "id", &op_Quote);
+    addOp(operators, "length", &op_Length);
+    addOp(operators, "cons", &op_Cons);
+    addOp(operators, "slice", &op_Slice);
+    addOp(operators, "[]", &op_Elem);
+    addOp(operators, "list", &op_List);
+    addOp(operators, "comment", &op_Comment);
 }
 
 void testExecuteSecond(const char *source){
