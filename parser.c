@@ -6,10 +6,9 @@
 #include "lexer.h"
 #include "parser.h"
 
-void fillTokenStream(TokensStream *ts, const char *source){
+void fillTokenStream(TokenStream *ts, const char *source){
     ts->codeStream.source = source;
     ts->codeStream.position = 0;
-
     ts->position = 0;
     ts->length = 0;
     ts->tokens = 0;    
@@ -21,37 +20,22 @@ void fillTokenStream(TokensStream *ts, const char *source){
     }
 }
 
-const char *lookToken(TokensStream *ts, int shift){
-
-//Are you shure it is a good idea to perform such corretions? 
-//If (shift > ts->length) it is more likely that shift is incorrect
-
-//    if(ts->position + shift >= ts->length){
-//        int diff_length = ts->position + shift - ts->length + 1;
-//        for(int i = 0; i < diff_length && !isEndOfCode(&ts->codeStream); i++){
-//            const char *t = getToken(&ts->codeStream);
-//            ts->length++;
-//            ts->tokens = (const char **)realloc(ts->tokens, ts->length * sizeof(const char *));
-//            ts->tokens[ts->length - 1] = t;
-//        }
-//    }
-
-
+const char *lookToken(TokenStream *ts, int shift){
     if(ts->position + shift >= ts->length) return "";
     return ts->tokens[ts->position + shift];
 }
 
-const char *nextToken(TokensStream *ts){
+const char *nextToken(TokenStream *ts){
     const char *res = lookToken(ts, 0);
     ts->position++;
     return res;
 }
 
-bool isEndOfStream(TokensStream *ts){
+bool isEndOfStream(TokenStream *ts){
     return ts->position >= ts->length;
 }
 
-Node parse(TokensStream *ts, int shift){
+Node parse(TokenStream *ts, int shift){
     LOG("parse", "begin");
     Node res = {"", 0, 0};
     LOG("parse", "checking end of stream");

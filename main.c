@@ -112,7 +112,7 @@ ObjectNode *execute(hashtable_t *hashtable, Node *node){
 
 void import(hashtable_t *hashtable, const char *fname){
     const char *source = readFileAsLine(fname);
-    TokensStream ts;
+    TokenStream ts;
     fillTokenStream(&ts, source);
     while(!isEndOfStream(&ts)){
         Node head = parse(&ts, 0);
@@ -368,14 +368,14 @@ void testGetToken(const char *source){
 }
 
 void testParseFirst(const char *source){
-    TokensStream ts;
+    TokenStream ts;
     fillTokenStream(&ts, source);
     Node head = parse(&ts, 0);
     printTree(head, 0);
 }
 
 void testExecuteSecond(const char *source){
-    TokensStream ts;
+    TokenStream ts;
     fillTokenStream(&ts, source);
     hashtable_t *hashtable = ht_create( 65536 ); 
     fillOpTable(hashtable);
