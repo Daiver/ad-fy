@@ -27,8 +27,11 @@ int main(int argc, char **argv)
    int len;
    fn(&names, &len);
    printf("len %d\n", len);
-   for(int i = 0; i < len; i++){
-        printf("[%d] %s\n", i, names[i]);
+   for(int i = 0; i < len; i += 2){
+        printf("[%d] %s - %s\n", i, names[i], names[i + 1]);
+        ExtBuiltInFunction func;
+        func = dlsym(lib_handle, names[i + 1]);
+        printf(">%d\n", func(10));
    }
 
    dlclose(lib_handle);
