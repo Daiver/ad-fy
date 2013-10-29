@@ -21,8 +21,8 @@ void fillTokenStream(TokenStream *ts, const char *source){
 }
 
 const char *lookToken(TokenStream *ts, int shift){
-    if(ts->position + shift >= ts->length) return "";
-    return ts->tokens[ts->position + shift];
+    int i = ts->position + shift;
+    return i < ts->length ? ts->tokens[i] : "";
 }
 
 const char *nextToken(TokenStream *ts){
@@ -37,45 +37,36 @@ bool isEndOfStream(TokenStream *ts){
 
 Node parse(TokenStream *ts, int shift){
     LOG("parse", "begin");
-    Node res = {"", 0, 0};
-    LOG("parse", "checking end of stream");
-    if(isEndOfStream(ts)) 
-        return res;
+    Node node = {"", 0, NULL};
+    if(isEndOfStream(ts))
+        return node;
     const char *token = nextToken(ts);
-    while(strcmp(token, "\n") == 0)
+    while( !(strcmp(token, "\n") && strcmp(token, "\t")) )
         token = nextToken(ts);
-    while(strcmp(token, "\t") == 0)
-        token = nextToken(ts);
-
-    LOG("parse", "token");
-    res.name = token;
-    LOG("parse", token);
-    if(!token) return res;
+    if(!token)
+        return node;
+    if(!strcmp(token, ""))  return node;
+    node.name = token;
     while(!isEndOfStream(ts)){
-        LOG("parse", "child token");
         token = nextToken(ts);
-        LOG("parse", token);
-        if(!token) return res;
-        LOG("parse", "checking if )");
-        if(strcmp(token, ")") == 0) break;
-        LOG("parse", "checking if tab");
-        if(strcmp(token, "\t") == 0) continue;
+        if(!token) return node;
+        if(!strcmp(token, ")")) break;
+        if(!strcmp(token, "\t")) continue;
         bool readGroup = false;
-        LOG("parse", "checking if end of line");
-        if(strcmp(token, "\n") == 0){
+        if(!strcmp(token, "\n")){
             int shift_count = 0;
             bool end_big_cycle = false;
             while(!end_big_cycle){
                 shift_count = 0;
-                while(strcmp(lookToken(ts, shift_count), "\t") == 0){
+                while(!strcmp(lookToken(ts, shift_count), "\t"))
                     ++shift_count;
-                }
-                if(strcmp(lookToken(ts, shift_count), "\n") == 0){
+                if(!strcmp(lookToken(ts, shift_count), "\n")){
                     token = lookToken(ts, shift_count);
                     ts->position += shift_count + 1;
                 }
-                else
+                else{
                     end_big_cycle = true;
+                }
             }
             readGroup = shift_count == shift + 1;
             if(!readGroup){
@@ -83,23 +74,17 @@ Node parse(TokenStream *ts, int shift){
                 break;
             }
         }
-        LOG("parse", "childs memory reallocation");
-        res.childs_length++;
-        res.childs = (Node *) realloc(res.childs, res.childs_length * sizeof(Node));
-        LOG("parse", "checking if ( or readGroup");
-        if(strcmp(token, "(") == 0 || readGroup){
-            LOG("parse", "true");
-            res.childs[res.childs_length - 1] = parse(ts, (readGroup ? shift + 1 : shift));
+        node.childs_length++;
+        node.childs = (Node *) realloc(node.childs, node.childs_length * sizeof(Node));
+        if(readGroup || !strcmp(token, "(")){
+            node.childs[node.childs_length - 1] = parse(ts, (readGroup ? shift + 1 : shift));
         }
         else{
-            LOG("parse", "false");
-            res.childs[res.childs_length - 1].name = token;
-            res.childs[res.childs_length - 1].childs_length = 0;
+            node.childs[node.childs_length - 1].name = token;
+            node.childs[node.childs_length - 1].childs_length = 0;
         }
     }
-
-    LOG("parse", "native end");
-    return res;
+    return node;
 }
 
 void printTree(Node node, int shift){
