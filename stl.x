@@ -77,4 +77,4 @@ deffn call (args some_lambda) some_lambda
 deffn while (args while_predicate while_body)
     if (not while_predicate )
         0
-        call (\ (while_body) (while while_predicate while_body))
+        call (' (\ (while_body) (while while_predicate while_body)))
