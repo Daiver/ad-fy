@@ -31,6 +31,10 @@ const char *nextToken(TokenStream *ts){
     return res;
 }
 
+void skipTokens(TokenStream *ts, int n){
+    ts->position += n;
+}
+
 bool isEndOfStream(TokenStream *ts){
     return ts->position >= ts->length;
 }
@@ -41,7 +45,7 @@ Node parse(TokenStream *ts, int shift){
     if(isEndOfStream(ts))
         return node;
     const char *token = nextToken(ts);
-    while( !(strcmp(token, "\n") && strcmp(token, "\t")) )
+    while(!(strcmp(token, "\n") && strcmp(token, "\t")))
         token = nextToken(ts);
     node.name = token;
     while(!isEndOfStream(ts)){
@@ -57,8 +61,8 @@ Node parse(TokenStream *ts, int shift){
                 while(!strcmp(lookToken(ts, shift_count), "\t"))
                     ++shift_count;
                 if(!strcmp(lookToken(ts, shift_count), "\n")){
-                    token = lookToken(ts, shift_count);
-                    ts->position += shift_count + 1;
+                  skipTokens(ts, shift_count);
+                  token = nextToken(ts);
                 }
                 else{
                     end_big_cycle = true;
