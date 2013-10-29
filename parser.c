@@ -50,23 +50,22 @@ Node parse(TokenStream *ts, int shift){
     node.name = token;
     while(!isEndOfStream(ts)){
         token = nextToken(ts);
-        if(!strcmp(token, ")")) break;
-        if(!strcmp(token, "\t")) continue;
+        if(!strcmp(token, ")"))
+            break;
+        if(!strcmp(token, "\t"))
+            continue;
         bool readGroup = false;
         if(!strcmp(token, "\n")){
             int shift_count = 0;
-            bool end_big_cycle = false;
-            while(!end_big_cycle){
+            bool found = false;
+            while(!found){
                 shift_count = 0;
                 while(!strcmp(lookToken(ts, shift_count), "\t"))
                     ++shift_count;
-                if(!strcmp(lookToken(ts, shift_count), "\n")){
-                  skipTokens(ts, shift_count);
-                  token = nextToken(ts);
-                }
-                else{
-                    end_big_cycle = true;
-                }
+                if(!strcmp(lookToken(ts, shift_count), "\n"))
+                    skipTokens(ts, shift_count + 1);
+                else
+                    found = true;
             }
             readGroup = shift_count == shift + 1;
             if(!readGroup){
