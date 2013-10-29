@@ -43,13 +43,9 @@ Node parse(TokenStream *ts, int shift){
     const char *token = nextToken(ts);
     while( !(strcmp(token, "\n") && strcmp(token, "\t")) )
         token = nextToken(ts);
-    if(!token)
-        return node;
-    if(!strcmp(token, ""))  return node;
     node.name = token;
     while(!isEndOfStream(ts)){
         token = nextToken(ts);
-        if(!token) return node;
         if(!strcmp(token, ")")) break;
         if(!strcmp(token, "\t")) continue;
         bool readGroup = false;
