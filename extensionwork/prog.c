@@ -9,7 +9,7 @@ int main(int argc, char **argv)
    char *error;
    ExtContentGetter fn;
 
-   lib_handle = dlopen("/home/daiver/coding/ad-fy/extensionwork/libext1.so.1.0", RTLD_LAZY);
+   lib_handle = dlopen("/home/daiver/coding/ad-fy/extensionwork/bin/libext1.so.1.0", RTLD_LAZY);
    if (!lib_handle) 
    {
         fprintf(stderr, "%s\n", dlerror());
