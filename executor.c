@@ -19,16 +19,12 @@ ObjectList *newObjectList(int length, ObjectNode *items){
 }
 
 ObjectNode *execute(hashtable_t *hashtable, Node *node){
-    ObjectNode *res = newObjectNode(NTYPE_NONE, 0);
-    if(isDigit(node->name)){
-        res->type = NTYPE_INT;
-        res->value = (void *)atoi(node->name);
-        return res;
-    }
+    if(isDigit(node->name))
+        return newObjectNode(NTYPE_INT, (void *) atoi(node->name));
     ObjectNode *obj = ht_get(hashtable, node->name);
     if(obj == NULL){
         printf("EXECTE ERROR obj [%s] does not exists\n", node->name);
-        return res;
+        return newObjectNode(NTYPE_NONE, 0);
     } 
     switch(obj->type){
         case NTYPE_BUILTIN_FUNC : {
@@ -36,37 +32,37 @@ ObjectNode *execute(hashtable_t *hashtable, Node *node){
             return func(hashtable, node);
         }
         case NTYPE_NODE : {
-          return execute(hashtable, obj->value);
+            return execute(hashtable, obj->value);
         }
         case NTYPE_FUNC : {
-            FunctionObj *foo = (FunctionObj *)obj->value;
-            ObjectNode **objs = malloc(sizeof(ObjectNode *) * node->childs_length);
-            for(int i = 0; i < node->childs_length; i++){
-                objs[i] = execute(hashtable, &node->childs[i]);
-            }
-            void **backup = malloc(sizeof(void *) * foo->args_length);
-            for(int i = 0; i < foo->args_length; i++){
-                void *tmp = ht_get(hashtable, foo->args[i]);
+            FunctionObj *func = (FunctionObj *) obj->value;
+            ObjectNode **arguments = malloc(sizeof(ObjectNode *) * node->childs_length);
+            for(int i = 0; i < node->childs_length; i++)
+                arguments[i] = execute(hashtable, &node->childs[i]);
+            //Unfair contexts
+            void **backup = malloc(sizeof(void *) * func->args_length);
+            for(int i = 0; i < func->args_length; i++){
+                void *tmp = ht_get(hashtable, func->args[i]);
                 if(tmp != NULL){
-                        backup[i] = tmp;
-                        ht_del(hashtable, foo->args[i]);
+                    backup[i] = tmp;
+                    ht_del(hashtable, func->args[i]);
                 }
                 else
-                        backup[i] = NULL;
-                ht_set(hashtable, foo->args[i], objs[i]);
-                //ht_set(hashtable, foo->args[i], execute(hashtable, &node->childs[i]));
+                    backup[i] = NULL;
+                ht_set(hashtable, func->args[i], arguments[i]);
             }
-            for(int i = 0; i < foo->node_length; i++){
-                res = execute(hashtable, foo->nodes[i]);
+            ObjectNode *res = NULL;
+            for(int i = 0; i < func->node_length; i++){
+                res = execute(hashtable, func->nodes[i]);
             }
-            for(int i = 0; i < foo->args_length; i++){
-                ht_del(hashtable, foo->args[i]);
+            for(int i = 0; i < func->args_length; i++){
+                ht_del(hashtable, func->args[i]);
                 if(backup[i] != NULL){
-                        ht_set(hashtable, foo->args[i], backup[i]);
+                    ht_set(hashtable, func->args[i], backup[i]);
                 }
             }
             free(backup); 
-            free(objs);
+            free(arguments);
             return res;
         }
         default : {
@@ -75,5 +71,5 @@ ObjectNode *execute(hashtable_t *hashtable, Node *node){
         }
     }
     printf("EXECTE ERROR type [%d] does not exists\n", obj->type);
-    return res;
+    return newObjectNode(NTYPE_NONE, 0);
 }
