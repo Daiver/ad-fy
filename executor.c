@@ -39,7 +39,7 @@ ObjectNode *execute(hashtable_t *hashtable, Node *node){
             ObjectNode **arguments = malloc(sizeof(ObjectNode *) * node->childs_length);
             for(int i = 0; i < node->childs_length; i++)
                 arguments[i] = execute(hashtable, &node->childs[i]);
-            //Unfair contexts
+            //Unfair contexts save
             void **backup = malloc(sizeof(void *) * func->args_length);
             for(int i = 0; i < func->args_length; i++){
                 void *tmp = ht_get(hashtable, func->args[i]);
@@ -51,11 +51,12 @@ ObjectNode *execute(hashtable_t *hashtable, Node *node){
                     backup[i] = NULL;
                 ht_set(hashtable, func->args[i], arguments[i]);
             }
-            ObjectNode *res = NULL;
-            for(int i = 0; i < func->node_length; i++){
-                res = execute(hashtable, func->nodes[i]);
-            }
-            for(int i = 0; i < func->args_length; i++){
+            int i;
+            for(i = 0; i < func->node_length - 1; i++)
+                free(execute(hashtable, func->nodes[i]));
+            ObjectNode *res = execute(hashtable, func->nodes[i]);
+            //Unfair context resotore
+            for(i = 0; i < func->args_length; i++){
                 ht_del(hashtable, func->args[i]);
                 if(backup[i] != NULL){
                     ht_set(hashtable, func->args[i], backup[i]);
