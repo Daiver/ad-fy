@@ -75,12 +75,14 @@ Node parse(TokenStream *ts, int shift){
         }
         node.childs_length++;
         node.childs = (Node *) realloc(node.childs, node.childs_length * sizeof(Node));
+        int i = node.childs_length - 1;
         if(readGroup || !strcmp(token, "(")){
-            node.childs[node.childs_length - 1] = parse(ts, (readGroup ? shift + 1 : shift));
+            node.childs[i] = parse(ts, (readGroup ? shift + 1 : shift));
         }
         else{
-            node.childs[node.childs_length - 1].name = token;
-            node.childs[node.childs_length - 1].childs_length = 0;
+            node.childs[i].name = token;
+            node.childs[i].childs_length = 0;
+            node.childs[i].childs = NULL;
         }
     }
     return node;
