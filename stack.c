@@ -32,6 +32,13 @@ void *stack_pop(Stack *stack){
     return NULL;
 }
 
+void *stack_pick(Stack *stack){
+    if(stack && stack->head){
+        return stack->head->value;
+    }
+    return NULL;
+}
+
 bool stack_isEmpty(Stack *stack){
   return stack == NULL || stack->head == NULL;
 }

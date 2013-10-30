@@ -17,6 +17,7 @@ struct TStack{
 Stack stack_new();
 void stack_push(Stack *stack, void *value);
 void *stack_pop(Stack *stack);
+void *stack_pick(Stack *stack);
 bool stack_isEmpty(Stack *stack);
 
 #endif
