@@ -16,7 +16,13 @@ struct TContext{
 typedef struct TContext Context;
 
 //void *context_get(Context *context, char *key);
-//void context_set(Context *context, char *key, void *value);
+void context_set(Context *context, char *key, void *value){
+     if(!context || stack_isEmpty(&context->scopes))
+         return;
+     hashtable_t *scope = stack_pick(&context->scopes);
+     ht_set(scope, key, value);
+}
+
 void context_enterScope(Context *context){
     if(!context)
         return;
@@ -49,8 +55,8 @@ void context_remove(Context *context){
 int main(){
     Context *context = context_new();
     context_enterScope(context);
-
-
+    context_set(context, "a", "valA");
+    context_set(context, "b", "valB");
     context_leaveScope(context);
     context_remove(context);
     return 0;
