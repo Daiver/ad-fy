@@ -20,7 +20,6 @@ ObjectList *newObjectList(int length, ObjectNode *items){
 
 ObjectNode *execute(hashtable_t *hashtable, Node *node){
     ObjectNode *res = newObjectNode(NTYPE_NONE, 0);
-    //printf("[%s]\n", node->name);
     if(isDigit(node->name)){
         res->type = NTYPE_INT;
         res->value = (void *)atoi(node->name);
@@ -33,8 +32,8 @@ ObjectNode *execute(hashtable_t *hashtable, Node *node){
     } 
     switch(obj->type){
         case NTYPE_BUILTIN_FUNC : {
-            ObjectNode *(*fp)(hashtable_t *hashtable, Node *node) = obj->value;
-            return fp(hashtable, node);
+            OpHandler func = obj->value;
+            return func(hashtable, node);
         }
         case NTYPE_NODE : {
           return execute(hashtable, obj->value);

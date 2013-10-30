@@ -8,7 +8,7 @@
 #include "hashtable.h"
 #include "parser.h"
 
-typedef ObjectNode*(*OpHandler)(hashtable_t, Node *);
+typedef ObjectNode*(*OpHandler)(hashtable_t *, Node *);
 ObjectNode *op_Plus(hashtable_t *hashtable, Node *node);
 ObjectNode *op_Mul(hashtable_t *hashtable, Node *node);
 ObjectNode *op_Minus(hashtable_t *hashtable, Node *node);
