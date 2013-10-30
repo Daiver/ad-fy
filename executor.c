@@ -24,19 +24,22 @@ ObjectNode *execute(hashtable_t *hashtable, Node *node){
     if(isDigit(node->name)){
         res->type = NTYPE_INT;
         res->value = (void *)atoi(node->name);
+        return res;
     }
-    else{
-        ObjectNode *obj = ht_get(hashtable, node->name);
-        if(obj == NULL){
-            printf("EXECTE ERROR obj [%s] does not exists\n", node->name);
-            return res;
-        }
-        if(obj->type == NTYPE_BUILTIN_FUNC){
+    ObjectNode *obj = ht_get(hashtable, node->name);
+    if(obj == NULL){
+        printf("EXECTE ERROR obj [%s] does not exists\n", node->name);
+        return res;
+    } 
+    switch(obj->type){
+        case NTYPE_BUILTIN_FUNC : {
             ObjectNode *(*fp)(hashtable_t *hashtable, Node *node) = obj->value;
-            res = fp(hashtable, node);
-        }else if(obj->type == NTYPE_NODE){
-            return execute(hashtable, obj->value);
-        }else if(obj->type == NTYPE_FUNC){// MAKE ITBETTER. PLEASE ='(
+            return fp(hashtable, node);
+        }
+        case NTYPE_NODE : {
+          return execute(hashtable, obj->value);
+        }
+        case NTYPE_FUNC : {
             FunctionObj *foo = (FunctionObj *)obj->value;
             ObjectNode **objs = malloc(sizeof(ObjectNode *) * node->childs_length);
             for(int i = 0; i < node->childs_length; i++){
@@ -46,11 +49,11 @@ ObjectNode *execute(hashtable_t *hashtable, Node *node){
             for(int i = 0; i < foo->args_length; i++){
                 void *tmp = ht_get(hashtable, foo->args[i]);
                 if(tmp != NULL){
-                    backup[i] = tmp;
-                    ht_del(hashtable, foo->args[i]);
+                        backup[i] = tmp;
+                        ht_del(hashtable, foo->args[i]);
                 }
                 else
-                    backup[i] = NULL;
+                        backup[i] = NULL;
                 ht_set(hashtable, foo->args[i], objs[i]);
                 //ht_set(hashtable, foo->args[i], execute(hashtable, &node->childs[i]));
             }
@@ -60,19 +63,18 @@ ObjectNode *execute(hashtable_t *hashtable, Node *node){
             for(int i = 0; i < foo->args_length; i++){
                 ht_del(hashtable, foo->args[i]);
                 if(backup[i] != NULL){
-                    ht_set(hashtable, foo->args[i], backup[i]);
+                        ht_set(hashtable, foo->args[i], backup[i]);
                 }
             }
             free(backup); 
             free(objs);
             return res;
-        }else if(obj->type > 100){
-            return obj;
         }
-        else{
-            printf("EXECTE ERROR type [%d] does not exists\n", obj->type);
-            return res;
+        default : {
+            if(obj->type > 100)
+                return obj;
         }
     }
+    printf("EXECTE ERROR type [%d] does not exists\n", obj->type);
     return res;
 }
