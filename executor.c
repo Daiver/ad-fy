@@ -22,7 +22,7 @@ ObjectNode *execute(hashtable_t *hashtable, Node *node){
     ObjectNode *res = newObjectNode(NTYPE_NONE, 0);
     //printf("[%s]\n", node->name);
     if(isDigit(node->name)){
-        res->type = 101;
+        res->type = NTYPE_INT;
         res->value = (void *)atoi(node->name);
     }
     else{
@@ -31,12 +31,12 @@ ObjectNode *execute(hashtable_t *hashtable, Node *node){
             printf("EXECTE ERROR obj [%s] does not exists\n", node->name);
             return res;
         }
-        if(obj->type == 1){
+        if(obj->type == NTYPE_BUILTIN_FUNC){
             ObjectNode *(*fp)(hashtable_t *hashtable, Node *node) = obj->value;
             res = fp(hashtable, node);
-        }else if(obj->type == 2){
+        }else if(obj->type == NTYPE_NODE){
             return execute(hashtable, obj->value);
-        }else if(obj->type == 3){// MAKE ITBETTER. PLEASE ='(
+        }else if(obj->type == NTYPE_FUNC){// MAKE ITBETTER. PLEASE ='(
             FunctionObj *foo = (FunctionObj *)obj->value;
             ObjectNode **objs = malloc(sizeof(ObjectNode *) * node->childs_length);
             for(int i = 0; i < node->childs_length; i++){
