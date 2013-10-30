@@ -18,10 +18,10 @@ ObjectList *newObjectList(int length, ObjectNode *items){
     return res;
 }
 
-ObjectNode *execute(hashtable_t *hashtable, Node *node){
+ObjectNode *execute(hashtable_t *context, Node *node){
     if(isDigit(node->name))
         return newObjectNode(NTYPE_INT, (void *) atoi(node->name));
-    ObjectNode *obj = ht_get(hashtable, node->name);
+    ObjectNode *obj = ht_get(context, node->name);
     if(obj == NULL){
         printf("Execution error> Object does not exists: [%s]\n", node->name);
         return newObjectNode(NTYPE_NONE, 0);
@@ -29,37 +29,37 @@ ObjectNode *execute(hashtable_t *hashtable, Node *node){
     switch(obj->type){
         case NTYPE_BUILTIN_FUNC : {
             OpHandler func = obj->value;
-            return func(hashtable, node);
+            return func(context, node);
         }
         case NTYPE_NODE : {
-            return execute(hashtable, obj->value);
+            return execute(context, obj->value);
         }
         case NTYPE_FUNC : {
             FunctionObj *func = (FunctionObj *) obj->value;
             ObjectNode **arguments = malloc(sizeof(ObjectNode *) * node->childs_length);
             for(int i = 0; i < node->childs_length; i++)
-                arguments[i] = execute(hashtable, &node->childs[i]);
+                arguments[i] = execute(context, &node->childs[i]);
             //Unfair contexts save
             void **backup = malloc(sizeof(void *) * func->args_length);
             for(int i = 0; i < func->args_length; i++){
-                void *tmp = ht_get(hashtable, func->args[i]);
+                void *tmp = ht_get(context, func->args[i]);
                 if(tmp != NULL){
                     backup[i] = tmp;
-                    ht_del(hashtable, func->args[i]);
+                    ht_del(context, func->args[i]);
                 }
                 else
                     backup[i] = NULL;
-                ht_set(hashtable, func->args[i], arguments[i]);
+                ht_set(context, func->args[i], arguments[i]);
             }
             int i;
             for(i = 0; i < func->node_length - 1; i++)
-                free(execute(hashtable, func->nodes[i]));
-            ObjectNode *res = execute(hashtable, func->nodes[i]);
+                free(execute(context, func->nodes[i]));
+            ObjectNode *res = execute(context, func->nodes[i]);
             //Unfair context resotore
             for(i = 0; i < func->args_length; i++){
-                ht_del(hashtable, func->args[i]);
+                ht_del(context, func->args[i]);
                 if(backup[i] != NULL){
-                    ht_set(hashtable, func->args[i], backup[i]);
+                    ht_set(context, func->args[i], backup[i]);
                 }
             }
             free(backup); 
