@@ -47,3 +47,35 @@ Stack stack_new(){
     Stack stack = {NULL};
     return stack;
 }
+
+void *stack_find(Stack *stack, Condition cond){
+    if(!(stack && stack->head))
+      return NULL;
+   
+    StackItem *item = stack->head;
+    while(item){
+        if(cond(item->value))
+            return item->value;
+        item = item->next;     
+    }
+    return NULL;
+}
+
+/*
+bool check(void *value){
+   return ((char *) value)[0] == 'o';
+}
+
+int main(){
+    Stack stack = stack_new();
+
+    stack_push(&stack, "a");
+    stack_push(&stack, "c");
+    stack_push(&stack, "b");
+    
+    char *v = (char *) stack_find(&stack, &check);
+    if(!v) printf("Not found\n");
+    else printf("%s\n", v);
+    return 0;
+}
+*/
