@@ -23,7 +23,7 @@ ObjectNode *execute(hashtable_t *hashtable, Node *node){
         return newObjectNode(NTYPE_INT, (void *) atoi(node->name));
     ObjectNode *obj = ht_get(hashtable, node->name);
     if(obj == NULL){
-        printf("EXECTE ERROR obj [%s] does not exists\n", node->name);
+        printf("Execution error> Object does not exists: [%s]\n", node->name);
         return newObjectNode(NTYPE_NONE, 0);
     } 
     switch(obj->type){
@@ -71,6 +71,6 @@ ObjectNode *execute(hashtable_t *hashtable, Node *node){
                 return obj;
         }
     }
-    printf("EXECTE ERROR type [%d] does not exists\n", obj->type);
+    printf("Execution error> Unknown type: [%d]\n", obj->type);
     return newObjectNode(NTYPE_NONE, 0);
 }
