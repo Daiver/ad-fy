@@ -43,11 +43,13 @@ ObjectNode *execute(Context *context, Node *node){
             OpHandler func = obj->value;
             result = func(context, node);
             LOG("execute", "builtin_func end");
+            break;
         }
         case NTYPE_NODE : {
             LOG("execute", "node start");
             result = execute(context, obj->value);
             LOG("execute", "node end");
+            break;
         }
         case NTYPE_FUNC : {
             LOG("execute", "func start");
@@ -81,6 +83,7 @@ ObjectNode *execute(Context *context, Node *node){
             //free(backup); 
             free(arguments);
             LOG("execute", "func end");
+            break;
         }
         default : {
             LOG("execute", "default start");
