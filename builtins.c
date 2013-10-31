@@ -4,6 +4,7 @@
 #include "executor.h"
 #include "hashtable.h"
 #include "parser.h"
+#include "context.h"
 
 ObjectNode *op_Plus(hashtable_t *context, Node *node){
     int res = 0;
@@ -214,29 +215,29 @@ ObjectNode *op_Length(hashtable_t *context, Node *node){
 
 typedef ObjectNode*(*OpHandler)(hashtable_t, Node *);
 
-void addOp(hashtable_t *context, char *token, OpHandler handler){
-    ht_set(context, token, (char *) newObjectNode(NTYPE_BUILTIN_FUNC, handler));
+void addOp(Context *context, char *token, OpHandler handler){
+    context_set(context, token, (void *) newObjectNode(NTYPE_BUILTIN_FUNC, handler));
 }
 
-void fillOpTable(hashtable_t *operators){
-    addOp(operators, "+", &op_Plus);
-    addOp(operators, "-", &op_Minus);
-    addOp(operators, "*", &op_Mul);
-    addOp(operators, "/", &op_Div);
-    addOp(operators, "==", &op_Eq);
-    addOp(operators, "help", &op_Help);
-    addOp(operators, "define", &op_Define);
-    addOp(operators, "lambde", &op_Fn);
-    addOp(operators, "alias", &op_Alias);
-    addOp(operators, "deffn", &op_DefFn);
-    addOp(operators, "print", &op_Print);
-    addOp(operators, "import", &op_Import);
-    addOp(operators, "if", &op_If);
-    addOp(operators, "id", &op_Quote);
-    addOp(operators, "length", &op_Length);
-    addOp(operators, "cons", &op_Cons);
-    addOp(operators, "slice", &op_Slice);
-    addOp(operators, "[]", &op_Elem);
-    addOp(operators, "list", &op_List);
-    addOp(operators, "comment", &op_Comment);
+void fillOpTable(Context *context){
+    addOp(context, "+", &op_Plus);
+    addOp(context, "-", &op_Minus);
+    addOp(context, "*", &op_Mul);
+    addOp(context, "/", &op_Div);
+    addOp(context, "==", &op_Eq);
+    addOp(context, "help", &op_Help);
+    addOp(context, "define", &op_Define);
+    addOp(context, "lambde", &op_Fn);
+    addOp(context, "alias", &op_Alias);
+    addOp(context, "deffn", &op_DefFn);
+    addOp(context, "print", &op_Print);
+    addOp(context, "import", &op_Import);
+    addOp(context, "if", &op_If);
+    addOp(context, "id", &op_Quote);
+    addOp(context, "length", &op_Length);
+    addOp(context, "cons", &op_Cons);
+    addOp(context, "slice", &op_Slice);
+    addOp(context, "[]", &op_Elem);
+    addOp(context, "list", &op_List);
+    addOp(context, "comment", &op_Comment);
 }

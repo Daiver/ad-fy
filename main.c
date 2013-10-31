@@ -5,6 +5,7 @@
 #include "lexer.h"
 #include "parser.h"
 #include "executor.h"
+#include "context.h"
 
 void import(hashtable_t *hashtable, const char *fname){
     const char *source = readFileAsLine(fname);
@@ -19,8 +20,8 @@ void import(hashtable_t *hashtable, const char *fname){
 void testExecuteSecond(const char *source){
     TokenStream ts;
     fillTokenStream(&ts, source);
-    hashtable_t *hashtable = ht_create( 65536 ); 
-    fillOpTable(hashtable);
+    Context *globalContext = context_new();
+    fillOpTable(globalContext);
     import(hashtable, "stl.x");
     while(!isEndOfStream(&ts)){
         Node head = parse(&ts, 0);
