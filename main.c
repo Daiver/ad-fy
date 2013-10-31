@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "hashtable.h"
 #include "lexer.h"
 #include "parser.h"
 #include "executor.h"
@@ -27,7 +26,7 @@ void testExecuteSecond(const char *source){
     while(!isEndOfStream(&ts)){
         Node head = parse(&ts, 0);
         printTree(head, 0);
-        ObjectNode *node = execute(hashtable, &head);
+        ObjectNode *node = execute(globalContext, &head);
         printf("res>");
         printObjectNode(node);
         printf("\n");
