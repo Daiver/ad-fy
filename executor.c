@@ -62,7 +62,7 @@ ObjectNode *execute(Context *context, Node *node){
             for(i = 0; i < node->childs_length; i++)
                 arguments[i] = execute(context, &node->childs[i]);
             for(i = 0; i < func->args_length; i++)
-                context_set(context, func->args[i], arguments[i]);
+                context_set(context, func->args[i], arguments[i], true);
             for(i = 0; i < func->node_length - 1; i++)
                 free(execute(context, func->nodes[i]));
             result = execute(context, func->nodes[i]);
