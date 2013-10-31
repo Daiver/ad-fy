@@ -3,7 +3,7 @@
 #include "hashtable.h"
 #include "stack.h"
 #include "context.h"
-
+#include "common.h"
 
 hashtable_t *findScope(Context *context, char *key){
     hashtable_t *scope = NULL;
@@ -28,11 +28,20 @@ void *context_get(Context *context, char *key){
     return scope ? ht_get(scope, key) : NULL;
 }
 
-void context_set(Context *context, char *key, void *value){
-     if(!context || stack_isEmpty(&context->scopes))
-         return;
-     hashtable_t *scope = stack_pick(&context->scopes);
-     ht_set(scope, key, value);
+void context_set(Context *context, char *key, void *value, bool localy){
+    if(!context || stack_isEmpty(&context->scopes))
+        return;
+    hashtable_t *scope = NULL;
+    hashtable_t *localScope = stack_pick(&context->scopes);
+    
+    if(localy){
+        scope = localScope;
+    }else{
+        scope = findScope(context, key);
+        if(!scope)
+            scope = localScope;
+    }
+    ht_set(scope, key, value);
 }
 
 void context_enterScope(Context *context){
@@ -63,22 +72,21 @@ void context_remove(Context *context){
     }
 }
 
-/*
 int main(){
     char *val = NULL;
     Context *context = context_new();
 
     context_enterScope(context);
-    context_set(context, "a", "valA");
-    context_set(context, "b", "valB");
+    context_set(context, "a", "valA", true);
+    context_set(context, "b", "valB", true);
     val = (char*) context_get(context, "b");
     printf("%s\n", val);
 
     context_enterScope(context);
-    context_set(context, "c", "valC");
+    context_set(context, "c", "valC", true);
     val = (char*) context_get(context, "a");
     printf("%s\n", val);
-    context_set(context, "a", "localValA");
+    context_set(context, "a", "localValA", true);
     val = (char*) context_get(context, "c");
     printf("%s\n", val);
     val = (char*) context_get(context, "a");
@@ -96,4 +104,4 @@ int main(){
     context_leaveScope(context);
     context_remove(context);
     return 0;
-}*/
+}

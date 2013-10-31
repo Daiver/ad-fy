@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include "hashtable.h"
 #include "stack.h"
+#include "common.h"
 
 typedef struct TContext Context;
 struct TContext{
@@ -12,7 +13,7 @@ struct TContext{
 };
 
 void *context_get(Context *context, char *key);
-void context_set(Context *context, char *key, void *value);
+void context_set(Context *context, char *key, void *value, bool localy);
 void context_enterScope(Context *context);
 void context_leaveScope(Context *context);
 Context *context_new();
