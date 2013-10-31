@@ -210,8 +210,6 @@ ObjectNode *op_Length(Context *context, Node *node){
     return newObjectNode(NTYPE_INT, ((ObjectList *)res->value)->length);
 }
 
-typedef ObjectNode*(*OpHandler)(Context, Node *);
-
 void addOp(Context *context, char *token, OpHandler handler){
     context_set(context, token, (void *) newObjectNode(NTYPE_BUILTIN_FUNC, handler));
 }
