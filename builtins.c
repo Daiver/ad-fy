@@ -59,14 +59,14 @@ ObjectNode *op_Help(Context *context, Node *node){
 ObjectNode *op_Define(Context *context, Node *node){// FIX IT!
     const char *func_name = node->childs[0].name; 
     ObjectNode *tmp = execute(context, &node->childs[1]); //(char *)newObjectNode(2, &node->childs[1]);
-    context_set(context, func_name, tmp);
+    context_set(context, func_name, tmp, true);
     return tmp;
 }
 
 ObjectNode *op_Alias(Context *context, Node *node){// FIX IT!
     const char *func_name = node->childs[0].name; 
     ObjectNode *tmp = context_get(context, node->childs[1].name); //(char *)newObjectNode(2, &node->childs[1]);
-    context_set(context, func_name, tmp);
+    context_set(context, func_name, tmp, true);
     return tmp;
 }
 
@@ -113,7 +113,7 @@ ObjectNode *op_DefFn(Context *context, Node *node){
     for(int i = starts_with; i < node->childs_length; i++)
         fo->nodes[i - starts_with] = &node->childs[i];
     ObjectNode *tmp = newObjectNode(NTYPE_FUNC, (void *)fo);
-    context_set(context, func_name, tmp);
+    context_set(context, func_name, tmp, true);
     return tmp;
 }
 
@@ -212,7 +212,7 @@ ObjectNode *op_Length(Context *context, Node *node){
 }
 
 void addOp(Context *context, char *token, OpHandler handler){
-    context_set(context, token, (void *) newObjectNode(NTYPE_BUILTIN_FUNC, handler));
+    context_set(context, token, (void *) newObjectNode(NTYPE_BUILTIN_FUNC, handler), true);
 }
 
 void fillOpTable(Context *context){
