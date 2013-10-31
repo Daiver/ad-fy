@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "hashtable.h"
 #include "parser.h"
+#include "context.h"
 
 #define NTYPE_NONE 0
 #define NTYPE_BUILTIN_FUNC 1
@@ -38,6 +38,6 @@ typedef struct TObjectList ObjectList;
 
 ObjectNode *newObjectNode(unsigned char type, void *value);
 ObjectList *newObjectList(int length, ObjectNode *items);
-ObjectNode *execute(hashtable_t *hashtable, Node *node);
+ObjectNode *execute(Context *context, Node *node);
 
 #endif
