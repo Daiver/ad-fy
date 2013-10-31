@@ -36,6 +36,7 @@ void skipTokens(TokenStream *ts, int n){
 }
 
 bool isEndOfStream(TokenStream *ts){
+    LOG("isEndOfStream", "called");
     return ts->position >= ts->length;
 }
 

@@ -27,6 +27,7 @@ ObjectNode *execute(Context *context, Node *node){
         return newObjectNode(NTYPE_INT, (void *) atoi(node->name));
     }
     LOG("execute", "getting object from context");
+    printf("NODENAME: %s\n", node->name);
     ObjectNode *obj = context_get(context, node->name);
     LOG("execute", "object got");
     if(obj == NULL){
