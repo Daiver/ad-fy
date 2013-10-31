@@ -2,11 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include "executor.h"
-#include "hashtable.h"
 #include "parser.h"
 #include "context.h"
 
-ObjectNode *op_Plus(hashtable_t *context, Node *node){
+ObjectNode *op_Plus(Context *context, Node *node){
     int res = 0;
     for(int i = 0; i < node->childs_length; i++){
         ObjectNode *tmp = execute(context, &node->childs[i]);
@@ -15,7 +14,7 @@ ObjectNode *op_Plus(hashtable_t *context, Node *node){
     return newObjectNode(NTYPE_INT, res);
 }
 
-ObjectNode *op_Mul(hashtable_t *context, Node *node){
+ObjectNode *op_Mul(Context *context, Node *node){
     int res = 1;
     for(int i = 0; i < node->childs_length; i++){
         ObjectNode *tmp = execute(context, &node->childs[i]);
@@ -24,7 +23,7 @@ ObjectNode *op_Mul(hashtable_t *context, Node *node){
     return newObjectNode(NTYPE_INT, res);
 }
 
-ObjectNode *op_Minus(hashtable_t *context, Node *node){
+ObjectNode *op_Minus(Context *context, Node *node){
     ObjectNode *tmp = execute(context, &node->childs[0]);
     int res = tmp->value;
     for(int i = 1; i < node->childs_length; i++){
@@ -34,14 +33,14 @@ ObjectNode *op_Minus(hashtable_t *context, Node *node){
     return newObjectNode(NTYPE_INT, res);
 }
 
-ObjectNode *op_Eq(hashtable_t *context, Node *node){
+ObjectNode *op_Eq(Context *context, Node *node){
     ObjectNode *tmp1 = execute(context, &node->childs[0]);
     ObjectNode *tmp2 = execute(context, &node->childs[1]);
     return newObjectNode(NTYPE_BOOL, tmp1->value == tmp2->value);
 }
 
 
-ObjectNode *op_Div(hashtable_t *context, Node *node){
+ObjectNode *op_Div(Context *context, Node *node){
     ObjectNode *tmp = execute(context, &node->childs[0]);
     int res = tmp->value;
     for(int i = 1; i < node->childs_length; i++){
@@ -51,28 +50,26 @@ ObjectNode *op_Div(hashtable_t *context, Node *node){
     return newObjectNode(NTYPE_INT, res);
 }
 
-ObjectNode *op_Help(hashtable_t *context, Node *node){
+ObjectNode *op_Help(Context *context, Node *node){
     printf("\nThis is small lisp like language interpreter by Victor Muzychenko and Kirill Klimov\n");
     return newObjectNode(NTYPE_NONE, 0);
 }
 
-ObjectNode *op_Define(hashtable_t *context, Node *node){// FIX IT!
+ObjectNode *op_Define(Context *context, Node *node){// FIX IT!
     const char *func_name = node->childs[0].name; 
     ObjectNode *tmp = execute(context, &node->childs[1]); //(char *)newObjectNode(2, &node->childs[1]);
-    ht_del(context, func_name);
-    printf("LOLOLOLOLOLLOLOLOL=%d\n", tmp->value);
-    ht_set(context, func_name, tmp);
+    context_set(context, func_name, tmp);
     return tmp;
 }
 
-ObjectNode *op_Alias(hashtable_t *context, Node *node){// FIX IT!
+ObjectNode *op_Alias(Context *context, Node *node){// FIX IT!
     const char *func_name = node->childs[0].name; 
-    ObjectNode *tmp = ht_get(context, node->childs[1].name); //(char *)newObjectNode(2, &node->childs[1]);
-    ht_set(context, func_name, tmp);
+    ObjectNode *tmp = context_get(context, node->childs[1].name); //(char *)newObjectNode(2, &node->childs[1]);
+    context_set(context, func_name, tmp);
     return tmp;
 }
 
-ObjectNode *op_Fn(hashtable_t *context, Node *node){
+ObjectNode *op_Fn(Context *context, Node *node){
     FunctionObj *fo = (FunctionObj *)malloc(sizeof(FunctionObj));
     int starts_with = 0;
     if(strcmp(node->childs[0].name, "args") == 0){
@@ -94,7 +91,7 @@ ObjectNode *op_Fn(hashtable_t *context, Node *node){
     return newObjectNode(NTYPE_FUNC, (void *)fo);
 }
 
-ObjectNode *op_DefFn(hashtable_t *context, Node *node){
+ObjectNode *op_DefFn(Context *context, Node *node){
     const char *func_name = node->childs[0].name; 
     FunctionObj *fo = (FunctionObj *)malloc(sizeof(FunctionObj));
     int starts_with = 1;
@@ -115,27 +112,27 @@ ObjectNode *op_DefFn(hashtable_t *context, Node *node){
     for(int i = starts_with; i < node->childs_length; i++)
         fo->nodes[i - starts_with] = &node->childs[i];
     ObjectNode *tmp = newObjectNode(NTYPE_FUNC, (void *)fo);
-    ht_set(context, func_name, tmp);
+    context_set(context, func_name, tmp);
     return tmp;
 }
 
-ObjectNode *op_Quote(hashtable_t *context, Node *node){
-    return ht_get(context, node->childs[0].name);
+ObjectNode *op_Quote(Context *context, Node *node){
+    return context_get(context, node->childs[0].name);
 }
 
-ObjectNode *op_If(hashtable_t *context, Node *node){
+ObjectNode *op_If(Context *context, Node *node){
     ObjectNode *p = execute(context, &node->childs[0]);
     if(p->value != 0)
         return execute(context, &node->childs[1]);
     return execute(context, &node->childs[2]);
 }
 
-ObjectNode *op_Import(hashtable_t *context, Node *node){
+ObjectNode *op_Import(Context *context, Node *node){
     import(context, node->childs[0].name);
     return newObjectNode(NTYPE_NONE, 0);
 }
 
-ObjectNode *op_Comment(hashtable_t *context, Node *node){
+ObjectNode *op_Comment(Context *context, Node *node){
     return newObjectNode(NTYPE_NONE, 0);
 }
 
@@ -155,7 +152,7 @@ void printObjectNode(ObjectNode *obj){
     }
 }
 
-ObjectNode *op_Print(hashtable_t *context, Node *node){
+ObjectNode *op_Print(Context *context, Node *node){
     printf("stdout>");
     ObjectNode *res = NULL;
     for(int i = 0; i < node->childs_length; i++){
@@ -169,7 +166,7 @@ ObjectNode *op_Print(hashtable_t *context, Node *node){
     return res;
 }
 
-ObjectNode *op_List(hashtable_t *context, Node *node){
+ObjectNode *op_List(Context *context, Node *node){
     ObjectList *res = (ObjectList *)malloc(sizeof(ObjectList));
     res->length = node->childs_length;
     res->items = (ObjectNode *)malloc(sizeof(ObjectNode) * res->length);
@@ -178,7 +175,7 @@ ObjectNode *op_List(hashtable_t *context, Node *node){
     return newObjectNode(NTYPE_LIST, res);
 }
 
-ObjectNode *op_Elem(hashtable_t *context, Node *node){
+ObjectNode *op_Elem(Context *context, Node *node){
     ObjectNode *index = execute(context, &node->childs[0]);
     ObjectNode *res = execute(context, &node->childs[1]);
     if(index->value >= ((ObjectList *)res->value)->length)
@@ -186,7 +183,7 @@ ObjectNode *op_Elem(hashtable_t *context, Node *node){
     return &((ObjectList *)res->value)->items[(int)index->value];
 }
 
-ObjectNode *op_Slice(hashtable_t *context, Node *node){
+ObjectNode *op_Slice(Context *context, Node *node){
     ObjectNode *start_index = execute(context, &node->childs[0]);
     ObjectNode *end_index = execute(context, &node->childs[1]);
     ObjectNode *li = execute(context, &node->childs[2]);
@@ -197,7 +194,7 @@ ObjectNode *op_Slice(hashtable_t *context, Node *node){
     return newObjectNode(NTYPE_LIST, res);
 }
 
-ObjectNode *op_Cons(hashtable_t *context, Node *node){
+ObjectNode *op_Cons(Context *context, Node *node){
     ObjectNode *elem = execute(context, &node->childs[0]);
     ObjectNode *li = execute(context, &node->childs[1]);
     ObjectNode *items = malloc(sizeof(ObjectNode) * (((ObjectList *)li->value)->length + 1));// fix fix fix
@@ -208,12 +205,12 @@ ObjectNode *op_Cons(hashtable_t *context, Node *node){
     return newObjectNode(NTYPE_LIST, newObjectList(((ObjectList *)li->value)->length + 1, items));
 }
 
-ObjectNode *op_Length(hashtable_t *context, Node *node){
+ObjectNode *op_Length(Context *context, Node *node){
     ObjectNode *res = execute(context, &node->childs[0]);
     return newObjectNode(NTYPE_INT, ((ObjectList *)res->value)->length);
 }
 
-typedef ObjectNode*(*OpHandler)(hashtable_t, Node *);
+typedef ObjectNode*(*OpHandler)(Context, Node *);
 
 void addOp(Context *context, char *token, OpHandler handler){
     context_set(context, token, (void *) newObjectNode(NTYPE_BUILTIN_FUNC, handler));
