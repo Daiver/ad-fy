@@ -4,24 +4,28 @@
 #include "stack.h"
 #include "context.h"
 
+
+hashtable_t *findScope(Context *context, char *key){
+    hashtable_t *scope = NULL;
+    Stack temp = stack_new();
+    void *res = NULL;
+    do{
+        scope = (hashtable_t *) stack_pop(&context->scopes);
+        if(scope){
+            stack_push(&temp, scope);
+            res = ht_get(scope, key);
+        }
+    }while(scope && !res);
+    while(!stack_isEmpty(&temp))
+        stack_push(&context->scopes, stack_pop(&temp));
+    return scope;
+}
+
 void *context_get(Context *context, char *key){
     if(!context)
         return NULL;
-    hashtable_t *scope = NULL;
-    void *res = NULL;  
-    Stack temp = stack_new();
-    do{
-      scope = (hashtable_t *) stack_pop(&context->scopes);
-      if(scope){
-         stack_push(&temp, scope);
-         res = ht_get(scope, key);
-      }
-    }while(scope && !res);
-
-    while(!stack_isEmpty(&temp))
-        stack_push(&context->scopes, stack_pop(&temp));
-
-    return res ? res : NULL;
+    hashtable_t *scope = findScope(context, key);
+    return scope ? ht_get(scope, key) : NULL;
 }
 
 void context_set(Context *context, char *key, void *value){
@@ -82,6 +86,8 @@ int main(){
 
     context_leaveScope(context);
     val = (char*) context_get(context, "a");
+    printf("%s\n", val);
+    val = (char*) context_get(context, "b");
     printf("%s\n", val);
     val = (char*) context_get(context, "c");
     printf("%s\n", val ? val : "Not found");
