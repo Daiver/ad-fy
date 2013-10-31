@@ -55,12 +55,13 @@ ObjectNode *execute(Context *context, Node *node){
             LOG("execute", "func start");
             FunctionObj *func = (FunctionObj *) obj->value;
             ObjectNode **arguments = malloc(sizeof(ObjectNode *) * node->childs_length);
-            for(int i = 0; i < node->childs_length; i++)
-                arguments[i] = execute(context, &node->childs[i]);
-            for(int i = 0; i < func->args_length; i++){
-                context_set(context, func->args[i], arguments[i]);
-            }
             int i;
+
+            printf("ch_l: %d\n farg_l: %d\n fnode_l: %d\n", node->childs_length, func->args_length, func->node_length);
+            for(i = 0; i < node->childs_length; i++)
+                arguments[i] = execute(context, &node->childs[i]);
+            for(i = 0; i < func->args_length; i++)
+                context_set(context, func->args[i], arguments[i]);
             for(i = 0; i < func->node_length - 1; i++)
                 free(execute(context, func->nodes[i]));
             result = execute(context, func->nodes[i]);
@@ -73,6 +74,10 @@ ObjectNode *execute(Context *context, Node *node){
             if(obj->type > 100){
                 LOG("execute", "type > 100");
                 result = obj;
+            }else{
+	        LOG("execute", "type < 100");
+                printf("Execution error> Unknown type: [%d]\n", obj->type);
+                return newObjectNode(NTYPE_NONE, 0);
             }
             LOG("execute", "default end");
         }
@@ -80,9 +85,5 @@ ObjectNode *execute(Context *context, Node *node){
     LOG("execute", "type swtich end");
     context_leaveScope(context);
     LOG("execute", "scope left");
-    if(!result){
-        printf("Execution error> Unknown type: [%d]\n", obj->type);
-        return newObjectNode(NTYPE_NONE, 0);
-    }
-    return result;
+    return result ? result : newObjectNode(NTYPE_NONE, 0);
 }
