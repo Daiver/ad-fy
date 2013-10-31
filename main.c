@@ -7,13 +7,13 @@
 #include "executor.h"
 #include "context.h"
 
-void import(hashtable_t *hashtable, const char *fname){
+void import(Context *context, const char *fname){
     const char *source = readFileAsLine(fname);
     TokenStream ts;
     fillTokenStream(&ts, source);
     while(!isEndOfStream(&ts)){
         Node head = parse(&ts, 0);
-        ObjectNode *node = execute(hashtable, &head);
+        ObjectNode *node = execute(context, &head);
     }
 }
 
@@ -21,8 +21,9 @@ void testExecuteSecond(const char *source){
     TokenStream ts;
     fillTokenStream(&ts, source);
     Context *globalContext = context_new();
+    context_enterScope(globalContext); 
     fillOpTable(globalContext);
-    import(hashtable, "stl.x");
+    import(globalContext, "stl.x");
     while(!isEndOfStream(&ts)){
         Node head = parse(&ts, 0);
         printTree(head, 0);
@@ -31,6 +32,7 @@ void testExecuteSecond(const char *source){
         printObjectNode(node);
         printf("\n");
     }
+    context_leaveScope(globalContext);
 }
 
 int main(int argc, char **argv){
