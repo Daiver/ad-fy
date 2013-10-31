@@ -57,30 +57,13 @@ ObjectNode *execute(Context *context, Node *node){
             ObjectNode **arguments = malloc(sizeof(ObjectNode *) * node->childs_length);
             for(int i = 0; i < node->childs_length; i++)
                 arguments[i] = execute(context, &node->childs[i]);
-            //Unfair contexts save
-            //void **backup = malloc(sizeof(void *) * func->args_length);
             for(int i = 0; i < func->args_length; i++){
-                //void *tmp = context_get(context, func->args[i]);
-                //if(tmp != NULL){
-                //    backup[i] = tmp;
-                //    context_del(context, func->args[i]);
-                //}
-                //else
-                //    backup[i] = NULL;
                 context_set(context, func->args[i], arguments[i]);
             }
             int i;
             for(i = 0; i < func->node_length - 1; i++)
                 free(execute(context, func->nodes[i]));
             result = execute(context, func->nodes[i]);
-            //Unfair context resotore
-            //for(i = 0; i < func->args_length; i++){
-            //    context_del(context, func->args[i]);
-            //    if(backup[i] != NULL){
-            //        context_set(context, func->args[i], backup[i]);
-            //    }
-            //}
-            //free(backup); 
             free(arguments);
             LOG("execute", "func end");
             break;
