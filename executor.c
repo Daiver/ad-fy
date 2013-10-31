@@ -27,13 +27,15 @@ ObjectNode *execute(Context *context, Node *node){
         printf("Execution error> Object does not exists: [%s]\n", node->name);
         return newObjectNode(NTYPE_NONE, 0);
     } 
+    ObjectNode *result = NULL;
+    context_enterScope(context);
     switch(obj->type){
         case NTYPE_BUILTIN_FUNC : {
             OpHandler func = obj->value;
-            return func(context, node);
+            result = func(context, node);
         }
         case NTYPE_NODE : {
-            return execute(context, obj->value);
+            result = execute(context, obj->value);
         }
         case NTYPE_FUNC : {
             FunctionObj *func = (FunctionObj *) obj->value;
@@ -55,7 +57,7 @@ ObjectNode *execute(Context *context, Node *node){
             int i;
             for(i = 0; i < func->node_length - 1; i++)
                 free(execute(context, func->nodes[i]));
-            ObjectNode *res = execute(context, func->nodes[i]);
+            result = execute(context, func->nodes[i]);
             //Unfair context resotore
             //for(i = 0; i < func->args_length; i++){
             //    context_del(context, func->args[i]);
@@ -65,13 +67,16 @@ ObjectNode *execute(Context *context, Node *node){
             //}
             //free(backup); 
             free(arguments);
-            return res;
         }
         default : {
             if(obj->type > 100)
-                return obj;
+                result = obj;
         }
     }
-    printf("Execution error> Unknown type: [%d]\n", obj->type);
-    return newObjectNode(NTYPE_NONE, 0);
+    context_leaveScope(context);
+    if(!result){
+        printf("Execution error> Unknown type: [%d]\n", obj->type);
+        return newObjectNode(NTYPE_NONE, 0);
+    }
+    return result;
 }
