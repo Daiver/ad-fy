@@ -114,6 +114,7 @@ ObjectNode *execute(hashtable_t *hashtable, Node *node){
 
 void import(hashtable_t *hashtable, const char *fname){
     const char *source = readFileAsLine(fname);
+    //printf(">[%s] [%s]\n",fname, source);
     TokensStream ts;
     fillTokenStream(&ts, source);
     while(!isEndOfStream(&ts)){
