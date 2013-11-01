@@ -72,8 +72,8 @@ void context_remove(Context *context){
         free(context);
     }
 }
-/*
-int main(){
+
+/*int main(){
     char *val = NULL;
     Context *context = context_new();
 

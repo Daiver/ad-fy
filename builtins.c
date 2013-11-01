@@ -5,6 +5,7 @@
 #include "parser.h"
 #include "context.h"
 #include "builtins.h"
+#include "logging.h"
 
 ObjectNode *op_Plus(Context *context, Node *node){
     int res = 0;
@@ -57,9 +58,11 @@ ObjectNode *op_Help(Context *context, Node *node){
 }
 
 ObjectNode *op_Define(Context *context, Node *node){// FIX IT!
+    LOG("op_Define", "start");
     const char *func_name = node->childs[0].name; 
     ObjectNode *tmp = execute(context, &node->childs[1]); //(char *)newObjectNode(2, &node->childs[1]);
     context_set(context, func_name, tmp, true);
+    LOG("op_Define", "end");
     return tmp;
 }
 

@@ -20,7 +20,7 @@ void import(Context *context, const char *fname){
         Node head = parse(&ts, 0);
         LOG("import", "returned from parse");
         LOG("import", "calling execute");
-        ObjectNode *node = execute(context, &head);
+        execute(context, &head);
         LOG("import", "returned from execute");
     }
 }
@@ -41,15 +41,13 @@ void testExecuteSecond(const char *source){
         LOG("testExecuteSecond", "calling parse");
         Node head = parse(&ts, 0);
         LOG("testExecuteSecond", "returning form parse");
-	LOG("TestExecuteSecond", "calling execute");
+	LOG("TestExecuteSecond", "calling printTree");
         printTree(head, 0);
-        printf("Main: NODENAME: %s\n", head.name);
         LOG("testExecuteSecond", "calling execute");
         ObjectNode *node = execute(globalContext, &head);
         printf("res>");
         printObjectNode(node);
         printf("\n");
-       break;
     }
     context_leaveScope(globalContext);
 }

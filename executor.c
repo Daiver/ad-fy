@@ -20,6 +20,15 @@ ObjectList *newObjectList(int length, ObjectNode *items){
     return res;
 }
 
+ObjectNode *scopedExecute(Context *context, Node *node){
+    LOG("executeWithContext", "entering scope");
+    context_enterScope(context);
+    ObjectNode *result = execute(context, node);
+    context_leaveScope(context);
+    LOG("executeWithContext", "scope left");
+    return result;
+}
+
 ObjectNode *execute(Context *context, Node *node){
     LOG("execute", "begin");
     if(isDigit(node->name)){
@@ -27,7 +36,6 @@ ObjectNode *execute(Context *context, Node *node){
         return newObjectNode(NTYPE_INT, (void *) atoi(node->name));
     }
     LOG("execute", "getting object from context");
-    printf("NODENAME: %s\n", node->name);
     ObjectNode *obj = context_get(context, node->name);
     LOG("execute", "object got");
     if(obj == NULL){
@@ -35,8 +43,6 @@ ObjectNode *execute(Context *context, Node *node){
         return newObjectNode(NTYPE_NONE, 0);
     } 
     ObjectNode *result = NULL;
-    LOG("execute", "entering scope");
-    context_enterScope(context);
     LOG("execute", "type swtich start");
     switch(obj->type){
         case NTYPE_BUILTIN_FUNC : {
@@ -48,7 +54,7 @@ ObjectNode *execute(Context *context, Node *node){
         }
         case NTYPE_NODE : {
             LOG("execute", "node start");
-            result = execute(context, obj->value);
+            result = scopedExecute(context, obj->value);
             LOG("execute", "node end");
             break;
         }
@@ -57,15 +63,13 @@ ObjectNode *execute(Context *context, Node *node){
             FunctionObj *func = (FunctionObj *) obj->value;
             ObjectNode **arguments = malloc(sizeof(ObjectNode *) * node->childs_length);
             int i;
-
-            printf("ch_l: %d\n farg_l: %d\n fnode_l: %d\n", node->childs_length, func->args_length, func->node_length);
             for(i = 0; i < node->childs_length; i++)
-                arguments[i] = execute(context, &node->childs[i]);
+                arguments[i] = scopedExecute(context, &node->childs[i]);
             for(i = 0; i < func->args_length; i++)
                 context_set(context, func->args[i], arguments[i], true);
             for(i = 0; i < func->node_length - 1; i++)
-                free(execute(context, func->nodes[i]));
-            result = execute(context, func->nodes[i]);
+                free(scopedExecute(context, func->nodes[i]));
+            result = scopedExecute(context, func->nodes[i]);
             free(arguments);
             LOG("execute", "func end");
             break;
@@ -84,7 +88,5 @@ ObjectNode *execute(Context *context, Node *node){
         }
     }
     LOG("execute", "type swtich end");
-    context_leaveScope(context);
-    LOG("execute", "scope left");
     return result ? result : newObjectNode(NTYPE_NONE, 0);
 }
