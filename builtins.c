@@ -226,7 +226,7 @@ void fillOpTable(hashtable_t *operators){
     addOp(operators, "==", &op_Eq);
     addOp(operators, "help", &op_Help);
     addOp(operators, "define", &op_Define);
-    addOp(operators, "lambde", &op_Fn);
+    addOp(operators, "lambda", &op_Fn);
     addOp(operators, "alias", &op_Alias);
     addOp(operators, "deffn", &op_DefFn);
     addOp(operators, "print", &op_Print);
