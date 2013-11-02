@@ -17,11 +17,11 @@ deffn init (args li) (slice 0 (dec (length li)) li)
 deffn empty (args li) (== 0 (length li))
 
 deffn foldl 
-    args oldl_function initial li
+    args foldl_function initial li
     if (== 0 (length li))
         initial
-        foldl (' oldl_function )
-            oldl_function initial (head li)
+        foldl (' foldl_function )
+            foldl_function initial (head li)
             tail li
 
 deffn map
