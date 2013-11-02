@@ -27,16 +27,16 @@ void import(Context *context, const char *fname){
 
 void testExecuteSecond(const char *source){
     LOG("testExecuteSecond", "begin");
-    TokenStream ts;
-    LOG("testExecuteSecond", "starting fill token stream");
-    fillTokenStream(&ts, source); 
-    LOG("testExecuteSecond", "token stream filled");
     Context *globalContext = context_new();
     context_enterScope(globalContext); 
     LOG("testExecuteSecond", "filling op table");
     fillOpTable(globalContext);
     LOG("testExecuteSecond", "op table filled");
     import(globalContext, "stl.x");
+    TokenStream ts;
+    LOG("testExecuteSecond", "starting fill token stream");
+    fillTokenStream(&ts, source); 
+    LOG("testExecuteSecond", "token stream filled");
     while(!isEndOfStream(&ts)){
         LOG("testExecuteSecond", "calling parse");
         Node head = parse(&ts, 0);

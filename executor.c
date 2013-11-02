@@ -30,7 +30,10 @@ ObjectNode *execute(Context *context, Node *node){
     ObjectNode *obj = context_get(context, node->name);
     LOG("execute", "object got");
     if(obj == NULL){
-        printf("Execution error> Object does not exists: [%s]\n", node->name);
+        if(strcmp(node->name, "") == 0 )
+            printf("Execution error>Empty node\n");
+        else
+            printf("Execution error> Object does not exists: [%s]. At line %d %d \n", node->name, node->line, node->pos_in_line);
         return newObjectNode(NTYPE_NONE, 0);
     } 
     ObjectNode *result = NULL;
@@ -77,7 +80,7 @@ ObjectNode *execute(Context *context, Node *node){
                 result = obj;
             }else{
 	        LOG("execute", "type < 100");
-                printf("Execution error> Unknown type: [%d]\n", obj->type);
+                printf("Execution error> Unknown type: [%d] At line %d %d\n", obj->type, node->line, node->pos_in_line);
                 return newObjectNode(NTYPE_NONE, 0);
             }
             LOG("execute", "default end");
