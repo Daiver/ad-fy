@@ -59,18 +59,18 @@ ObjectNode *execute(Context *context, Node *node){
             int i;
 
             LOG("execute", "entering scope");
-            context_enterScope(context);
+            context_enterScope(func->context);
             for(i = 0; i < node->childs_length; i++)
                 arguments[i] = execute(context, &node->childs[i]);
             for(i = 0; i < func->args_length; i++)
-                context_set(context, func->args[i], arguments[i]);
+                context_set(func->context, func->args[i], arguments[i]);
             for(i = 0; i < func->node_length - 1; i++)
-                free(execute(context, func->nodes[i]));
-            result = execute(context, func->nodes[i]);
+                free(execute(func->context, func->nodes[i]));
+            result = execute(func->context, func->nodes[i]);
             free(arguments);
             LOG("execute", "func end");
             LOG("execute", "type swtich end");
-            context_leaveScope(context);
+            context_leaveScope(func->context);
             break;
         }
         default : {

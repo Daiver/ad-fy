@@ -89,6 +89,7 @@ ObjectNode *op_Fn(Context *context, Node *node){
     fo->nodes = malloc(sizeof(Node *) * fo->node_length);
     for(int i = starts_with; i < node->childs_length; i++)
         fo->nodes[i - starts_with] = &node->childs[i];
+    fo->context = context;
     return newObjectNode(NTYPE_FUNC, (void *)fo);
 }
 
@@ -108,6 +109,7 @@ ObjectNode *op_DefFn(Context *context, Node *node){
         fo->args_length = 0;
         fo->args = 0;
     }
+    fo->context = context;
     fo->node_length = node->childs_length - starts_with;
     fo->nodes = malloc(sizeof(Node *) * fo->node_length);
     for(int i = starts_with; i < node->childs_length; i++)

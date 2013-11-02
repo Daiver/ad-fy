@@ -27,6 +27,7 @@ struct TFunctionObj{
     char **args;
     int node_length;
     Node **nodes;
+    Context *context;
 };
 typedef struct TFunctionObj FunctionObj;
 
