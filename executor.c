@@ -27,7 +27,6 @@ ObjectNode *execute(Context *context, Node *node){
         return newObjectNode(NTYPE_INT, (void *) atoi(node->name));
     }
     LOG("execute", "getting object from context");
-    printf("NODENAME: %s\n", node->name);
     ObjectNode *obj = context_get(context, node->name);
     LOG("execute", "object got");
     if(obj == NULL){
@@ -35,8 +34,6 @@ ObjectNode *execute(Context *context, Node *node){
         return newObjectNode(NTYPE_NONE, 0);
     } 
     ObjectNode *result = NULL;
-    LOG("execute", "entering scope");
-    context_enterScope(context);
     LOG("execute", "type swtich start");
     switch(obj->type){
         case NTYPE_BUILTIN_FUNC : {
@@ -58,7 +55,8 @@ ObjectNode *execute(Context *context, Node *node){
             ObjectNode **arguments = malloc(sizeof(ObjectNode *) * node->childs_length);
             int i;
 
-            printf("ch_l: %d\n farg_l: %d\n fnode_l: %d\n", node->childs_length, func->args_length, func->node_length);
+            LOG("execute", "entering scope");
+            context_enterScope(context);
             for(i = 0; i < node->childs_length; i++)
                 arguments[i] = execute(context, &node->childs[i]);
             for(i = 0; i < func->args_length; i++)
@@ -68,6 +66,8 @@ ObjectNode *execute(Context *context, Node *node){
             result = execute(context, func->nodes[i]);
             free(arguments);
             LOG("execute", "func end");
+            LOG("execute", "type swtich end");
+            context_leaveScope(context);
             break;
         }
         default : {
@@ -83,8 +83,6 @@ ObjectNode *execute(Context *context, Node *node){
             LOG("execute", "default end");
         }
     }
-    LOG("execute", "type swtich end");
-    context_leaveScope(context);
     LOG("execute", "scope left");
     return result ? result : newObjectNode(NTYPE_NONE, 0);
 }

@@ -43,13 +43,11 @@ void testExecuteSecond(const char *source){
         LOG("testExecuteSecond", "returning form parse");
 	LOG("TestExecuteSecond", "calling execute");
         printTree(head, 0);
-        printf("Main: NODENAME: %s\n", head.name);
         LOG("testExecuteSecond", "calling execute");
         ObjectNode *node = execute(globalContext, &head);
         printf("res>");
         printObjectNode(node);
         printf("\n");
-       break;
     }
     context_leaveScope(globalContext);
 }

@@ -223,7 +223,7 @@ void fillOpTable(Context *context){
     addOp(context, "==", &op_Eq);
     addOp(context, "help", &op_Help);
     addOp(context, "define", &op_Define);
-    addOp(context, "lambde", &op_Fn);
+    addOp(context, "lambda", &op_Fn);
     addOp(context, "alias", &op_Alias);
     addOp(context, "deffn", &op_DefFn);
     addOp(context, "print", &op_Print);
