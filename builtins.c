@@ -217,6 +217,18 @@ void addOp(Context *context, char *token, OpHandler handler){
     context_set(context, token, (void *) newObjectNode(NTYPE_BUILTIN_FUNC, handler));
 }
 
+
+ObjectNode *op_Assert(Context *context, Node *node){ //improve it
+    bool res = execute(context, &node->childs[0]) == 0;
+    printf("Assertion \"%s\" ", node->childs[1].name);
+    if(res)
+        printf("FAILED");
+    else
+        printf("PASSED");
+    printf("\n");
+    return newObjectNode(NTYPE_NONE, 0);
+}
+
 void fillOpTable(Context *context){
     addOp(context, "+", &op_Plus);
     addOp(context, "-", &op_Minus);
@@ -238,4 +250,5 @@ void fillOpTable(Context *context){
     addOp(context, "[]", &op_Elem);
     addOp(context, "list", &op_List);
     addOp(context, "comment", &op_Comment);
+    addOp(context, "assert", &op_Assert);
 }

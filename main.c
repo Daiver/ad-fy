@@ -25,7 +25,7 @@ void import(Context *context, const char *fname){
     }
 }
 
-void testExecuteSecond(const char *source){
+void testExecute(const char *source, bool verbose){
     LOG("testExecuteSecond", "begin");
     Context *globalContext = context_new();
     context_enterScope(globalContext); 
@@ -41,26 +41,35 @@ void testExecuteSecond(const char *source){
         LOG("testExecuteSecond", "calling parse");
         Node head = parse(&ts, 0);
         LOG("testExecuteSecond", "returning form parse");
-	LOG("TestExecuteSecond", "calling execute");
-        printTree(head, 0);
+        LOG("TestExecuteSecond", "calling execute");
+        if(verbose)
+            printTree(head, 0);
         LOG("testExecuteSecond", "calling execute");
         ObjectNode *node = execute(globalContext, &head);
-        printf("res>");
-        printObjectNode(node);
-        printf("\n");
+        if(verbose){
+            printf("res>");
+            printObjectNode(node);
+            printf("\n");
+        }
     }
     context_leaveScope(globalContext);
 }
 
 int main(int argc, char **argv){
     if(argc > 1){
-        printf("Reading from file [%s]...\n", argv[1]);
-        const char *src = readFileAsLine(argv[1]);
+        bool verbose = false;
+        for(int i = 1; i < argc; i++){
+            if(strcmp(argv[i], "-v") == 0){
+                verbose = true;
+            }
+        }
+        printf("Reading from file [%s]...\n", argv[argc - 1]);
+        const char *src = readFileAsLine(argv[argc - 1]);
         printf("{-\n%s\n-}\n", src);
-        testExecuteSecond(src);
+        testExecute(src, verbose);
     }
     else{
-        printf("USAGE ./main source_file");
+        printf("USAGE ./main [-v] source_file");
     }
     return 0;
 }
