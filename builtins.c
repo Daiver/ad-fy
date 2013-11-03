@@ -219,7 +219,7 @@ void addOp(Context *context, char *token, OpHandler handler){
 
 
 ObjectNode *op_Assert(Context *context, Node *node){ //improve it
-    bool res = execute(context, &node->childs[0]) == 0;
+    bool res = (execute(context, &node->childs[0])->value == 0);
     printf("Assertion \"%s\" ", node->childs[1].name);
     if(res)
         printf("FAILED");
