@@ -1,4 +1,4 @@
-
+import law.x
 deffn my_map
     args f seq
     foldl 
