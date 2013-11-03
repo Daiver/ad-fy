@@ -66,3 +66,13 @@ assert (== 15 (sum (range 0 6))) sum_assert
 assert (== 0 (product (range 0 6))) product_assert
 assert (== 120 (product (range 1 6))) product_assert2
 assert (== 15 (foldl1 (' +) (range 0 6))) foldl1_assert
+
+assert (== (mod 6 4) 2) mod
+assert (== (mod 7 2) 1) mod2
+assert (== (mod 11 3) 2) mod3
+
+assert
+    lists-compare
+        list 0 2 4 6 8
+        filter (' odd) (range 0 10)
+    filter_assert

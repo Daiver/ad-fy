@@ -7,6 +7,8 @@ alias ' id
 deffn inc (args x) (+ x 1)
 deffn dec (args x) (- x 1)
 deffn not (args x) (if (== 0 x) 1 0)
+deffn mod (args x y) (- x (* y (/ x y)))
+deffn odd (args x) (not (mod x 2))
 
 ; lists
 deffn head (args li) ([] 0 li)
