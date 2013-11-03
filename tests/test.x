@@ -41,3 +41,28 @@ deffn f
         define res 2
 f
 assert (== res 50) inner_define
+
+; some comment
+comment more comments
+
+assert
+    lists-compare 
+        map (' inc) l
+        list 1 2 3 4 5
+    map_assert
+
+define x 10
+assert
+    lists-compare (functor 10 (list (' dec) (' inc) (' ')))
+        list 9 11 10
+    functor_test
+
+define res 
+    foldl (' ++) list 
+        list (range 0 8) (range 8 13) 
+assert (lists-compare res (range 0 13)) foldl_test
+
+assert (== 15 (sum (range 0 6))) sum_assert
+assert (== 0 (product (range 0 6))) product_assert
+assert (== 120 (product (range 1 6))) product_assert2
+assert (== 15 (foldl1 (' +) (range 0 6))) foldl1_assert

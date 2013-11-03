@@ -24,6 +24,10 @@ deffn foldl
             foldl_function initial (head li)
             tail li
 
+deffn foldl1
+    args foldl1_func li
+    foldl (' foldl1_func) (head li) (tail li)
+
 deffn map
     args f li
     deffn map_tmp
@@ -85,10 +89,18 @@ deffn lists-compare (args l1 l2)
         0
         lists-values-compare l1 l2
         
+define functor
+    lambda (args value seq)
+        map 
+            \ (args f)
+                f value
+            seq
 
 deffn call (args some_lambda) some_lambda
 
-deffn while (args while_predicate while_body)
+comment
+    unworks, because we cannot change upper context 
+    deffn while (args while_predicate while_body)
     if (while_predicate)
         0
         call (\ while_body (while (' while_predicate) (' while_body)))
