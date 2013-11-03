@@ -60,14 +60,14 @@ ObjectNode *op_Define(Context *context, Node *node){// FIX IT!
     const char *func_name = node->childs[0].name; 
     ObjectNode *tmp = execute(context, &node->childs[1]); //(char *)newObjectNode(2, &node->childs[1]);
     context_set(context, func_name, tmp);
-    return tmp;
+    return newObjectNode(NTYPE_NONE, 0);
 }
 
 ObjectNode *op_Alias(Context *context, Node *node){// FIX IT!
     const char *func_name = node->childs[0].name; 
     ObjectNode *tmp = context_get(context, node->childs[1].name); //(char *)newObjectNode(2, &node->childs[1]);
     context_set(context, func_name, tmp);
-    return tmp;
+    return newObjectNode(NTYPE_NONE, 0);
 }
 
 ObjectNode *op_Fn(Context *context, Node *node){
@@ -116,7 +116,7 @@ ObjectNode *op_DefFn(Context *context, Node *node){
         fo->nodes[i - starts_with] = &node->childs[i];
     ObjectNode *tmp = newObjectNode(NTYPE_FUNC, (void *)fo);
     context_set(context, func_name, tmp);
-    return tmp;
+    return newObjectNode(NTYPE_NONE, 0);
 }
 
 ObjectNode *op_Quote(Context *context, Node *node){
