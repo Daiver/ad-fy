@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "executor.h"
+//#include "executor.h"
 #include "parser.h"
 #include "context.h"
 #include "builtins.h"
 
-ObjectNode *op_Plus(Context *context, Node *node){
+ObjectNode *op_Plus
+    (ExecuteHandler execute, Context *context, Node *node){
     int res = 0;
     for(int i = 0; i < node->childs_length; i++){
         ObjectNode *tmp = execute(context, &node->childs[i]);
@@ -15,7 +16,8 @@ ObjectNode *op_Plus(Context *context, Node *node){
     return newObjectNode(NTYPE_INT, res);
 }
 
-ObjectNode *op_Mul(Context *context, Node *node){
+ObjectNode *op_Mul
+    (ExecuteHandler execute, Context *context, Node *node){
     int res = 1;
     for(int i = 0; i < node->childs_length; i++){
         ObjectNode *tmp = execute(context, &node->childs[i]);
@@ -24,7 +26,8 @@ ObjectNode *op_Mul(Context *context, Node *node){
     return newObjectNode(NTYPE_INT, res);
 }
 
-ObjectNode *op_Minus(Context *context, Node *node){
+ObjectNode *op_Minus
+    (ExecuteHandler execute, Context *context, Node *node){
     ObjectNode *tmp = execute(context, &node->childs[0]);
     int res = tmp->value;
     for(int i = 1; i < node->childs_length; i++){
@@ -34,14 +37,16 @@ ObjectNode *op_Minus(Context *context, Node *node){
     return newObjectNode(NTYPE_INT, res);
 }
 
-ObjectNode *op_Eq(Context *context, Node *node){
+ObjectNode *op_Eq
+    (ExecuteHandler execute, Context *context, Node *node){
     ObjectNode *tmp1 = execute(context, &node->childs[0]);
     ObjectNode *tmp2 = execute(context, &node->childs[1]);
     return newObjectNode(NTYPE_BOOL, tmp1->value == tmp2->value);
 }
 
 
-ObjectNode *op_Div(Context *context, Node *node){
+ObjectNode *op_Div
+    (ExecuteHandler execute, Context *context, Node *node){
     ObjectNode *tmp = execute(context, &node->childs[0]);
     int res = tmp->value;
     for(int i = 1; i < node->childs_length; i++){
@@ -51,26 +56,30 @@ ObjectNode *op_Div(Context *context, Node *node){
     return newObjectNode(NTYPE_INT, res);
 }
 
-ObjectNode *op_Help(Context *context, Node *node){
+ObjectNode *op_Help
+    (ExecuteHandler execute, Context *context, Node *node){
     printf("\nThis is small lisp like language interpreter by Victor Muzychenko and Kirill Klimov\n");
     return newObjectNode(NTYPE_NONE, 0);
 }
 
-ObjectNode *op_Define(Context *context, Node *node){// FIX IT!
+ObjectNode *op_Define
+    (ExecuteHandler execute, Context *context, Node *node){
     const char *func_name = node->childs[0].name; 
     ObjectNode *tmp = execute(context, &node->childs[1]); //(char *)newObjectNode(2, &node->childs[1]);
     context_set(context, func_name, tmp);
     return newObjectNode(NTYPE_NONE, 0);
 }
 
-ObjectNode *op_Alias(Context *context, Node *node){// FIX IT!
+ObjectNode *op_Alias
+    (ExecuteHandler execute, Context *context, Node *node){
     const char *func_name = node->childs[0].name; 
     ObjectNode *tmp = context_get(context, node->childs[1].name); //(char *)newObjectNode(2, &node->childs[1]);
     context_set(context, func_name, tmp);
     return newObjectNode(NTYPE_NONE, 0);
 }
 
-ObjectNode *op_Fn(Context *context, Node *node){
+ObjectNode *op_Fn
+    (ExecuteHandler execute, Context *context, Node *node){
     FunctionObj *fo = (FunctionObj *)malloc(sizeof(FunctionObj));
     int starts_with = 0;
     if(strcmp(node->childs[0].name, "args") == 0){
@@ -93,7 +102,8 @@ ObjectNode *op_Fn(Context *context, Node *node){
     return newObjectNode(NTYPE_FUNC, (void *)fo);
 }
 
-ObjectNode *op_DefFn(Context *context, Node *node){
+ObjectNode *op_DefFn
+    (ExecuteHandler execute, Context *context, Node *node){
     const char *func_name = node->childs[0].name; 
     FunctionObj *fo = (FunctionObj *)malloc(sizeof(FunctionObj));
     int starts_with = 1;
@@ -119,23 +129,27 @@ ObjectNode *op_DefFn(Context *context, Node *node){
     return newObjectNode(NTYPE_NONE, 0);
 }
 
-ObjectNode *op_Quote(Context *context, Node *node){
+ObjectNode *op_Quote
+    (ExecuteHandler execute, Context *context, Node *node){
     return context_get(context, node->childs[0].name);
 }
 
-ObjectNode *op_If(Context *context, Node *node){
+ObjectNode *op_If
+    (ExecuteHandler execute, Context *context, Node *node){
     ObjectNode *p = execute(context, &node->childs[0]);
     if(p->value != 0)
         return execute(context, &node->childs[1]);
     return execute(context, &node->childs[2]);
 }
 
-ObjectNode *op_Import(Context *context, Node *node){
+ObjectNode *op_Import
+    (ExecuteHandler execute, Context *context, Node *node){
     import(context, node->childs[0].name);
     return newObjectNode(NTYPE_NONE, 0);
 }
 
-ObjectNode *op_Comment(Context *context, Node *node){
+ObjectNode *op_Comment
+    (ExecuteHandler execute, Context *context, Node *node){
     return newObjectNode(NTYPE_NONE, 0);
 }
 
@@ -155,7 +169,8 @@ void printObjectNode(ObjectNode *obj){
     }
 }
 
-ObjectNode *op_Print(Context *context, Node *node){
+ObjectNode *op_Print
+    (ExecuteHandler execute, Context *context, Node *node){
     printf("stdout>");
     ObjectNode *res = NULL;
     for(int i = 0; i < node->childs_length; i++){
@@ -169,7 +184,8 @@ ObjectNode *op_Print(Context *context, Node *node){
     return res;
 }
 
-ObjectNode *op_List(Context *context, Node *node){
+ObjectNode *op_List
+    (ExecuteHandler execute, Context *context, Node *node){
     ObjectList *res = (ObjectList *)malloc(sizeof(ObjectList));
     res->length = node->childs_length;
     res->items = (ObjectNode *)malloc(sizeof(ObjectNode) * res->length);
@@ -178,7 +194,8 @@ ObjectNode *op_List(Context *context, Node *node){
     return newObjectNode(NTYPE_LIST, res);
 }
 
-ObjectNode *op_Elem(Context *context, Node *node){
+ObjectNode *op_Elem
+    (ExecuteHandler execute, Context *context, Node *node){
     ObjectNode *index = execute(context, &node->childs[0]);
     ObjectNode *res = execute(context, &node->childs[1]);
     if(index->value >= ((ObjectList *)res->value)->length)
@@ -186,7 +203,8 @@ ObjectNode *op_Elem(Context *context, Node *node){
     return &((ObjectList *)res->value)->items[(int)index->value];
 }
 
-ObjectNode *op_Slice(Context *context, Node *node){
+ObjectNode *op_Slice
+    (ExecuteHandler execute, Context *context, Node *node){
     ObjectNode *start_index = execute(context, &node->childs[0]);
     ObjectNode *end_index = execute(context, &node->childs[1]);
     ObjectNode *li = execute(context, &node->childs[2]);
@@ -197,7 +215,8 @@ ObjectNode *op_Slice(Context *context, Node *node){
     return newObjectNode(NTYPE_LIST, res);
 }
 
-ObjectNode *op_Cons(Context *context, Node *node){
+ObjectNode *op_Cons
+    (ExecuteHandler execute, Context *context, Node *node){
     ObjectNode *elem = execute(context, &node->childs[0]);
     ObjectNode *li = execute(context, &node->childs[1]);
     ObjectNode *items = malloc(sizeof(ObjectNode) * (((ObjectList *)li->value)->length + 1));// fix fix fix
@@ -208,7 +227,8 @@ ObjectNode *op_Cons(Context *context, Node *node){
     return newObjectNode(NTYPE_LIST, newObjectList(((ObjectList *)li->value)->length + 1, items));
 }
 
-ObjectNode *op_Length(Context *context, Node *node){
+ObjectNode *op_Length
+    (ExecuteHandler execute, Context *context, Node *node){
     ObjectNode *res = execute(context, &node->childs[0]);
     return newObjectNode(NTYPE_INT, ((ObjectList *)res->value)->length);
 }
@@ -218,7 +238,8 @@ void addOp(Context *context, char *token, OpHandler handler){
 }
 
 
-ObjectNode *op_Assert(Context *context, Node *node){ //improve it
+ObjectNode *op_Assert
+    (ExecuteHandler execute, Context *context, Node *node){
     bool res = (execute(context, &node->childs[0])->value == 0);
     const char *assertion_name = node->childs_length > 1 ? node->childs[1].name : "";
     if(res)

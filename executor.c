@@ -42,7 +42,7 @@ ObjectNode *execute(Context *context, Node *node){
         case NTYPE_BUILTIN_FUNC : {
             LOG("execute", "builtin_func start");
             OpHandler func = obj->value;
-            result = func(context, node);
+            result = func(&execute, context, node);
             LOG("execute", "builtin_func end");
             break;
         }
