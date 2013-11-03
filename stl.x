@@ -73,6 +73,19 @@ deffn ++ (args l1 l2)
             cons (head l2) l1
             tail l2
 
+deffn lists-compare (args l1 l2)
+    deffn lists-values-compare (args l1 l2)
+        if (empty l1)
+            1
+            if (== (head l1) (head l2))
+                lists-values-compare (tail l1) (tail l2)
+                0
+
+    if (not (== (length l1) (length l2)))
+        0
+        lists-values-compare l1 l2
+        
+
 deffn call (args some_lambda) some_lambda
 
 deffn while (args while_predicate while_body)

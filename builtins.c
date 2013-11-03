@@ -220,11 +220,12 @@ void addOp(Context *context, char *token, OpHandler handler){
 
 ObjectNode *op_Assert(Context *context, Node *node){ //improve it
     bool res = (execute(context, &node->childs[0])->value == 0);
-    printf("Assertion \"%s\" ", node->childs[1].name);
+    const char *assertion_name = node->childs_length > 1 ? node->childs[1].name : "";
     if(res)
         printf("FAILED");
     else
         printf("PASSED");
+    printf("\t\tAssertion \"%s\" ", assertion_name);
     printf("\n");
     return newObjectNode(NTYPE_NONE, 0);
 }
