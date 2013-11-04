@@ -87,3 +87,16 @@ deffn f
 assert 
     == (f 11) 1100
     inner_func
+
+deffn f
+    args x
+    deffn g
+        args y
+        deffn k
+            args z
+            + z y
+        * x (k 7)
+    g 100
+
+assert (== 1177 (f 11)) inner_func2
+
