@@ -1,6 +1,8 @@
 #include "eapi.h"
+#include "hi.h"
 
 int square(int j){
+    hu();
     return j * j;
 }
 

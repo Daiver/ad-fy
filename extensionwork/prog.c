@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <dlfcn.h>
 #include "eapi.h"
+#include "hi.h"
 
 int main(int argc, char **argv) 
 {
    int x;
+   hu();
    char *error;
    ExtContentGetter fn;
    const char *ext_names[2] = { 
