@@ -76,3 +76,14 @@ assert
         list 0 2 4 6 8
         filter (' odd) (range 0 10)
     filter_assert
+
+deffn f
+    args x
+    deffn g
+        args y
+        * x y
+    g 100
+
+assert 
+    == (f 11) 1100
+    inner_func
