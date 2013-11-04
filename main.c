@@ -13,6 +13,7 @@ void import(Context *context, const char *fname){
     LOG("import", "file read");
     TokenStream ts;
     LOG("import", "filling token stream");
+    //printf(">[%s] [%s]\n",fname, source);
     fillTokenStream(&ts, source);
     LOG("import", "token stream filled");
     while(!isEndOfStream(&ts)){ 
