@@ -2,8 +2,11 @@ CC = gcc
 #CC = clang
 
 ##bin/main: bin/hashtable_test
-bin/ad-fy: build/hashtable.o build/common.o build/lexer.o build/parser.o build/stack.o build/context.o build/builtins.o
-	$(CC) --std=c99 main.c build/common.o build/lexer.o build/parser.o executor.c build/builtins.o build/hashtable.o build/context.o build/stack.o -o bin/ad-fy -w 
+bin/ad-fy: build/hashtable.o build/common.o build/lexer.o build/parser.o build/stack.o build/context.o build/builtins.o build/executor.o
+	$(CC) --std=c99 main.c build/common.o build/lexer.o build/parser.o build/executor.o build/builtins.o build/hashtable.o build/context.o build/stack.o -o bin/ad-fy -w 
+
+build/executor.o: build/context.o build/parser.o
+	$(CC) --std=c99 executor.c build/context.o build/parser.o -o build/executor.o -c
 
 build/builtins.o: build/context.o build/parser.o
 	$(CC) --std=c99 builtins.c build/parser.o build/context.o -o build/builtins.o -c
