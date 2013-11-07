@@ -42,7 +42,7 @@ void context_enterScope(Context *context){
 void context_leaveScope(Context *context){
     if(context && !stack_isEmpty(&context->scopes)){
        hashtable_t *scope = stack_pop(&context->scopes);
-       free(scope);
+//       free(scope);
     }
 }
 
