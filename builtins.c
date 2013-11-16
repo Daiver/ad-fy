@@ -5,6 +5,7 @@
 #include "parser.h"
 #include "context.h"
 #include "builtins.h"
+#include "logging.h"
 
 ObjectNode *op_Plus
     (ExecuteHandler execute, Context *context, Node *node){
@@ -64,9 +65,11 @@ ObjectNode *op_Help
 
 ObjectNode *op_Define
     (ExecuteHandler execute, Context *context, Node *node){
+    LOG("op_Define", "start");
     const char *func_name = node->childs[0].name; 
     ObjectNode *tmp = execute(context, &node->childs[1]); //(char *)newObjectNode(2, &node->childs[1]);
-    context_set(context, func_name, tmp);
+    context_set(context, func_name, tmp, true);
+    LOG("op_Define", "end");
     return newObjectNode(NTYPE_NONE, 0);
 }
 
@@ -74,7 +77,7 @@ ObjectNode *op_Alias
     (ExecuteHandler execute, Context *context, Node *node){
     const char *func_name = node->childs[0].name; 
     ObjectNode *tmp = context_get(context, node->childs[1].name); //(char *)newObjectNode(2, &node->childs[1]);
-    context_set(context, func_name, tmp);
+    context_set(context, func_name, tmp, true);
     return newObjectNode(NTYPE_NONE, 0);
 }
 
@@ -125,7 +128,7 @@ ObjectNode *op_DefFn
     for(int i = starts_with; i < node->childs_length; i++)
         fo->nodes[i - starts_with] = &node->childs[i];
     ObjectNode *tmp = newObjectNode(NTYPE_FUNC, (void *)fo);
-    context_set(context, func_name, tmp);
+    context_set(context, func_name, tmp, true);
     return newObjectNode(NTYPE_NONE, 0);
 }
 
@@ -234,7 +237,7 @@ ObjectNode *op_Length
 }
 
 void addOp(Context *context, char *token, OpHandler handler){
-    context_set(context, token, (void *) newObjectNode(NTYPE_BUILTIN_FUNC, handler));
+    context_set(context, token, (void *) newObjectNode(NTYPE_BUILTIN_FUNC, handler), true);
 }
 
 

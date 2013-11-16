@@ -21,7 +21,7 @@ void import(Context *context, const char *fname){
         Node head = parse(&ts, 0);
         LOG("import", "returned from parse");
         LOG("import", "calling execute");
-        ObjectNode *node = execute(context, &head);
+        execute(context, &head);
         LOG("import", "returned from execute");
     }
 }

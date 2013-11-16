@@ -20,6 +20,15 @@ ObjectList *newObjectList(int length, ObjectNode *items){
     return res;
 }
 
+ObjectNode *scopedExecute(Context *context, Node *node){
+    LOG("executeWithContext", "entering scope");
+    context_enterScope(context);
+    ObjectNode *result = execute(context, node);
+    context_leaveScope(context);
+    LOG("executeWithContext", "scope left");
+    return result;
+}
+
 ObjectNode *execute(Context *context, Node *node){
     LOG("execute", "begin");
     if(isDigit(node->name)){
@@ -48,7 +57,7 @@ ObjectNode *execute(Context *context, Node *node){
         }
         case NTYPE_NODE : {
             LOG("execute", "node start");
-            result = execute(context, obj->value);
+            result = scopedExecute(context, obj->value);
             LOG("execute", "node end");
             break;
         }
@@ -61,12 +70,16 @@ ObjectNode *execute(Context *context, Node *node){
             LOG("execute", "entering scope");
             context_enterScope(func->context);
             for(i = 0; i < node->childs_length; i++)
-                arguments[i] = execute(context, &node->childs[i]);
+                arguments[i] = scopedExecute(context, &node->childs[i]);
             for(i = 0; i < func->args_length; i++)
                 context_set(func->context, func->args[i], arguments[i]);
             for(i = 0; i < func->node_length - 1; i++)
                 free(execute(func->context, func->nodes[i]));
             result = execute(func->context, func->nodes[i]);
+                context_set(context, func->args[i], arguments[i], true);
+            for(i = 0; i < func->node_length - 1; i++)
+                free(scopedExecute(context, func->nodes[i]));
+            result = scopedExecute(context, func->nodes[i]);
             free(arguments);
             LOG("execute", "func end");
             LOG("execute", "type swtich end");
@@ -86,6 +99,6 @@ ObjectNode *execute(Context *context, Node *node){
             LOG("execute", "default end");
         }
     }
-    LOG("execute", "scope left");
+    LOG("execute", "type swtich end");
     return result ? result : newObjectNode(NTYPE_NONE, 0);
 }

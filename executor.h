@@ -43,5 +43,6 @@ typedef struct TObjectList ObjectList;
 ObjectNode *newObjectNode(unsigned char type, void *value);
 ObjectList *newObjectList(int length, ObjectNode *items);
 ObjectNode *execute(Context *context, Node *node);
+ObjectNode *scopedExecute(Context *context, Node *node);
 
 #endif

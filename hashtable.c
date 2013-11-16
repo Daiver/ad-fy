@@ -58,9 +58,9 @@ entry_t *ht_newpair( char *key, char *value ) {
         return NULL;
     }
  
-    /*if( ( newpair->value = strdup( value ) ) == NULL ) {
-        return NULL;
-    }*/
+//    if( ( newpair->value = strdup( value ) ) == NULL ) {
+//        return NULL;
+//    }
     newpair->value = value;
  
     newpair->next = NULL;
@@ -91,7 +91,7 @@ void ht_set( hashtable_t *hashtable, char *key, char *value ) {
     /* There's already a pair.  Let's replace that string. */
     if( next != NULL && next->key != NULL && strcmp( key, next->key ) == 0 ) {
  
-        free( next->value );
+  //      free( next->value );
         next->value = strdup( value );
  
     /* Nope, could't find it.  Time to grow a pair. */
