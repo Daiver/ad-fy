@@ -233,11 +233,6 @@ ObjectNode *op_Length
     return newObjectNode(NTYPE_INT, ((ObjectList *)res->value)->length);
 }
 
-void addOp(Context *context, char *token, OpHandler handler){
-    context_set(context, token, (void *) newObjectNode(NTYPE_BUILTIN_FUNC, handler));
-}
-
-
 ObjectNode *op_Assert
     (ExecuteHandler execute, Context *context, Node *node){
     bool res = (execute(context, &node->childs[0])->value == 0);
@@ -249,6 +244,10 @@ ObjectNode *op_Assert
     printf("\t\tAssertion \"%s\" ", assertion_name);
     printf("\n");
     return newObjectNode(NTYPE_NONE, 0);
+}
+
+void addOp(Context *context, char *token, OpHandler handler){
+    context_set(context, token, (void *) newObjectNode(NTYPE_BUILTIN_FUNC, handler));
 }
 
 void fillOpTable(Context *context){
