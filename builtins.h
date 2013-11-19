@@ -32,5 +32,6 @@ ObjectNode *op_Slice(Context *context, Node *node);
 ObjectNode *op_Cons(Context *context, Node *node);
 ObjectNode *op_Length(Context *context, Node *node);*/
 void fillOpTable(Context *operators);
+void addOp(Context *context, char *token, OpHandler handler);
 
 #endif
