@@ -29,6 +29,10 @@ build/stack.o:
 build/hashtable.o:
 	$(CC) --std=c99 hashtable.c -o build/hashtable.o -c -w
 
+build/extloader.o:
+	$(CC) --std=c99 extloader.c -o build/extloader.o -c 
+
+
 clean:
 	rm bin/ad-fy
 	rm build/*.o

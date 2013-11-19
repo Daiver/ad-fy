@@ -4,6 +4,7 @@
 #include "eapi.h"
 #include "builtins.h"
 #include "common.h"
+#include "extloader.h"
 
 bool load(void **lib_handle, int ext_index, const char *name,  Context *context){
   lib_handle[ext_index] = dlopen(name, RTLD_LAZY);
