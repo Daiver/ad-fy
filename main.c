@@ -6,6 +6,9 @@
 #include "executor.h"
 #include "context.h"
 #include "logging.h"
+#include "extloader.h"
+
+#define EXT_LOCATION "lib/"
 
 void import(Context *context, const char *fname){
     LOG("import", "begin");
@@ -32,6 +35,8 @@ void testExecute(const char *source, bool verbose){
     context_enterScope(globalContext); 
     LOG("testExecuteSecond", "filling op table");
     fillOpTable(globalContext);
+    LOG("testExecuteSecond", "loading extensions");
+    int ext_num = loadExtensions(EXT_LOCATION, globalContext);
     LOG("testExecuteSecond", "op table filled");
     import(globalContext, "stl.x");
     TokenStream ts;
@@ -53,6 +58,7 @@ void testExecute(const char *source, bool verbose){
             printf("\n");
         }
     }
+//    closeExtensions(lib_handle, ext_num);
     context_leaveScope(globalContext);
 }
 
