@@ -12,15 +12,19 @@ int checkIsNumber(const char *s){
     const char *str = s;
     if(*str == '-')
         ++str;
-    bool hasPoint = *str == '.';
-    if(hasPoint)
+    bool hasPoint = (*str == '.') ? true : false; //= *str == '.';
+    if(hasPoint){
         ++str;
+    }
     if(*str == '\0')
         return NTYPE_NONE;
     while(*str != '\0'){
-        if(hasPoint && *str == '.')
-            return NTYPE_NONE;
-        if (*str < 48 || *str > 57) 
+        if(*str == '.'){
+            if(hasPoint)
+                return NTYPE_NONE;
+            hasPoint = true;
+        }
+        if ((*str != '.') && (*str < 48 || *str > 57))
             return NTYPE_NONE;
         ++str;
     }

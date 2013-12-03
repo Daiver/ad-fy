@@ -6,14 +6,29 @@
 #include "context.h"
 #include "builtins.h"
 
+ObjectNode *setNumType(bool isDouble, double res){ // i dont know how call it better
+    if(isDouble){
+        double *tmp = malloc(sizeof(double));
+        *tmp = res;
+        return newObjectNode(NTYPE_DOUBLE, tmp);
+    }
+    return newObjectNode(NTYPE_INT, (int)res);
+}
+
 ObjectNode *op_Plus
     (ExecuteHandler execute, Context *context, Node *node){
-    int res = 0;
+    double res = 0;
+    bool isDouble = false;
     for(int i = 0; i < node->childs_length; i++){
         ObjectNode *tmp = execute(context, &node->childs[i]);
-        res += (int)tmp->value;
+        if(tmp->type == NTYPE_DOUBLE)
+            isDouble = true;
+        if(isDouble)
+            res += *(double *)tmp->value;
+        else
+            res += (int)tmp->value;
     }
-    return newObjectNode(NTYPE_INT, res);
+    return setNumType(isDouble, res);
 }
 
 ObjectNode *op_Mul
@@ -154,9 +169,13 @@ ObjectNode *op_Comment
 }
 
 void printObjectNode(ObjectNode *obj){
-    if(obj->type == 101){
+    if(obj->type == NTYPE_INT){
         printf("%d", obj->value);
+    }    
+    if(obj->type == NTYPE_DOUBLE){
+        printf("%f", *(double *)obj->value);
     }
+
     if(obj->type == 110){
         ObjectList *li = (ObjectList *)obj->value;
         printf("[");

@@ -33,7 +33,8 @@ bool load(void **lib_handle, int ext_index, const char *name,  Context *context)
 
 int loadExtensions(char *location, Context *context){
    const char *ext_names[1] = {
-        "/home/cyou/Projects/Other/C/ad-fy/lib/libext1.so.1.0"
+        "/home/user/ad-fy/lib/libext1.so.1.0"
+        //"/home/cyou/Projects/Other/C/ad-fy/lib/libext1.so.1.0"
    };
    int ext_num = 1;
    void **lib_handle = malloc(sizeof(void *) * ext_num);

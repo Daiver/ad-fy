@@ -29,7 +29,10 @@ ObjectNode *execute(Context *context, Node *node){
       switch(numtype){
         case NTYPE_INT : num = (void *) atoi(node->name); LOG("execute", "Int"); break;
         case NTYPE_DOUBLE : 
-            num = (void *) strtod(node->name, NULL) ; LOG("execute", "Double"); break;
+            num = malloc(sizeof( double));
+            *(double *)num = strtod(node->name, NULL) ; 
+            LOG("execute", "Double"); 
+            break;
       }
  
       return newObjectNode(numtype, num);
