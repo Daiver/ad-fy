@@ -37,6 +37,7 @@ void testExecute(const char *source, bool verbose){
     fillOpTable(globalContext);
     LOG("testExecuteSecond", "loading extensions");
     int ext_num = loadExtensions(EXT_LOCATION, globalContext);
+    printf("Loaded %d extensions\n", ext_num);
     LOG("testExecuteSecond", "op table filled");
     import(globalContext, "stl.x");
     TokenStream ts;

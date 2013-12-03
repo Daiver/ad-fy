@@ -25,6 +25,7 @@ bool load(void **lib_handle, int ext_index, const char *name,  Context *context)
   fn(&ops, &len);
   for(int i = 0; i < len; ++i){
     OpHandler handler = dlsym(lib_handle[ext_index], ops[i].handler);
+    printf("Loaded extension %s\n", ops[i].name);
     addOp(context, ops[i].name, handler);
   }
   return true;
@@ -41,6 +42,7 @@ int loadExtensions(char *location, Context *context){
 
    for (int i = 0; i < ext_num; ++i)
      load(lib_handle, i, ext_names[i], context);
+   return ext_num;
 }
 
 int closeExtensions(void **lib_handle, int ext_num){
