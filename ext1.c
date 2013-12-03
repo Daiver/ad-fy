@@ -1,10 +1,11 @@
-#include <stdlib.j>
+#include <stdlib.h>
 #include "eapi.h"
+#include "builtins.h"
 
 
 void getExtContent(Operation **ops, int *len){
     *len = 1;
-    *ops = malloc(sizeof(Operation *) * l);
+    *ops = malloc(sizeof(Operation *) * *len);
     (*ops)[0].name = "xor";
     (*ops)[0].handler = "op_Xor";
 }
@@ -15,7 +16,7 @@ ObjectNode *op_Xor
     int res = 0;
     for(int i = 0; i < node->childs_length; i++){
         ObjectNode *tmp = execute(context, &node->childs[i]);
-        res ^ (int)tmp->value;
+        res ^= (int)tmp->value;
     }
     return newObjectNode(NTYPE_INT, res);
 }
