@@ -9,6 +9,7 @@
 #define NTYPE_NODE 2
 #define NTYPE_FUNC 3
 #define NTYPE_INT 101
+#define NTYPE_DOUBLE 102
 #define NTYPE_BOOL 105
 #define NTYPE_LIST 110
 

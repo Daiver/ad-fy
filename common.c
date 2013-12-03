@@ -4,22 +4,27 @@
 #include <malloc.h>
 #include <string.h>
 #include "common.h"
+#include "eapi.h"
 
-bool isDigit(const char *s){
+int checkIsNumber(const char *s){
     if(strlen(s) == 0)
-        return false;
+        return NTYPE_NONE;
     const char *str = s;
-    if(*str == '-'){
-        str++;
-        if(*str == '\0')
-            return false;
-    }
-    while (*str != '\0'){
+    if(*str == '-')
+        ++str;
+    bool hasPoint = *str == '.';
+    if(hasPoint)
+        ++str;
+    if(*str == '\0')
+        return NTYPE_NONE;
+    while(*str != '\0'){
+        if(hasPoint && *str == '.')
+            return NTYPE_NONE;
         if (*str < 48 || *str > 57) 
-            return false;
-        str++;
+            return NTYPE_NONE;
+        ++str;
     }
-    return true;
+    return hasPoint ? NTYPE_DOUBLE : NTYPE_INT;
 }
 
 char *readFileAsLine(char *input_file_name){

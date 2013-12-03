@@ -11,8 +11,7 @@
 #include <malloc.h>
 #include <string.h>
 
-bool isDigit(const char *s);
-
+int checkIsNumber(const char *s);
 char *readFileAsLine(char *input_file_name);
 
 #endif

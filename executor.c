@@ -22,10 +22,20 @@ ObjectList *newObjectList(int length, ObjectNode *items){
 
 ObjectNode *execute(Context *context, Node *node){
     LOG("execute", "begin");
-    if(isDigit(node->name)){
-        LOG("execute", "Diggit found");
-        return newObjectNode(NTYPE_INT, (void *) atoi(node->name));
+    int numtype = checkIsNumber(node->name);
+    if(numtype != NTYPE_NONE){
+      LOG("execute", "Diggit found");
+      void *num = NULL;
+      switch(numtype){
+        case NTYPE_INT : num = (void *) atoi(node->name); LOG("execute", "Int"); break;
+        case NTYPE_DOUBLE : 
+            num = (void *) strtod(node->name, NULL) ; LOG("execute", "Double"); break;
+      }
+ 
+      return newObjectNode(numtype, num);
     }
+
+
     LOG("execute", "getting object from context");
     ObjectNode *obj = context_get(context, node->name);
     LOG("execute", "object got");
