@@ -133,3 +133,8 @@ assert
 
 assert (== 0.125 (product (list .5 .5 .5))) double_product
 assert (== 0.1 (sum (list .05 -.05 .09 .01))) double_sum
+assert
+    lists-compare
+        list .1 .2 .3
+        map (\ (args x) (* x 0.1)) (list 1 2 3)
+    double_map
