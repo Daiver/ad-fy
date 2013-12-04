@@ -93,13 +93,26 @@ ObjectNode *op_Eq
 
 ObjectNode *op_Div
     (ExecuteHandler execute, Context *context, Node *node){
-    ObjectNode *tmp = execute(context, &node->childs[0]);
-    int res = tmp->value;
+    double res = 0;
+    if(tmp->type == NTYPE_DOUBLE){
+        isDouble = true;
+        res = *(double *)tmp->value;
+    }
+    else{
+        res = (int)tmp->value;
+    }
     for(int i = 1; i < node->childs_length; i++){
         ObjectNode *tmp = execute(context, &node->childs[i]);
-        res /= (int)tmp->value;
+        if(tmp->type == NTYPE_DOUBLE){
+            isDouble = true;
+            res /= *(double *)tmp->value;
+        }
+        else{
+            res /= (int)tmp->value;
+        }
     }
-    return newObjectNode(NTYPE_INT, res);
+    return setNumType(isDouble, res);
+
 }
 
 ObjectNode *op_Help
