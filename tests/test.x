@@ -117,3 +117,4 @@ assert
             10
     double_four
 
+assert (== 1 (* 0.1 10))
