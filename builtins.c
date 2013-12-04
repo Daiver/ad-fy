@@ -82,7 +82,7 @@ ObjectNode *op_Eq
         (tmp1->type == NTYPE_DOUBLE && tmp2->type == NTYPE_DOUBLE)){
         double r1 = tmp1->type == NTYPE_DOUBLE ? *(double *)tmp1->value : (int)tmp1->value;
         double r2 = tmp2->type == NTYPE_DOUBLE ? *(double *)tmp2->value : (int)tmp2->value;
-        res = r1 == r2;
+        res = fabs(r1 - r2) < 0.000001; // bad. maybe it useless
     }
     else{
         res = tmp1->value == tmp2->value;
@@ -220,6 +220,9 @@ void printObjectNode(ObjectNode *obj){
     }    
     if(obj->type == NTYPE_DOUBLE){
         printf("%f", *(double *)obj->value);
+    }
+    if(obj->type == NTYPE_BOOL){
+        printf("%s", obj->value ? "True" : "False");
     }
 
     if(obj->type == 110){

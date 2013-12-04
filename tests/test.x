@@ -100,3 +100,10 @@ deffn f
 
 assert (== 1177 (f 11)) inner_func2
 
+assert 
+    == 3.3
+        + 0.1 2.0 1.2
+    double_one
+
+assert (== 3.2 (+ 1 1.0 1.2)) double_two
+assert (== 0.1 (- 1.1 1)) double_three
