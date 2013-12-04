@@ -33,12 +33,18 @@ ObjectNode *op_Plus
 
 ObjectNode *op_Mul
     (ExecuteHandler execute, Context *context, Node *node){
-    int res = 1;
+    bool isDouble = false;
+    double res = 1;
     for(int i = 0; i < node->childs_length; i++){
         ObjectNode *tmp = execute(context, &node->childs[i]);
-        res *= (int)tmp->value;
+        if(tmp->type == NTYPE_DOUBLE)
+            isDouble = true;
+        if(isDouble)
+            res *= *(double *)tmp->value;
+        else
+            res *= (int)tmp->value;
     }
-    return newObjectNode(NTYPE_INT, res);
+    return setNumType(isDouble, res);
 }
 
 ObjectNode *op_Minus
