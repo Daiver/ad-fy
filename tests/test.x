@@ -77,7 +77,7 @@ assert
         filter (' odd) (range 0 10)
     filter_assert
 
-deffn f
+deffn f10
     args x
     deffn g
         args y
@@ -85,10 +85,10 @@ deffn f
     g 100
 
 assert 
-    == (f 11) 1100
+    == (f10 11) 1100
     inner_func
 
-deffn f
+deffn f20
     args x
     deffn g
         args y
@@ -98,7 +98,7 @@ deffn f
         * x (k 7)
     g 100
 
-assert (== 1177 (f 11)) inner_func2
+assert (== 1177 (f20 11)) inner_func2
 
 assert 
     == 3.3
@@ -117,4 +117,19 @@ assert
             10
     double_four
 
-assert (== 1 (* 0.1 10))
+assert (== 1 (* 0.1 10)) double_five
+assert (== 10.0 (* 0.1 100)) double_six
+assert 
+    == 1024
+        /
+            + 1 2 3 (- 3 1)
+            * .01
+                / 
+                    + 
+                        + 8 (* 10 7)
+                        * .5 .5 .5
+                    100
+    double_seven
+
+assert (== 0.125 (product (list .5 .5 .5))) double_product
+assert (== 0.1 (sum (list .05 -.05 .09 .01))) double_sum
