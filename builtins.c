@@ -21,10 +21,10 @@ ObjectNode *op_Plus
     bool isDouble = false;
     for(int i = 0; i < node->childs_length; i++){
         ObjectNode *tmp = execute(context, &node->childs[i]);
-        if(tmp->type == NTYPE_DOUBLE)
+        if(tmp->type == NTYPE_DOUBLE){//TODO Make it better
             isDouble = true;
-        if(isDouble)
             res += *(double *)tmp->value;
+        }
         else
             res += (int)tmp->value;
     }
@@ -37,10 +37,10 @@ ObjectNode *op_Mul
     double res = 1;
     for(int i = 0; i < node->childs_length; i++){
         ObjectNode *tmp = execute(context, &node->childs[i]);
-        if(tmp->type == NTYPE_DOUBLE)
+        if(tmp->type == NTYPE_DOUBLE){
             isDouble = true;
-        if(isDouble)
             res *= *(double *)tmp->value;
+        }
         else
             res *= (int)tmp->value;
     }
@@ -49,20 +49,45 @@ ObjectNode *op_Mul
 
 ObjectNode *op_Minus
     (ExecuteHandler execute, Context *context, Node *node){
+    bool isDouble = false;
     ObjectNode *tmp = execute(context, &node->childs[0]);
-    int res = tmp->value;
+    double res = 0;
+    if(tmp->type == NTYPE_DOUBLE){
+        isDouble = true;
+        res = *(double *)tmp->value;
+    }
+    else{
+        res = (int)tmp->value;
+    }
     for(int i = 1; i < node->childs_length; i++){
         ObjectNode *tmp = execute(context, &node->childs[i]);
-        res -= (int)tmp->value;
+        if(tmp->type == NTYPE_DOUBLE){
+            isDouble = true;
+            res -= *(double *)tmp->value;
+        }
+        else{
+            res -= (int)tmp->value;
+        }
     }
-    return newObjectNode(NTYPE_INT, res);
+    return setNumType(isDouble, res);
 }
 
 ObjectNode *op_Eq
-    (ExecuteHandler execute, Context *context, Node *node){
+    (ExecuteHandler execute, Context *context, Node *node){//make it better
     ObjectNode *tmp1 = execute(context, &node->childs[0]);
     ObjectNode *tmp2 = execute(context, &node->childs[1]);
-    return newObjectNode(NTYPE_BOOL, tmp1->value == tmp2->value);
+    bool res;
+    if((tmp1->type == NTYPE_INT && tmp2->type == NTYPE_DOUBLE) ||
+        (tmp1->type == NTYPE_DOUBLE && tmp2->type == NTYPE_INT) ||
+        (tmp1->type == NTYPE_DOUBLE && tmp2->type == NTYPE_DOUBLE)){
+        double r1 = tmp1->type == NTYPE_DOUBLE ? *(double *)tmp1->value : (int)tmp1->value;
+        double r2 = tmp2->type == NTYPE_DOUBLE ? *(double *)tmp2->value : (int)tmp2->value;
+        res = r1 == r2;
+    }
+    else{
+        res = tmp1->value == tmp2->value;
+    }
+    return newObjectNode(NTYPE_BOOL, res);
 }
 
 
