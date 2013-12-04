@@ -107,3 +107,13 @@ assert
 
 assert (== 3.2 (+ 1 1.0 1.2)) double_two
 assert (== 0.1 (- 1.1 1)) double_three
+assert 
+    == 0.44
+        /
+            *
+                2.2
+                + 1 2
+                    - 1 2
+            10
+    double_four
+

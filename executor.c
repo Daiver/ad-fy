@@ -38,7 +38,6 @@ ObjectNode *execute(Context *context, Node *node){
       return newObjectNode(numtype, num);
     }
 
-
     LOG("execute", "getting object from context");
     ObjectNode *obj = context_get(context, node->name);
     LOG("execute", "object got");
