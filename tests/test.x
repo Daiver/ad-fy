@@ -149,3 +149,5 @@ assert
             s_string
         "some string"
     string_test1
+
+assert (== 3 (length "321"))
