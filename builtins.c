@@ -224,11 +224,13 @@ void printObjectNode(ObjectNode *obj){
     if(obj->type == NTYPE_BOOL){
         printf("%s", obj->value ? "True" : "False");
     }
+    //printf(">%d %d\n", obj->type, obj->value);
     if(obj->type == NTYPE_CHAR){
         printf("%c", (char)obj->value);
     }
     if(obj->type == NTYPE_STRING){
         ObjectList *li = (ObjectList *)obj->value;
+        //printf("length %d\n", li->length);
         printf("'");
         for(int i = 0; i < li->length; i++){
             printObjectNode(&li->items[i]);
@@ -291,7 +293,7 @@ ObjectNode *op_Slice
     ObjectList *tmp = ((ObjectList *)li->value);
     ObjectNode *slice = tmp->items + (int)start_index->value;
     ObjectList *res = newObjectList(end_index->value - start_index->value, slice);
-    return newObjectNode(NTYPE_LIST, res);
+    return newObjectNode(li->type, res);
 }
 
 ObjectNode *op_Cons
@@ -303,7 +305,8 @@ ObjectNode *op_Cons
         items[i] = ((ObjectList *)li->value)->items[i];
     }
     items[((ObjectList *)li->value)->length] = *elem;
-    return newObjectNode(NTYPE_LIST, newObjectList(((ObjectList *)li->value)->length + 1, items));
+    return newObjectNode((elem->type == 0 || elem->type == NTYPE_CHAR) && li->type == NTYPE_STRING ? NTYPE_STRING : NTYPE_LIST, 
+        newObjectList(((ObjectList *)li->value)->length + 1, items));
 }
 
 ObjectNode *op_Length

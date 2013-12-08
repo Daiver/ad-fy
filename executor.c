@@ -26,7 +26,7 @@ ObjectNode *listFromString(const char *s){
     res->length = length - 2;
     res->items = (ObjectNode *)malloc(sizeof(ObjectNode) * res->length);
     for(int i = 1; i < length - 1; i++){
-        res->items[i] = *newObjectNode(NTYPE_CHAR, (void *)s[i]);
+        res->items[i - 1] = *newObjectNode(NTYPE_CHAR, (void *)s[i]);
     }
     //res->items = items;
     return newObjectNode(NTYPE_STRING, res); 

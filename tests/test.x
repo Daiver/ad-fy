@@ -138,3 +138,14 @@ assert
         list .1 .2 .3
         map (\ (args x) (* x 0.1)) (list 1 2 3)
     double_map
+
+define s_some "some"
+define s_string "string"
+
+assert 
+    lists-compare
+        ++
+            ++ s_some " "
+            s_string
+        "some string"
+    string_test1
