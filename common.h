@@ -11,7 +11,8 @@
 #include <malloc.h>
 #include <string.h>
 
-int checkIsNumber(const char *s);
+int  checkIsNumber(const char *s);
+bool isQuotedString(const char *s);
 char *readFileAsLine(char *input_file_name);
 
 #endif

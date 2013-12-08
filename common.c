@@ -31,6 +31,10 @@ int checkIsNumber(const char *s){
     return hasPoint ? NTYPE_DOUBLE : NTYPE_INT;
 }
 
+bool isQuotedString(const char *s){//Can i make it better
+    return s[0] == '"' && s[strlen(s) - 1] == '"';
+}
+
 char *readFileAsLine(char *input_file_name){
     char *file_contents;
     long input_file_size;

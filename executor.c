@@ -20,6 +20,14 @@ ObjectList *newObjectList(int length, ObjectNode *items){
     return res;
 }
 
+ObjectNode *listFromString(const char *s){
+    ObjectList *res = (ObjectList *)malloc(sizeof(ObjectList));
+    int length = strlen(s) - 2;
+    res->length = length;
+    //res->items = items;
+    return res; 
+}
+
 ObjectNode *execute(Context *context, Node *node){
     LOG("execute", "begin");
     int numtype = checkIsNumber(node->name);
