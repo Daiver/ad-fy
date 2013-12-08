@@ -150,4 +150,26 @@ assert
         "some string"
     string_test1
 
-assert (== 3 (length "321"))
+assert (== 3 (length "321")) string_length
+
+deffn map2 
+    args func li1 li2 
+    if (empty li1)
+        list
+        cons (func (head li1) (head li2)) (map2 (' func) (tail li1) (tail li2))
+
+deffn str_list_compare 
+    args s1 s2
+    foldl1
+        \ (args l r)
+            if l
+                if r
+                    1
+                0
+        map2 (' lists-compare) s1 s2
+
+assert
+    str_list_compare
+        list "Hi!" "Hello!" "Bonjour!"
+        map (\ (args x) (++ x "!")) (list "Hi" "Hello" "Bonjour")
+    string_map
