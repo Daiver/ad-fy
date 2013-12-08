@@ -6,32 +6,6 @@
 #include "context.h"
 #include "logging.h"
 
-ObjectNode *newObjectNode(unsigned char type, void *value){
-    ObjectNode *obj = (ObjectNode *) malloc( sizeof(ObjectNode));
-    obj->type = type;
-    obj->value = value;
-    return obj;
-}
-
-ObjectList *newObjectList(int length, ObjectNode *items){
-    ObjectList *res = (ObjectList *)malloc(sizeof(ObjectList));
-    res->length = length;
-    res->items = items;
-    return res;
-}
-
-ObjectNode *listFromString(const char *s){
-    ObjectList *res = (ObjectList *)malloc(sizeof(ObjectList));
-    int length = strlen(s);
-    res->length = length - 2;
-    res->items = (ObjectNode *)malloc(sizeof(ObjectNode) * res->length);
-    for(int i = 1; i < length - 1; i++){
-        res->items[i - 1] = *newObjectNode(NTYPE_CHAR, (void *)s[i]);
-    }
-    //res->items = items;
-    return newObjectNode(NTYPE_STRING, res); 
-}
-
 ObjectNode *execute(Context *context, Node *node){
     LOG("execute", "begin");
     int numtype = checkIsNumber(node->name);
