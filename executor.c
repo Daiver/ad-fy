@@ -22,10 +22,14 @@ ObjectList *newObjectList(int length, ObjectNode *items){
 
 ObjectNode *listFromString(const char *s){
     ObjectList *res = (ObjectList *)malloc(sizeof(ObjectList));
-    int length = strlen(s) - 2;
-    res->length = length;
+    int length = strlen(s);
+    res->length = length - 2;
+    res->items = (ObjectNode *)malloc(sizeof(ObjectNode) * res->length);
+    for(int i = 1; i < length - 1; i++){
+        res->items[i] = *newObjectNode(NTYPE_CHAR, (void *)s[i]);
+    }
     //res->items = items;
-    return res; 
+    return newObjectNode(NTYPE_STRING, res); 
 }
 
 ObjectNode *execute(Context *context, Node *node){
@@ -44,6 +48,9 @@ ObjectNode *execute(Context *context, Node *node){
       }
  
       return newObjectNode(numtype, num);
+    }
+    if(isQuotedString(node->name)){
+        return listFromString(node->name);
     }
 
     LOG("execute", "getting object from context");

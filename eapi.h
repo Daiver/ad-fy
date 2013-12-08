@@ -13,6 +13,7 @@
 #define NTYPE_CHAR 104
 #define NTYPE_BOOL 105
 #define NTYPE_LIST 110
+#define NTYPE_STRING 111
 
 struct TNode{
     const char *name;

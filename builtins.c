@@ -224,8 +224,19 @@ void printObjectNode(ObjectNode *obj){
     if(obj->type == NTYPE_BOOL){
         printf("%s", obj->value ? "True" : "False");
     }
+    if(obj->type == NTYPE_CHAR){
+        printf("%c", (char)obj->value);
+    }
+    if(obj->type == NTYPE_STRING){
+        ObjectList *li = (ObjectList *)obj->value;
+        printf("'");
+        for(int i = 0; i < li->length; i++){
+            printObjectNode(&li->items[i]);
+        }
+        printf("'");
+    }
 
-    if(obj->type == 110){
+    if(obj->type == NTYPE_LIST){
         ObjectList *li = (ObjectList *)obj->value;
         printf("[");
         for(int i = 0; i < li->length; i++){
