@@ -34,8 +34,9 @@ ObjectNode *op_ReadFile
     for(int i = 0; i < li->length; i++){
         fname[i] = (char)li->items[i].value;
     }
+    fname[li->length] = '\0';
     char *s = readFAsL(fname);
-    return newObjectNode(NTYPE_STRING, listFromString(s));
+    return listFromString(s);
 }
 
 ObjectNode *op_Xor
