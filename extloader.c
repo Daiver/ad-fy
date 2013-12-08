@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <dlfcn.h>
+#include <dirent.h>
 #include "eapi.h"
 #include "builtins.h"
 #include "common.h"
 #include "extloader.h"
+
 
 bool load(void **lib_handle, int ext_index, const char *name,  Context *context){
   lib_handle[ext_index] = dlopen(name, RTLD_LAZY);
@@ -31,19 +33,30 @@ bool load(void **lib_handle, int ext_index, const char *name,  Context *context)
   return true;
 }
 
+//"/home/cyou/Projects/Other/C/ad-fy/lib/libext1.so.1.0"
 int loadExtensions(char *location, Context *context){
-   const char *ext_names[1] = {
-        "/home/user/ad-fy/lib/libext1.so.1.0"
-        //"/home/cyou/Projects/Other/C/ad-fy/lib/libext1.so.1.0"
-   };
-   int ext_num = 1;
-   void **lib_handle = malloc(sizeof(void *) * ext_num);
-
-   hashtable_t exthandlers;
-
-   for (int i = 0; i < ext_num; ++i)
-     load(lib_handle, i, ext_names[i], context);
-   return ext_num;
+  DIR *dir = opendir(location);
+  struct dirent *ent;
+  if (dir == NULL)
+    return 0;
+  int ext_num = 0;
+  int ext_length = 5;
+  char **ext_names = (char **) malloc(ext_length * sizeof(char *));
+  while ((ent = readdir (dir)) != NULL)
+    if (ent->d_type == DT_REG) {
+       if(ext_num >= ext_length)
+         *ext_names = (char **) realloc(ext_names, ext_length*=2);
+       ext_names[ext_num]  = ent->d_name;
+       ++ext_num;
+    }
+  closedir(dir);
+  void **lib_handle = (void **) malloc(sizeof(void **) * ext_num);
+  hashtable_t exthandlers;
+  for (int i = 0; i < ext_num; ++i)
+    load(lib_handle, i, ext_names[i], context);
+  free(lib_handle);
+  free(ext_names);
+  return ext_num;
 }
 
 int closeExtensions(void **lib_handle, int ext_num){
