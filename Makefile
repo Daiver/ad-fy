@@ -1,4 +1,5 @@
 CC = gcc
+CXX = g++
 #CC = clang
 
 ##bin/main: bin/hashtable_test
@@ -29,14 +30,21 @@ build/stack.o:
 build/hashtable.o:
 	$(CC) --std=c99 hashtable.c -o build/hashtable.o -c -w
 
-build/extloader.o: lib/libext1.so.1.0
+build/extloader.o: lib/libext1.so.1.0 lib/libcv.so.1.0
 	$(CC) --std=c99 extloader.c -o build/extloader.o -c -w
 
 lib/libext1.so.1.0: build/ext1.o
-	$(CC) --std=c99 -shared -Wl,-soname,libext1.so.1 -o lib/libext1.so.1.0 build/ext1.o -w
+	$(CC) --std=c99 -shared -Wl,-soname,libext1.so.1 -o lib/libext1.so.1.0 build/ext1.o -w 
 
 build/ext1.o: 
 	$(CC) --std=c99 -Wall -fPIC -c ext1.c -o build/ext1.o -w
+
+lib/libcv.so.1.0: build/extcv.o
+	$(CC) --std=c99 -shared -Wl,-soname,libcv.so.1 -o lib/libcv.so.1.0 build/extcv.o -w `pkg-config opencv --cflags --libs` 
+
+build/extcv.o: 
+	$(CC) --std=c99 -Wall -fPIC -c extcv.c -o build/extcv.o -w `pkg-config opencv --cflags --libs` 
+
 
 
 clean:
