@@ -92,8 +92,10 @@ define mat
             list 0 (list 1 0 0)
             list 0 (list 2 1 0)
             list 1 (list 0 1 1)
+            list 1 (list 0 1 0)
 
 print mat
 print (activate mat (list (list 3 1 0)))
 print (activate mat (list (list 0 1 5)))
+print (activate mat (list (list 0 1 0)))
 
