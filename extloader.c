@@ -42,18 +42,22 @@ int loadExtensions(char *location, Context *context){
   int ext_num = 0;
   int ext_length = 5;
   char **ext_names = (char **) malloc(ext_length * sizeof(char *));
+  char full_path[2048];
+  realpath(location, full_path);
   while ((ent = readdir (dir)) != NULL)
     if (ent->d_type == DT_REG) {
        if(ext_num >= ext_length)
          *ext_names = (char **) realloc(ext_names, ext_length*=2);
-       ext_names[ext_num]  = ent->d_name;
+       ext_names[ext_num] = malloc(strlen(full_path) + strlen(ent->d_name));
+       sprintf(ext_names[ext_num], "%s/%s", full_path, ent->d_name);
        ++ext_num;
     }
   closedir(dir);
   void **lib_handle = (void **) malloc(sizeof(void **) * ext_num);
   hashtable_t exthandlers;
-  for (int i = 0; i < ext_num; ++i)
+  for (int i = 0; i < ext_num; ++i){
     load(lib_handle, i, ext_names[i], context);
+  }
   free(lib_handle);
   free(ext_names);
   return ext_num;
