@@ -97,23 +97,26 @@ int main(int argc, char **argv){
     if(argc > 1){
         bool verbose = false;
         bool repl = false;
+        bool from_arg = false;
         for(int i = 1; i < argc; i++){
             if(strcmp(argv[i], "-i") == 0)
                 repl = true;
             if(strcmp(argv[i], "-v") == 0)
                 verbose = true;
+            if(strcmp(argv[i], "-s") == 0)
+                from_arg = true;
         }
         if(repl){
             REPL(verbose);
             return 0;
         }
         printf("Reading from file [%s]...\n", argv[argc - 1]);
-        const char *src = readFileAsLine(argv[argc - 1]);
+        const char *src = from_arg ? argv[argc - 1] : readFileAsLine(argv[argc - 1]);
         printf("{-\n%s\n-}\n", src);
         testExecute(src, verbose);
     }
     else{
-        printf("USAGE ./main [-v|-i] source_file");
+        printf("USAGE ./main [-v|-i|-s] source_file");
     }
     return 0;
 }
