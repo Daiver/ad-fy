@@ -33,6 +33,16 @@ deffn map2
         list
         cons (func (head li1) (head li2)) (map2 (' func) (tail li1) (tail li2))
 
+deffn replace_row 
+    args mtrx n row
+    if (empty mtrx)
+        list
+        cons 
+            if (== 0 n)
+                row
+                head mtrx
+            replace_row (tail mtrx) (- n 1) row
+
 deffn activate
     args mtrx sample
     mul_matrix_by_matrix sample mtrx
@@ -42,12 +52,17 @@ deffn train
     define tmp_mtrx
         [] label
             transpose mtrx
-    print 
-        map2 
-            \ (args w x)
-                + w (* 0.5 (- x w))
-            tmp_mtrx
-            sample
+    transpose
+        reverse 
+            replace_row  
+                transpose mtrx 
+                label
+                reverse 
+                    map2 
+                        \ (args w x)
+                            + w (* 0.5 (- x w))
+                        tmp_mtrx
+                        sample
 
 define mat
     list 
@@ -55,5 +70,8 @@ define mat
         list 0 0
         list 0 0
 
-train mat (list 1 0 1) 1
+print (reverse (replace_row (reverse mat) 0 (list 1 2)))
+
+print 
+    train mat (list 1 0 1) 0
 
