@@ -72,6 +72,11 @@ define mat
 
 print (reverse (replace_row (reverse mat) 0 (list 1 2)))
 
-print 
-    train mat (list 1 0 1) 0
+define mat (train mat (list 1 0 0) 0)
+define mat (train mat (list 2 1 0) 0)
+define mat (train mat (list 0 1 1) 1)
+
+print mat
+print (activate mat (list (list 3 1 0)))
+print (activate mat (list (list 0 1 5)))
 
