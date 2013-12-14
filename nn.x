@@ -1,3 +1,4 @@
+
 deffn mul_vector_by_vector (args v1 v2)
     if (empty v1)
         0
@@ -98,4 +99,5 @@ print mat
 print (activate mat (list (list 3 1 0)))
 print (activate mat (list (list 0 1 5)))
 print (activate mat (list (list 0 1 0)))
+
 
