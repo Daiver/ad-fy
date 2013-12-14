@@ -63,13 +63,49 @@ void testExecute(const char *source, bool verbose){
     context_leaveScope(globalContext);
 }
 
+
+void REPL(bool verbose){
+    Context *globalContext = context_new();
+    context_enterScope(globalContext); 
+    fillOpTable(globalContext);
+    int ext_num = loadExtensions(EXT_LOCATION, globalContext);
+    printf("Loaded %d extensions\n", ext_num);
+    import(globalContext, "stl.x");
+    int n_bytes = 100;
+    char *source = malloc(n_bytes + 1);
+    for(int i = 0;i < n_bytes + 1;i++) source[i] = 0;
+    while (1){
+        getline(&source, &n_bytes, stdin);
+        //printf("%s\n", source);
+        TokenStream ts;
+        fillTokenStream(&ts, source); 
+        while(!isEndOfStream(&ts)){
+            Node head = parse(&ts, 0);
+            if(verbose)
+                printTree(head, 0);
+            ObjectNode *node = execute(globalContext, &head);
+            printf("res>");
+            printObjectNode(node);
+            printf("\n");
+        }
+    }
+//    closeExtensions(lib_handle, ext_num);
+    context_leaveScope(globalContext);
+}
+
 int main(int argc, char **argv){
     if(argc > 1){
         bool verbose = false;
+        bool repl = false;
         for(int i = 1; i < argc; i++){
-            if(strcmp(argv[i], "-v") == 0){
+            if(strcmp(argv[i], "-i") == 0)
+                repl = true;
+            if(strcmp(argv[i], "-v") == 0)
                 verbose = true;
-            }
+        }
+        if(repl){
+            REPL(verbose);
+            return 0;
         }
         printf("Reading from file [%s]...\n", argv[argc - 1]);
         const char *src = readFileAsLine(argv[argc - 1]);
@@ -77,7 +113,7 @@ int main(int argc, char **argv){
         testExecute(src, verbose);
     }
     else{
-        printf("USAGE ./main [-v] source_file");
+        printf("USAGE ./main [-v|-i] source_file");
     }
     return 0;
 }
