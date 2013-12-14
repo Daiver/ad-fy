@@ -64,6 +64,14 @@ deffn train
                         tmp_mtrx
                         sample
 
+deffn train_on_samples
+    args mat samples
+    foldl
+        \ (args mt smpl)
+            train mt (last smpl) (head smpl)
+        mat
+        samples
+
 define mat
     list 
         list 0 0
@@ -72,9 +80,17 @@ define mat
 
 print (reverse (replace_row (reverse mat) 0 (list 1 2)))
 
-define mat (train mat (list 1 0 0) 0)
-define mat (train mat (list 2 1 0) 0)
-define mat (train mat (list 0 1 1) 1)
+;
+    define mat (train mat (list 1 0 0) 0)
+    define mat (train mat (list 2 1 0) 0)
+    define mat (train mat (list 0 1 1) 1)
+
+define mat
+    train_on_samples mat
+        list
+            list 0 (list 1 0 0)
+            list 0 (list 2 1 0)
+            list 1 (list 0 1 1)
 
 print mat
 print (activate mat (list (list 3 1 0)))
