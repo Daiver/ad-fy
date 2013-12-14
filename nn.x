@@ -27,27 +27,33 @@ deffn transpose (args mtrx)
             transpose
                 map (' tail) mtrx
 
-define m 
-    list
-        list 1 2 3
-        list 4 5 6
+deffn map2 
+    args func li1 li2 
+    if (empty li1)
+        list
+        cons (func (head li1) (head li2)) (map2 (' func) (tail li1) (tail li2))
 
-define m2
-    list
-        list 10 11
-        list 12 13
-        list 14 15
+deffn activate
+    args mtrx sample
+    mul_matrix_by_matrix sample mtrx
 
-define vctr
-    list 10 20 30
+deffn train
+    args mtrx sample label
+    define tmp_mtrx
+        [] label
+            transpose mtrx
+    print 
+        map2 
+            \ (args w x)
+                + w (* 0.5 (- x w))
+            tmp_mtrx
+            sample
 
-; print m
-transpose m
-mul_vector_by_vector ([] 0 m) ([] 1 m)
-mul_vector_by_matrix m vctr
-mul_matrix_by_matrix m m2
-
-define m3
+define mat
     list 
-        list 1 2 3
-print (mul_matrix_by_matrix m3 m2)
+        list 0 0
+        list 0 0
+        list 0 0
+
+train mat (list 1 0 1) 1
+

@@ -55,9 +55,8 @@ int loadExtensions(char *location, Context *context){
   closedir(dir);
   void **lib_handle = (void **) malloc(sizeof(void **) * ext_num);
   hashtable_t exthandlers;
-  for (int i = 0; i < ext_num; ++i){
+  for (int i = 0; i < ext_num; ++i)
     load(lib_handle, i, ext_names[i], context);
-  }
   free(lib_handle);
   free(ext_names);
   return ext_num;
