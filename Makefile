@@ -30,8 +30,9 @@ build/stack.o:
 build/hashtable.o:
 	$(CC) --std=gnu99 hashtable.c -o build/hashtable.o -c -w
 
-build/extloader.o: lib/libext1.so.1.0 lib/libcv.so.1.0
+build/extloader.o: lib/libext1.so.1.0 lib/libcv.so.1.0 lib/libextbmp.so.1.0
 	$(CC) --std=gnu99 extloader.c -o build/extloader.o -c -w
+
 
 lib/libext1.so.1.0: build/ext1.o
 	$(CC) --std=gnu99 -shared -Wl,-soname,libext1.so.1 -o lib/libext1.so.1.0 build/ext1.o -w 
@@ -45,6 +46,14 @@ lib/libcv.so.1.0: build/extcv.o
 build/extcv.o: 
 	$(CC) --std=gnu99 -Wall -fPIC -c extcv.c -o build/extcv.o -w `pkg-config opencv --cflags --libs` 
 
+lib/libextbmp.so.1.0: build/extbmp.o
+	$(CC) --std=gnu99 -shared -Wl,-soname,libextbmp.so.1 -o lib/libextbmp.so.1.0 build/extbmp.o -w 
+
+build/extbmp.o: build/bmp.o 
+	$(CC) --std=gnu99 -Wall -fPIC -c extbmp.c -o build/extbmp.o -w
+
+build/bmp.o:
+	$(CC) --std=gnu99 bmp.c -o build/bmp.o -c -w
 
 
 clean:
