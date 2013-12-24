@@ -59,6 +59,7 @@ build/bmp.o:
 clean:
 	rm bin/ad-fy
 	rm build/*.o
+	rm lib/*
 
 #bin/hashtable_test:
 #	$(CC) --std=gnu99 hashtable_test.c -o bin/hashtable_test

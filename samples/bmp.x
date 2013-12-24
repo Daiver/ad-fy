@@ -1,1 +1,1 @@
-loadbmp "a.x"
+print (loadbmp "a.x")
