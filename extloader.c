@@ -41,7 +41,7 @@ int loadExtensions(char *location, Context *context){
     return 0;
   int ext_num = 0;
   int ext_length = 5;
-  char **ext_names = (char **) malloc(ext_length * sizeof(char *));
+  char **ext_names = (char **) malloc(ext_length * sizeof(char **));
   char full_path[2048];
   realpath(location, full_path);
   while ((ent = readdir (dir)) != NULL)
