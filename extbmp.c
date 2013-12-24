@@ -20,15 +20,26 @@ ObjectNode *mkList(BITMAP *bmp){
     return newObjectNode(NTYPE_LIST, res); 
 }
 
+char * listToString(ObjectNode *fname_obj){
+   ObjectList *li = fname_obj->value;
+    char *fname = malloc(sizeof(char) * (li->length + 1));
+    for(int i = 0; i < li->length; i++){
+        fname[i] = (char)li->items[i].value;
+    }
+    fname[li->length] = '\0';
+    return fname;
+}
+
 ObjectNode *op_LoadBmp
     (ExecuteHandler execute, Context *context, Node *node){
     void *res = NULL;
-//    ObjectNode *objpath = execute(context, &node->childs[0]);
+    ObjectNode *objpath = execute(context, &node->childs[0]);
+
+    char *path = listToString(objpath);
     BITMAP bmp;
-    if(readBitmap(&bmp, "pics/black8x8.bmp"))
+    if(readBitmap(&bmp, path))
       return newObjectNode(NTYPE_NONE, NULL);
     res = (void *) mkList(&bmp);
     freeBitmap(&bmp);
-//    return newObjectNode(NTYPE_LIST, res);
     return res;
 }

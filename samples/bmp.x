@@ -1,1 +1,1 @@
-print (loadbmp "a.x")
+print (loadbmp "pics/16a1.bmp")
