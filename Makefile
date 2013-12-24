@@ -3,8 +3,8 @@ CXX = g++
 #CC = clang
 
 ##bin/main: bin/hashtable_test
-bin/ad-fy: build/hashtable.o build/common.o build/lexer.o build/parser.o build/stack.o build/context.o build/builtins.o build/executor.o build/extloader.o
-	$(CC) --std=gnu99 main.c build/common.o build/lexer.o build/parser.o build/executor.o build/builtins.o build/hashtable.o build/context.o build/stack.o build/extloader.o -o bin/ad-fy -w  -rdynamic -ldl
+bin/ad-fy: build/hashtable.o build/common.o build/lexer.o build/parser.o build/stack.o build/context.o build/builtins.o build/executor.o build/extloader.o build/bmp.o
+	$(CC) --std=gnu99 main.c build/common.o build/lexer.o build/parser.o build/executor.o build/builtins.o build/hashtable.o build/context.o build/stack.o build/extloader.o build/bmp.o -o bin/ad-fy -w  -rdynamic -ldl
 
 build/executor.o: build/context.o build/parser.o
 	$(CC) --std=gnu99 executor.c -o build/executor.o -c -w
