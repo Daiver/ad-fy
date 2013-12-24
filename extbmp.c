@@ -19,7 +19,7 @@ ObjectNode *op_LoadBmp
     FILE *f = fopen("a.bmp", "r");
     
     BITMAP bmp;
-    if(readBitmap(&bmp, "a.bmp"))
+    if(readBitmap(&bmp, "pics/black8x8.bmp"))
       return newObjectNode(NTYPE_NONE, NULL);
     
     printInfo(&bmp);
