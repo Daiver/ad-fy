@@ -53,7 +53,7 @@ void testExecute(const char *source, bool verbose){
             printTree(head, 0);
         LOG("testExecuteSecond", "calling execute");
         ObjectNode *node = execute(globalContext, &head);
-        if(verbose){
+        if(verbose || node->type == NTYPE_EXCEPTION){
             printf("res>");
             printObjectNode(node);
             printf("\n");

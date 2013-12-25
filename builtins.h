@@ -14,6 +14,7 @@ typedef ObjectNode*(*OpHandler)(ExecuteHandler, Context *, Node *);
 ObjectNode *newObjectNode(unsigned char type, void *value);
 ObjectList *newObjectList(int length, ObjectNode *items);
 ObjectNode *listFromString(const char *s);
+ObjectNode *newException(const char *msg);
 void fillOpTable(Context *operators);
 void addOp(Context *context, char *token, OpHandler handler);
 

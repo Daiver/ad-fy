@@ -6,6 +6,12 @@
 #include "context.h"
 #include "builtins.h"
 
+ObjectNode *newException(const char *msg){
+    Exception *res = malloc(sizeof(Exception));
+    res->message = msg;
+    return newObjectNode(NTYPE_EXCEPTION, res);
+}
+
 ObjectNode *newObjectNode(unsigned char type, void *value){
     ObjectNode *obj = (ObjectNode *) malloc( sizeof(ObjectNode));
     obj->type = type;
@@ -253,6 +259,10 @@ void printObjectNode(ObjectNode *obj){
     //printf(">%d %d\n", obj->type, obj->value);
     if(obj->type == NTYPE_CHAR){
         printf("%c", (char)obj->value);
+    }
+    if(obj->type == NTYPE_EXCEPTION){
+        const char *msg = ((Exception *)obj->value)->message;
+        printf("Exception %s\n", msg);
     }
     if(obj->type == NTYPE_STRING){
         ObjectList *li = (ObjectList *)obj->value;
