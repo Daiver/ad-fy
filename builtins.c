@@ -47,12 +47,20 @@ ObjectNode *setNumType(bool isDouble, double res){ // i dont know how call it be
     return newObjectNode(NTYPE_INT, (int)res);
 }
 
+ObjectNode *newArgException(const char *message, int arg_pos){
+    char *tmp = malloc(sizeof(char) * 512);
+    sprintf(tmp, "%s in arg %d", message, arg_pos);
+    const char *res = tmp;
+    return newException(res);
+}
+
 ObjectNode *op_Plus
     (ExecuteHandler execute, Context *context, Node *node){
     double res = 0;
     bool isDouble = false;
     for(int i = 0; i < node->childs_length; i++){
         ObjectNode *tmp = execute(context, &node->childs[i]);
+        if(tmp->type != NTYPE_INT && tmp->type != NTYPE_INT && tmp->type != NTYPE_BOOL) return newArgException("cannot add not num value", i);
         if(tmp->type == NTYPE_DOUBLE){//TODO Make it better
             isDouble = true;
             res += *(double *)tmp->value;

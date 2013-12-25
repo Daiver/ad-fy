@@ -173,3 +173,5 @@ assert
         list "Hi!" "Hello!" "Bonjour!"
         map (\ (args x) (++ x "!")) (list "Hi" "Hello" "Bonjour")
     string_map
+
+print (+ 10 "0" 100)
