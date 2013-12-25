@@ -97,7 +97,9 @@ ObjectNode *execute(Context *context, Node *node){
             LOG("execute", "default end");
         }
     }
-
+    if (result->type == NTYPE_EXCEPTION){
+        stack_push(&((Exception *)result->value)->trace, node); 
+    }
     LOG("execute", "scope left");
     return result ? result : newObjectNode(NTYPE_NONE, 0);
 }

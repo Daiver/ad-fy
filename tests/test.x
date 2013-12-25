@@ -181,3 +181,10 @@ assertEq
     "Wrong num assert"
     NTYPE_EXCEPTION
     type (assert 1)
+
+print 
+    + 
+        10
+        - 
+            1
+            * ""
