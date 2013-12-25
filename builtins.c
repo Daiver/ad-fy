@@ -357,10 +357,15 @@ ObjectNode *op_Slice
     (ExecuteHandler execute, Context *context, Node *node){
     if (node->childs_length < 3) return newException("Too few args");
     ObjectNode *start_index = execute(context, &node->childs[0]);
+    if(start_index->type != NTYPE_INT) return newArgException("Index must be integer", 0, start_index);
     ObjectNode *end_index = execute(context, &node->childs[1]);
+    if(end_index->type != NTYPE_INT) return newArgException("Index must be integer", 1, end_index);
     ObjectNode *li = execute(context, &node->childs[2]);
+    if(li->type != NTYPE_LIST && li->type != NTYPE_STRING) return newArgException("No list", 0, li);
 
     ObjectList *tmp = ((ObjectList *)li->value);
+    //if(start_index->value >= tmp->length || start_index->value < 0)
+    //    return newArgException("Start index out of boundary", 0, start_index);
     ObjectNode *slice = tmp->items + (int)start_index->value;
     ObjectList *res = newObjectList(end_index->value - start_index->value, slice);
     return newObjectNode(li->type, res);
