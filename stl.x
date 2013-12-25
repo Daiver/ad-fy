@@ -7,6 +7,8 @@ alias ' id
 deffn inc (args x) (+ x 1)
 deffn dec (args x) (- x 1)
 deffn not (args x) (if (== 0 x) 1 0)
+deffn mod (args x y) (- x (* y (/ x y)))
+deffn odd (args x) (not (mod x 2))
 
 ; lists
 deffn head (args li) ([] 0 li)
@@ -23,6 +25,10 @@ deffn foldl
         foldl (' foldl_function )
             foldl_function initial (head li)
             tail li
+
+deffn foldl1
+    args foldl1_func li
+    foldl (' foldl1_func) (head li) (tail li)
 
 deffn map
     args f li
@@ -73,9 +79,30 @@ deffn ++ (args l1 l2)
             cons (head l2) l1
             tail l2
 
+deffn lists-compare (args l1 l2)
+    deffn lists-values-compare (args l1 l2)
+        if (empty l1)
+            1
+            if (== (head l1) (head l2))
+                lists-values-compare (tail l1) (tail l2)
+                0
+
+    if (not (== (length l1) (length l2)))
+        0
+        lists-values-compare l1 l2
+        
+define functor
+    lambda (args value seq)
+        map 
+            \ (args f)
+                f value
+            seq
+
 deffn call (args some_lambda) some_lambda
 
-deffn while (args while_predicate while_body)
+comment
+    unworks, because we cannot change upper context 
+    deffn while (args while_predicate while_body)
     if (while_predicate)
         0
-        call (' (\ (while_body) (while while_predicate while_body)))
+        call (\ while_body (while (' while_predicate) (' while_body)))

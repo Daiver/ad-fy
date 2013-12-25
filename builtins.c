@@ -1,77 +1,172 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "executor.h"
-#include "hashtable.h"
+//#include "executor.h"
 #include "parser.h"
+#include "context.h"
+#include "builtins.h"
 
-ObjectNode *op_Plus(hashtable_t *context, Node *node){
-    int res = 0;
-    for(int i = 0; i < node->childs_length; i++){
-        ObjectNode *tmp = execute(context, &node->childs[i]);
-        res += (int)tmp->value;
-    }
-    return newObjectNode(NTYPE_INT, res);
+ObjectNode *newObjectNode(unsigned char type, void *value){
+    ObjectNode *obj = (ObjectNode *) malloc( sizeof(ObjectNode));
+    obj->type = type;
+    obj->value = value;
+    return obj;
 }
 
-ObjectNode *op_Mul(hashtable_t *context, Node *node){
-    int res = 1;
-    for(int i = 0; i < node->childs_length; i++){
-        ObjectNode *tmp = execute(context, &node->childs[i]);
-        res *= (int)tmp->value;
-    }
-    return newObjectNode(NTYPE_INT, res);
+ObjectList *newObjectList(int length, ObjectNode *items){
+    ObjectList *res = (ObjectList *)malloc(sizeof(ObjectList));
+    res->length = length;
+    res->items = items;
+    return res;
 }
 
-ObjectNode *op_Minus(hashtable_t *context, Node *node){
+ObjectNode *listFromString(const char *s){
+    ObjectList *res = (ObjectList *)malloc(sizeof(ObjectList));
+    int length = strlen(s);
+    res->length = length - 2;
+    res->items = (ObjectNode *)malloc(sizeof(ObjectNode) * res->length);
+    for(int i = 1; i < length - 1; i++){
+        res->items[i - 1] = *newObjectNode(NTYPE_CHAR, (void *)s[i]);
+    }
+    //res->items = items;
+    return newObjectNode(NTYPE_STRING, res); 
+}
+
+ObjectNode *setNumType(bool isDouble, double res){ // i dont know how call it better
+    if(isDouble){
+        double *tmp = malloc(sizeof(double));
+        *tmp = res;
+        return newObjectNode(NTYPE_DOUBLE, tmp);
+    }
+    return newObjectNode(NTYPE_INT, (int)res);
+}
+
+ObjectNode *op_Plus
+    (ExecuteHandler execute, Context *context, Node *node){
+    double res = 0;
+    bool isDouble = false;
+    for(int i = 0; i < node->childs_length; i++){
+        ObjectNode *tmp = execute(context, &node->childs[i]);
+        if(tmp->type == NTYPE_DOUBLE){//TODO Make it better
+            isDouble = true;
+            res += *(double *)tmp->value;
+        }
+        else
+            res += (int)tmp->value;
+    }
+    return setNumType(isDouble, res);
+}
+
+ObjectNode *op_Mul
+    (ExecuteHandler execute, Context *context, Node *node){
+    bool isDouble = false;
+    double res = 1;
+    for(int i = 0; i < node->childs_length; i++){
+        ObjectNode *tmp = execute(context, &node->childs[i]);
+        if(tmp->type == NTYPE_DOUBLE){
+            isDouble = true;
+            res *= *(double *)tmp->value;
+        }
+        else
+            res *= (int)tmp->value;
+    }
+    return setNumType(isDouble, res);
+}
+
+ObjectNode *op_Minus
+    (ExecuteHandler execute, Context *context, Node *node){
+    bool isDouble = false;
     ObjectNode *tmp = execute(context, &node->childs[0]);
-    int res = tmp->value;
+    double res = 0;
+    if(tmp->type == NTYPE_DOUBLE){
+        isDouble = true;
+        res = *(double *)tmp->value;
+    }
+    else{
+        res = (int)tmp->value;
+    }
     for(int i = 1; i < node->childs_length; i++){
         ObjectNode *tmp = execute(context, &node->childs[i]);
-        res -= (int)tmp->value;
+        if(tmp->type == NTYPE_DOUBLE){
+            isDouble = true;
+            res -= *(double *)tmp->value;
+        }
+        else{
+            res -= (int)tmp->value;
+        }
     }
-    return newObjectNode(NTYPE_INT, res);
+    return setNumType(isDouble, res);
 }
 
-ObjectNode *op_Eq(hashtable_t *context, Node *node){
+ObjectNode *op_Eq
+    (ExecuteHandler execute, Context *context, Node *node){//make it better
     ObjectNode *tmp1 = execute(context, &node->childs[0]);
     ObjectNode *tmp2 = execute(context, &node->childs[1]);
-    return newObjectNode(NTYPE_BOOL, tmp1->value == tmp2->value);
-}
-
-
-ObjectNode *op_Div(hashtable_t *context, Node *node){
-    ObjectNode *tmp = execute(context, &node->childs[0]);
-    int res = tmp->value;
-    for(int i = 1; i < node->childs_length; i++){
-        ObjectNode *tmp = execute(context, &node->childs[i]);
-        res /= (int)tmp->value;
+    bool res;
+    if((tmp1->type == NTYPE_INT && tmp2->type == NTYPE_DOUBLE) ||
+        (tmp1->type == NTYPE_DOUBLE && tmp2->type == NTYPE_INT) ||
+        (tmp1->type == NTYPE_DOUBLE && tmp2->type == NTYPE_DOUBLE)){
+        double r1 = tmp1->type == NTYPE_DOUBLE ? *(double *)tmp1->value : (int)tmp1->value;
+        double r2 = tmp2->type == NTYPE_DOUBLE ? *(double *)tmp2->value : (int)tmp2->value;
+        res = fabs(r1 - r2) < 0.000001; // bad. maybe it useless
     }
-    return newObjectNode(NTYPE_INT, res);
+    else{
+        res = tmp1->value == tmp2->value;
+    }
+    return newObjectNode(NTYPE_BOOL, res);
 }
 
-ObjectNode *op_Help(hashtable_t *context, Node *node){
+
+ObjectNode *op_Div
+    (ExecuteHandler execute, Context *context, Node *node){
+    ObjectNode *tmp = execute(context, &node->childs[0]);
+    bool isDouble = false;
+    double res = 0;
+    if(tmp->type == NTYPE_DOUBLE){
+        isDouble = true;
+        res = *(double *)tmp->value;
+    }
+    else{
+        res = (int)tmp->value;
+    }
+    for(int i = 1; i < node->childs_length; i++){
+        tmp = execute(context, &node->childs[i]);
+        if(tmp->type == NTYPE_DOUBLE){
+            isDouble = true;
+            res /= *(double *)tmp->value;
+        }
+        else{
+            res /= (int)tmp->value;
+        }
+    }
+    return setNumType(isDouble, res);
+
+}
+
+ObjectNode *op_Help
+    (ExecuteHandler execute, Context *context, Node *node){
     printf("\nThis is small lisp like language interpreter by Victor Muzychenko and Kirill Klimov\n");
     return newObjectNode(NTYPE_NONE, 0);
 }
 
-ObjectNode *op_Define(hashtable_t *context, Node *node){// FIX IT!
+ObjectNode *op_Define
+    (ExecuteHandler execute, Context *context, Node *node){
     const char *func_name = node->childs[0].name; 
     ObjectNode *tmp = execute(context, &node->childs[1]); //(char *)newObjectNode(2, &node->childs[1]);
-    ht_del(context, func_name);
-    printf("LOLOLOLOLOLLOLOLOL=%d\n", tmp->value);
-    ht_set(context, func_name, tmp);
-    return tmp;
+    context_set(context, func_name, tmp);
+    return newObjectNode(NTYPE_NONE, 0);
 }
 
-ObjectNode *op_Alias(hashtable_t *context, Node *node){// FIX IT!
+ObjectNode *op_Alias
+    (ExecuteHandler execute, Context *context, Node *node){
     const char *func_name = node->childs[0].name; 
-    ObjectNode *tmp = ht_get(context, node->childs[1].name); //(char *)newObjectNode(2, &node->childs[1]);
-    ht_set(context, func_name, tmp);
-    return tmp;
+    ObjectNode *tmp = context_get(context, node->childs[1].name); //(char *)newObjectNode(2, &node->childs[1]);
+    context_set(context, func_name, tmp);
+    return newObjectNode(NTYPE_NONE, 0);
 }
 
-ObjectNode *op_Fn(hashtable_t *context, Node *node){
+ObjectNode *op_Fn
+    (ExecuteHandler execute, Context *context, Node *node){
     FunctionObj *fo = (FunctionObj *)malloc(sizeof(FunctionObj));
     int starts_with = 0;
     if(strcmp(node->childs[0].name, "args") == 0){
@@ -90,10 +185,12 @@ ObjectNode *op_Fn(hashtable_t *context, Node *node){
     fo->nodes = malloc(sizeof(Node *) * fo->node_length);
     for(int i = starts_with; i < node->childs_length; i++)
         fo->nodes[i - starts_with] = &node->childs[i];
+    fo->context = context;
     return newObjectNode(NTYPE_FUNC, (void *)fo);
 }
 
-ObjectNode *op_DefFn(hashtable_t *context, Node *node){
+ObjectNode *op_DefFn
+    (ExecuteHandler execute, Context *context, Node *node){
     const char *func_name = node->childs[0].name; 
     FunctionObj *fo = (FunctionObj *)malloc(sizeof(FunctionObj));
     int starts_with = 1;
@@ -109,40 +206,65 @@ ObjectNode *op_DefFn(hashtable_t *context, Node *node){
         fo->args_length = 0;
         fo->args = 0;
     }
+    fo->context = context;
     fo->node_length = node->childs_length - starts_with;
     fo->nodes = malloc(sizeof(Node *) * fo->node_length);
     for(int i = starts_with; i < node->childs_length; i++)
         fo->nodes[i - starts_with] = &node->childs[i];
     ObjectNode *tmp = newObjectNode(NTYPE_FUNC, (void *)fo);
-    ht_set(context, func_name, tmp);
-    return tmp;
+    context_set(context, func_name, tmp);
+    return newObjectNode(NTYPE_NONE, 0);
 }
 
-ObjectNode *op_Quote(hashtable_t *context, Node *node){
-    return ht_get(context, node->childs[0].name);
+ObjectNode *op_Quote
+    (ExecuteHandler execute, Context *context, Node *node){
+    return context_get(context, node->childs[0].name);
 }
 
-ObjectNode *op_If(hashtable_t *context, Node *node){
+ObjectNode *op_If
+    (ExecuteHandler execute, Context *context, Node *node){
     ObjectNode *p = execute(context, &node->childs[0]);
     if(p->value != 0)
         return execute(context, &node->childs[1]);
     return execute(context, &node->childs[2]);
 }
 
-ObjectNode *op_Import(hashtable_t *context, Node *node){
+ObjectNode *op_Import
+    (ExecuteHandler execute, Context *context, Node *node){
     import(context, node->childs[0].name);
     return newObjectNode(NTYPE_NONE, 0);
 }
 
-ObjectNode *op_Comment(hashtable_t *context, Node *node){
+ObjectNode *op_Comment
+    (ExecuteHandler execute, Context *context, Node *node){
     return newObjectNode(NTYPE_NONE, 0);
 }
 
 void printObjectNode(ObjectNode *obj){
-    if(obj->type == 101){
+    if(obj->type == NTYPE_INT){
         printf("%d", obj->value);
+    }    
+    if(obj->type == NTYPE_DOUBLE){
+        printf("%f", *(double *)obj->value);
     }
-    if(obj->type == 110){
+    if(obj->type == NTYPE_BOOL){
+        printf("%s", obj->value ? "True" : "False");
+    }
+    //printf(">%d %d\n", obj->type, obj->value);
+    if(obj->type == NTYPE_CHAR){
+        printf("%c", (char)obj->value);
+    }
+    if(obj->type == NTYPE_STRING){
+        ObjectList *li = (ObjectList *)obj->value;
+        //printf("length %d\n", li->length);
+        printf("'");
+        for(int i = 0; i < li->length; i++){
+            printObjectNode(&li->items[i]);
+        }
+        printf("'");
+    }
+
+    if(obj->type == NTYPE_LIST){
         ObjectList *li = (ObjectList *)obj->value;
         printf("[");
         for(int i = 0; i < li->length; i++){
@@ -154,7 +276,8 @@ void printObjectNode(ObjectNode *obj){
     }
 }
 
-ObjectNode *op_Print(hashtable_t *context, Node *node){
+ObjectNode *op_Print
+    (ExecuteHandler execute, Context *context, Node *node){
     printf("stdout>");
     ObjectNode *res = NULL;
     for(int i = 0; i < node->childs_length; i++){
@@ -168,7 +291,8 @@ ObjectNode *op_Print(hashtable_t *context, Node *node){
     return res;
 }
 
-ObjectNode *op_List(hashtable_t *context, Node *node){
+ObjectNode *op_List
+    (ExecuteHandler execute, Context *context, Node *node){
     ObjectList *res = (ObjectList *)malloc(sizeof(ObjectList));
     res->length = node->childs_length;
     res->items = (ObjectNode *)malloc(sizeof(ObjectNode) * res->length);
@@ -177,7 +301,8 @@ ObjectNode *op_List(hashtable_t *context, Node *node){
     return newObjectNode(NTYPE_LIST, res);
 }
 
-ObjectNode *op_Elem(hashtable_t *context, Node *node){
+ObjectNode *op_Elem
+    (ExecuteHandler execute, Context *context, Node *node){
     ObjectNode *index = execute(context, &node->childs[0]);
     ObjectNode *res = execute(context, &node->childs[1]);
     if(index->value >= ((ObjectList *)res->value)->length)
@@ -185,7 +310,8 @@ ObjectNode *op_Elem(hashtable_t *context, Node *node){
     return &((ObjectList *)res->value)->items[(int)index->value];
 }
 
-ObjectNode *op_Slice(hashtable_t *context, Node *node){
+ObjectNode *op_Slice
+    (ExecuteHandler execute, Context *context, Node *node){
     ObjectNode *start_index = execute(context, &node->childs[0]);
     ObjectNode *end_index = execute(context, &node->childs[1]);
     ObjectNode *li = execute(context, &node->childs[2]);
@@ -193,10 +319,11 @@ ObjectNode *op_Slice(hashtable_t *context, Node *node){
     ObjectList *tmp = ((ObjectList *)li->value);
     ObjectNode *slice = tmp->items + (int)start_index->value;
     ObjectList *res = newObjectList(end_index->value - start_index->value, slice);
-    return newObjectNode(NTYPE_LIST, res);
+    return newObjectNode(li->type, res);
 }
 
-ObjectNode *op_Cons(hashtable_t *context, Node *node){
+ObjectNode *op_Cons
+    (ExecuteHandler execute, Context *context, Node *node){
     ObjectNode *elem = execute(context, &node->childs[0]);
     ObjectNode *li = execute(context, &node->childs[1]);
     ObjectNode *items = malloc(sizeof(ObjectNode) * (((ObjectList *)li->value)->length + 1));// fix fix fix
@@ -204,39 +331,53 @@ ObjectNode *op_Cons(hashtable_t *context, Node *node){
         items[i] = ((ObjectList *)li->value)->items[i];
     }
     items[((ObjectList *)li->value)->length] = *elem;
-    return newObjectNode(NTYPE_LIST, newObjectList(((ObjectList *)li->value)->length + 1, items));
+    return newObjectNode((elem->type == 0 || elem->type == NTYPE_CHAR) && li->type == NTYPE_STRING ? NTYPE_STRING : NTYPE_LIST, 
+        newObjectList(((ObjectList *)li->value)->length + 1, items));
 }
 
-ObjectNode *op_Length(hashtable_t *context, Node *node){
+ObjectNode *op_Length
+    (ExecuteHandler execute, Context *context, Node *node){
     ObjectNode *res = execute(context, &node->childs[0]);
     return newObjectNode(NTYPE_INT, ((ObjectList *)res->value)->length);
 }
 
-typedef ObjectNode*(*OpHandler)(hashtable_t, Node *);
-
-void addOp(hashtable_t *context, char *token, OpHandler handler){
-    ht_set(context, token, (char *) newObjectNode(NTYPE_BUILTIN_FUNC, handler));
+ObjectNode *op_Assert
+    (ExecuteHandler execute, Context *context, Node *node){
+    bool res = (execute(context, &node->childs[0])->value == 0);
+    const char *assertion_name = node->childs_length > 1 ? node->childs[1].name : "";
+    if(res)
+        printf("FAILED");
+    else
+        printf("PASSED");
+    printf("\t\tAssertion \"%s\" ", assertion_name);
+    printf("\n");
+    return newObjectNode(NTYPE_NONE, 0);
 }
 
-void fillOpTable(hashtable_t *operators){
-    addOp(operators, "+", &op_Plus);
-    addOp(operators, "-", &op_Minus);
-    addOp(operators, "*", &op_Mul);
-    addOp(operators, "/", &op_Div);
-    addOp(operators, "==", &op_Eq);
-    addOp(operators, "help", &op_Help);
-    addOp(operators, "define", &op_Define);
-    addOp(operators, "lambda", &op_Fn);
-    addOp(operators, "alias", &op_Alias);
-    addOp(operators, "deffn", &op_DefFn);
-    addOp(operators, "print", &op_Print);
-    addOp(operators, "import", &op_Import);
-    addOp(operators, "if", &op_If);
-    addOp(operators, "id", &op_Quote);
-    addOp(operators, "length", &op_Length);
-    addOp(operators, "cons", &op_Cons);
-    addOp(operators, "slice", &op_Slice);
-    addOp(operators, "[]", &op_Elem);
-    addOp(operators, "list", &op_List);
-    addOp(operators, "comment", &op_Comment);
+void addOp(Context *context, char *token, OpHandler handler){
+    context_set(context, token, (void *) newObjectNode(NTYPE_BUILTIN_FUNC, handler));
+}
+
+void fillOpTable(Context *context){
+    addOp(context, "+", &op_Plus);
+    addOp(context, "-", &op_Minus);
+    addOp(context, "*", &op_Mul);
+    addOp(context, "/", &op_Div);
+    addOp(context, "==", &op_Eq);
+    addOp(context, "help", &op_Help);
+    addOp(context, "define", &op_Define);
+    addOp(context, "lambda", &op_Fn);
+    addOp(context, "alias", &op_Alias);
+    addOp(context, "deffn", &op_DefFn);
+    addOp(context, "print", &op_Print);
+    addOp(context, "import", &op_Import);
+    addOp(context, "if", &op_If);
+    addOp(context, "id", &op_Quote);
+    addOp(context, "length", &op_Length);
+    addOp(context, "cons", &op_Cons);
+    addOp(context, "slice", &op_Slice);
+    addOp(context, "[]", &op_Elem);
+    addOp(context, "list", &op_List);
+    addOp(context, "comment", &op_Comment);
+    addOp(context, "assert", &op_Assert);
 }

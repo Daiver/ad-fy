@@ -17,20 +17,40 @@ bool isStopChar(char c, char **ch){
   return false;
 }
 
-const char *getToken(CodeStream *stream){
+LexerToken getToken(CodeStream *stream){
+    LexerToken res;
     int spaceCount = 0;
     while(stream->source[stream->position] == ' '){
         ++spaceCount;
         ++stream->position;
-        if(spaceCount == 4)
-          return "\t";   
+        if(spaceCount == 4){
+            res.token = "\t";
+            res.pos = stream->position;
+            return res;
+        }
     }
     char *ch = NULL;
+    int i = stream->position;
+    if(stream->source[stream->position] == '"'){
+        i++;
+        while(stream->source[i] != '"' && stream->source[i] != '\0')
+            ++i;
+        i += !(stream->source[i] == '\0');
+        int len = i - stream->position;
+        char *token = (char *) malloc((len + 1) * sizeof(char));
+        strncpy(token, stream->source + stream->position, len);    
+        token[len] = '\0';
+        stream->position = i;
+        res.token = token;
+        res.pos = stream->position;
+        return res;
+    }
     if(isStopChar(stream->source[stream->position], &ch)){
         stream->position += (ch != '\0');
-        return ch;
+        res.token = ch;
+        res.pos = stream->position;
+        return res;
     }
-    int i = stream->position;
     while(!isStopChar(stream->source[i], &ch))
         ++i;
     int len = i - stream->position;
@@ -38,7 +58,9 @@ const char *getToken(CodeStream *stream){
     strncpy(token, stream->source + stream->position, len);    
     token[len] = '\0';
     stream->position = i;
-    return token;
+    res.token = token;
+    res.pos = stream->position;
+    return res;
 }
 
 bool isEndOfCode(CodeStream *ts){

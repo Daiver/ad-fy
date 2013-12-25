@@ -6,23 +6,18 @@
 #include <string.h>
 #include "common.h"
 #include "lexer.h"
+#include "eapi.h"
 
 struct TTokenStream{
     CodeStream codeStream;
-    const char **tokens;
+    LexerToken *tokens;
     unsigned int length;
-    unsigned int position;  
+    unsigned int position;
 };
-struct TNode{
-    const char *name;
-    unsigned int childs_length;
-    struct TNode *childs;
-}; 
 typedef struct TTokenStream TokenStream;
-typedef struct TNode Node;
 void fillTokenStream(TokenStream *ts, const char *source);
-const char *lookToken(TokenStream *ts, int shift);
-const char *nextToken(TokenStream *ts);
+LexerToken lookToken(TokenStream *ts, int shift);
+LexerToken nextToken(TokenStream *ts);
 bool isEndOfStream(TokenStream *ts);
 Node parse(TokenStream *ts, int shift);
 void printTree(Node node, int shift);

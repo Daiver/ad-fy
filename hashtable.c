@@ -70,6 +70,10 @@ entry_t *ht_newpair( char *key, char *value ) {
  
 /* Insert a key-value pair into a hash table. */
 void ht_set( hashtable_t *hashtable, char *key, char *value ) {
+    while(ht_get(hashtable, key) != NULL){
+        ht_del(hashtable, key);
+    }
+
     int bin = 0;
     entry_t *newpair = NULL;
     entry_t *next = NULL;

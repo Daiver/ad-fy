@@ -4,22 +4,35 @@
 #include <malloc.h>
 #include <string.h>
 #include "common.h"
+#include "eapi.h"
 
-bool isDigit(const char *s){
+int checkIsNumber(const char *s){
     if(strlen(s) == 0)
-        return false;
+        return NTYPE_NONE;
     const char *str = s;
-    if(*str == '-'){
-        str++;
-        if(*str == '\0')
-            return false;
+    if(*str == '-')
+        ++str;
+    bool hasPoint = (*str == '.') ? true : false; //= *str == '.';
+    if(hasPoint){
+        ++str;
     }
-    while (*str != '\0'){
-        if (*str < 48 || *str > 57) 
-            return false;
-        str++;
+    if(*str == '\0')
+        return NTYPE_NONE;
+    while(*str != '\0'){
+        if(*str == '.'){
+            if(hasPoint)
+                return NTYPE_NONE;
+            hasPoint = true;
+        }
+        if ((*str != '.') && (*str < 48 || *str > 57))
+            return NTYPE_NONE;
+        ++str;
     }
-    return true;
+    return hasPoint ? NTYPE_DOUBLE : NTYPE_INT;
+}
+
+bool isQuotedString(const char *s){//Can i make it better
+    return s[0] == '"' && s[strlen(s) - 1] == '"';
 }
 
 char *readFileAsLine(char *input_file_name){
