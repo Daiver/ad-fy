@@ -121,6 +121,8 @@ comment
         0
         call (\ while_body (while (' while_predicate) (' while_body)))
 
+deffn isException (args x) (== (type x) NTYPE_EXCEPTION)
+
 deffn assert (args assertion_name assertion_value)
     if 
         assertion_value
