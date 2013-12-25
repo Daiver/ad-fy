@@ -177,6 +177,7 @@ assert
 assertEq "is_exception test" NTYPE_EXCEPTION (type (+ 10 "0" 100))
 
 ; assert "PASSED BAD" 0
-assert
+assertEq
     "Wrong num assert"
-    isException (type (assert 1))
+    NTYPE_EXCEPTION
+    type (assert 1)
