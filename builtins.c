@@ -48,7 +48,7 @@ ObjectNode *setNumType(bool isDouble, double res){ // i dont know how call it be
     return newObjectNode(NTYPE_INT, (int)res);
 }
 
-ObjectNode newOrOldException(const char *msg, ObjectNode *value){
+ObjectNode *newOrOldException(const char *msg, ObjectNode *value){
     if(value && value->type == NTYPE_EXCEPTION) return value;
     return newException(msg);
 }
