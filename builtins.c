@@ -345,9 +345,11 @@ ObjectNode *op_Elem
     (ExecuteHandler execute, Context *context, Node *node){
     if (node->childs_length < 2) return newException("Too few args");
     ObjectNode *index = execute(context, &node->childs[0]);
+    if(index->type != NTYPE_INT) return newArgException("Index must be integer", 0, index);
     ObjectNode *res = execute(context, &node->childs[1]);
-    if(index->value >= ((ObjectList *)res->value)->length)
-        return newObjectNode(NTYPE_NONE, 0);
+    if(res->type != NTYPE_LIST && res->type != NTYPE_STRING) return newArgException("No list", 0, res);
+    if(index->value >= ((ObjectList *)res->value)->length || index->value < 0)
+        return newArgException("Out of boundary", 0, index);
     return &((ObjectList *)res->value)->items[(int)index->value];
 }
 

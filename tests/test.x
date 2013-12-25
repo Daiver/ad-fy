@@ -182,10 +182,35 @@ assertEq
     NTYPE_EXCEPTION
     type (assert 1)
 
-print 
-    + 
-        10
-        - 
-            1
-            * ""
-rgegergergeg
+assertEq
+    "exception test2"
+    NTYPE_EXCEPTION
+    type
+        + 
+            10
+            - 
+                1
+                * ""
+assertEq
+    "exception test3"
+    NTYPE_EXCEPTION
+    type rgegergergeg
+
+assertEq
+    "exception test4"
+    NTYPE_EXCEPTION
+    type
+        [] 10 "123"
+
+assertEq
+    "exception test5"
+    NTYPE_EXCEPTION
+    type
+        [] "123" 1
+
+
+assertEq
+    "exception test5"
+    NTYPE_EXCEPTION
+    type
+        []
