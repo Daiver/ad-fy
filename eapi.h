@@ -5,9 +5,13 @@
 #include "context.h"
 
 #define NTYPE_NONE 0
+
 #define NTYPE_BUILTIN_FUNC 1
 #define NTYPE_NODE 2
 #define NTYPE_FUNC 3
+
+#define NTYPE_EXCEPTION 66
+
 #define NTYPE_INT 101
 #define NTYPE_DOUBLE 102
 #define NTYPE_CHAR 104
@@ -51,6 +55,11 @@ struct TOperation{
   char *handler;
 };
 typedef struct TOperation Operation;
+
+struct TException{
+    const char *message;
+};
+typedef struct TException Exception;
 
 typedef void (*ExtContentGetter)(Operation **ops, int *len);
 

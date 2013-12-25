@@ -31,8 +31,9 @@ ObjectNode *execute(Context *context, Node *node){
     ObjectNode *obj = context_get(context, node->name);
     LOG("execute", "object got");
     if(obj == NULL){
-        if(strcmp(node->name, "") == 0 )
-            printf("Execution error>Empty node\n");
+        if(strcmp(node->name, "") == 0 ){
+            //printf("Execution error>Empty node\n");
+        }
         else
             printf("Execution error> Object does not exists: [%s]. At line %d %d \n", node->name, node->line, node->pos_in_line);
         return newObjectNode(NTYPE_NONE, 0);
@@ -72,6 +73,10 @@ ObjectNode *execute(Context *context, Node *node){
             LOG("execute", "func end");
             LOG("execute", "type swtich end");
             context_leaveScope(func->context);
+            break;
+        }
+        case NTYPE_EXCEPTION: {
+            LOG("execute", "exception passed");
             break;
         }
         default : {

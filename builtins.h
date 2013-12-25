@@ -14,26 +14,6 @@ typedef ObjectNode*(*OpHandler)(ExecuteHandler, Context *, Node *);
 ObjectNode *newObjectNode(unsigned char type, void *value);
 ObjectList *newObjectList(int length, ObjectNode *items);
 ObjectNode *listFromString(const char *s);
-/*ObjectNode *op_Plus(Context *context, Node *node);
-ObjectNode *op_Mul(Context *context, Node *node);
-ObjectNode *op_Minus(Context *context, Node *node);
-ObjectNode *op_Eq(Context *context, Node *node);
-ObjectNode *op_Div(Context *context, Node *node);
-ObjectNode *op_Help(Context *context, Node *node);
-ObjectNode *op_Define(Context *context, Node *node);
-ObjectNode *op_Alias(Context *context, Node *node);
-ObjectNode *op_Fn(Context *context, Node *node);
-ObjectNode *op_DefFn(Context *context, Node *node);
-ObjectNode *op_Quote(Context *context, Node *node);
-ObjectNode *op_If(Context *context, Node *node);
-ObjectNode *op_Import(Context *context, Node *node);
-ObjectNode *op_Comment(Context *context, Node *node);
-ObjectNode *op_Print(Context *context, Node *node);
-ObjectNode *op_List(Context *context, Node *node);
-ObjectNode *op_Elem(Context *context, Node *node);
-ObjectNode *op_Slice(Context *context, Node *node);
-ObjectNode *op_Cons(Context *context, Node *node);
-ObjectNode *op_Length(Context *context, Node *node);*/
 void fillOpTable(Context *operators);
 void addOp(Context *context, char *token, OpHandler handler);
 

@@ -41,10 +41,10 @@ build/ext1.o:
 	$(CC) --std=gnu99 -Wall -fPIC -c ext1.c -o build/ext1.o -w
 
 lib/libcv.so.1.0: build/extcv.o
-	$(CC) --std=gnu99 -shared -Wl,-soname,libcv.so.1 -o lib/libcv.so.1.0 build/extcv.o -w `pkg-config opencv --cflags --libs` 
+	$(CC) --std=gnu99 -shared -Wl,-soname,libcv.so.1 -o lib/libcv.so.1.0 build/extcv.o -w 
 
 build/extcv.o: 
-	$(CC) --std=gnu99 -Wall -fPIC -c extcv.c -o build/extcv.o -w `pkg-config opencv --cflags --libs` 
+	$(CC) --std=gnu99 -Wall -fPIC -c extcv.c -o build/extcv.o -w 
 
 lib/libextbmp.so.1.0: build/extbmp.o
 	$(CC) --std=gnu99 -shared -Wl,-soname,libextbmp.so.1 -o lib/libextbmp.so.1.0 build/extbmp.o -w 
