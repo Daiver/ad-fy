@@ -48,12 +48,16 @@ ObjectNode *setNumType(bool isDouble, double res){ // i dont know how call it be
     return newObjectNode(NTYPE_INT, (int)res);
 }
 
-ObjectNode *newArgException(const char *message, int arg_pos, ObjectNode *value){
+ObjectNode newOrOldException(const char *msg, ObjectNode *value){
     if(value && value->type == NTYPE_EXCEPTION) return value;
+    return newException(msg);
+}
+
+ObjectNode *newArgException(const char *message, int arg_pos, ObjectNode *value){
     char *tmp = malloc(sizeof(char) * 512);
     sprintf(tmp, "%s in arg %d", message, arg_pos);
     const char *res = tmp;
-    return newException(res);
+    return newOrOldException(res, value);
 }
 
 ObjectNode *op_Plus
