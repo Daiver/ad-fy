@@ -30,15 +30,18 @@ ObjectNode *execute(Context *context, Node *node){
     LOG("execute", "getting object from context");
     ObjectNode *obj = context_get(context, node->name);
     LOG("execute", "object got");
+    ObjectNode *result = NULL;
     if(obj == NULL){
         if(strcmp(node->name, "") == 0 ){
+            return newObjectNode(NTYPE_NONE, 0);
             //printf("Execution error>Empty node\n");
         }
-        else
-            printf("Execution error> Object does not exists: [%s]. At line %d %d \n", node->name, node->line, node->pos_in_line);
-        return newObjectNode(NTYPE_NONE, 0);
+        else{
+            result = newException("Object does not exists");
+            stack_push(&((Exception *)result->value)->trace, node); 
+            return result;
+        }
     } 
-    ObjectNode *result = NULL;
     LOG("execute", "type swtich start");
     switch(obj->type){
         case NTYPE_BUILTIN_FUNC : {

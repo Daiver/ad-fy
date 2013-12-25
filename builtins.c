@@ -290,7 +290,7 @@ void printObjectNode(ObjectNode *obj){
         printf("Stack trace\n");
         while(!stack_isEmpty(trace)){
             Node *node = stack_pop(trace);
-            printf("Call At line %d %d\n", node->line, node->pos_in_line);
+            printf("Node [%s]. At line %d %d\n", node->name, node->line, node->pos_in_line);
         }
         printf("Exception %s\n", msg);
     }
