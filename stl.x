@@ -3,6 +3,20 @@ alias ; comment
 alias \ lambda
 alias ' id
 
+; types defs
+define NTYPE_NONE 0
+define NTYPE_BUILTIN_FUNC 1
+define NTYPE_NODE 2
+define NTYPE_FUNC 3
+define NTYPE_EXCEPTION 66
+define NTYPE_INT 101
+define NTYPE_DOUBLE 102
+define NTYPE_CHAR 104
+define NTYPE_BOOL 105
+define NTYPE_LIST 110
+define NTYPE_STRING 111
+
+
 ; numeric work
 deffn inc (args x) (+ x 1)
 deffn dec (args x) (- x 1)
@@ -106,3 +120,12 @@ comment
     if (while_predicate)
         0
         call (\ while_body (while (' while_predicate) (' while_body)))
+
+deffn assert (args assertion_name assertion_value)
+    if 
+        assertion_value
+        0
+        print "FAILED            " assertion_name 
+
+deffn assertEq (args assert_name value1 value2) (assert assert_name (== value2 value1) )
+

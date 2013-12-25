@@ -113,7 +113,7 @@ int main(int argc, char **argv){
         }
         printf("Reading from file [%s]...\n", argv[argc - 1]);
         const char *src = from_arg ? argv[argc - 1] : readFileAsLine(argv[argc - 1]);
-        printf("{-\n%s\n-}\n", src);
+        if (verbose) printf("{-\n%s\n-}\n", src);
         testExecute(src, verbose);
     }
     else{

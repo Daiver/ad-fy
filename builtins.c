@@ -401,6 +401,6 @@ void fillOpTable(Context *context){
     addOp(context, "[]", &op_Elem);
     addOp(context, "list", &op_List);
     addOp(context, "comment", &op_Comment);
-    addOp(context, "assert", &op_Assert);
+    //addOp(context, "assert", &op_Assert);
     addOp(context, "type", &op_Type);
 }
