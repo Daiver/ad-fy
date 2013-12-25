@@ -331,6 +331,7 @@ ObjectNode *op_List
 
 ObjectNode *op_Elem
     (ExecuteHandler execute, Context *context, Node *node){
+    if (node->childs_length < 2) return newException("Too few args");
     ObjectNode *index = execute(context, &node->childs[0]);
     ObjectNode *res = execute(context, &node->childs[1]);
     if(index->value >= ((ObjectList *)res->value)->length)
@@ -340,6 +341,7 @@ ObjectNode *op_Elem
 
 ObjectNode *op_Slice
     (ExecuteHandler execute, Context *context, Node *node){
+    if (node->childs_length < 3) return newException("Too few args");
     ObjectNode *start_index = execute(context, &node->childs[0]);
     ObjectNode *end_index = execute(context, &node->childs[1]);
     ObjectNode *li = execute(context, &node->childs[2]);
