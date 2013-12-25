@@ -57,6 +57,11 @@ ObjectNode *execute(Context *context, Node *node){
         case NTYPE_FUNC : {
             LOG("execute", "func start");
             FunctionObj *func = (FunctionObj *) obj->value;
+            if(func->args_length > node->childs_length){
+                //printf("SOME WRONG!\n");
+                result = newException("Wrong arg num");
+                break;
+            }
             ObjectNode **arguments = malloc(sizeof(ObjectNode *) * node->childs_length);
             int i;
 
@@ -92,6 +97,7 @@ ObjectNode *execute(Context *context, Node *node){
             LOG("execute", "default end");
         }
     }
+
     LOG("execute", "scope left");
     return result ? result : newObjectNode(NTYPE_NONE, 0);
 }
