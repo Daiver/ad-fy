@@ -354,6 +354,7 @@ ObjectNode *op_Slice
 
 ObjectNode *op_Cons
     (ExecuteHandler execute, Context *context, Node *node){
+    if (node->childs_length < 2) return newException("Too few args");
     ObjectNode *elem = execute(context, &node->childs[0]);
     ObjectNode *li = execute(context, &node->childs[1]);
     ObjectNode *items = malloc(sizeof(ObjectNode) * (((ObjectList *)li->value)->length + 1));// fix fix fix
@@ -367,12 +368,14 @@ ObjectNode *op_Cons
 
 ObjectNode *op_Length
     (ExecuteHandler execute, Context *context, Node *node){
+    if (node->childs_length < 1) return newException("Too few args");
     ObjectNode *res = execute(context, &node->childs[0]);
     return newObjectNode(NTYPE_INT, ((ObjectList *)res->value)->length);
 }
 
 ObjectNode *op_Type
     (ExecuteHandler execute, Context *context, Node *node){
+    if (node->childs_length < 1) return newException("Too few args");
     ObjectNode *tmp = execute(context, &node->childs[0]);
     return newObjectNode(NTYPE_INT, tmp->type);
 }
