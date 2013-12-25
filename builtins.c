@@ -358,19 +358,6 @@ ObjectNode *op_Length
     return newObjectNode(NTYPE_INT, ((ObjectList *)res->value)->length);
 }
 
-ObjectNode *op_Assert
-    (ExecuteHandler execute, Context *context, Node *node){
-    bool res = (execute(context, &node->childs[0])->value == 0);
-    const char *assertion_name = node->childs_length > 1 ? node->childs[1].name : "";
-    if(res)
-        printf("FAILED");
-    else
-        printf("PASSED");
-    printf("\t\tAssertion \"%s\" ", assertion_name);
-    printf("\n");
-    return newObjectNode(NTYPE_NONE, 0);
-}
-
 ObjectNode *op_Type
     (ExecuteHandler execute, Context *context, Node *node){
     ObjectNode *tmp = execute(context, &node->childs[0]);
