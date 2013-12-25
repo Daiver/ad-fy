@@ -58,6 +58,7 @@ ObjectNode *op_Plus
     (ExecuteHandler execute, Context *context, Node *node){
     double res = 0;
     bool isDouble = false;
+    if (node->childs_length == 0) return newException("Zero arg Exception");
     for(int i = 0; i < node->childs_length; i++){
         ObjectNode *tmp = execute(context, &node->childs[i]);
         if(tmp->type != NTYPE_INT && tmp->type != NTYPE_DOUBLE && tmp->type != NTYPE_BOOL) return newArgException("cannot add not num value", i);
@@ -73,6 +74,7 @@ ObjectNode *op_Plus
 
 ObjectNode *op_Mul
     (ExecuteHandler execute, Context *context, Node *node){
+    if (node->childs_length == 0) return newException("Zero arg Exception");
     bool isDouble = false;
     double res = 1;
     for(int i = 0; i < node->childs_length; i++){
@@ -90,6 +92,7 @@ ObjectNode *op_Mul
 
 ObjectNode *op_Minus
     (ExecuteHandler execute, Context *context, Node *node){
+    if (node->childs_length == 0) return newException("Zero arg Exception");
     bool isDouble = false;
     ObjectNode *tmp = execute(context, &node->childs[0]);
     double res = 0;
@@ -117,6 +120,7 @@ ObjectNode *op_Minus
 
 ObjectNode *op_Eq
     (ExecuteHandler execute, Context *context, Node *node){//make it better
+    if (node->childs_length < 2) return newException("Too few args");
     ObjectNode *tmp1 = execute(context, &node->childs[0]);
     ObjectNode *tmp2 = execute(context, &node->childs[1]);
     bool res;
@@ -136,6 +140,7 @@ ObjectNode *op_Eq
 
 ObjectNode *op_Div
     (ExecuteHandler execute, Context *context, Node *node){
+    if (node->childs_length == 0) return newException("Zero arg Exception");
     ObjectNode *tmp = execute(context, &node->childs[0]);
     if(tmp->type != NTYPE_INT && tmp->type != NTYPE_DOUBLE && tmp->type != NTYPE_BOOL) return newArgException("cannot add not num value", 0);
     bool isDouble = false;
@@ -164,6 +169,7 @@ ObjectNode *op_Div
 
 ObjectNode *op_Define
     (ExecuteHandler execute, Context *context, Node *node){
+    if (node->childs_length < 2) return newException("Too few args");
     const char *func_name = node->childs[0].name; 
     ObjectNode *tmp = execute(context, &node->childs[1]); //(char *)newObjectNode(2, &node->childs[1]);
     context_set(context, func_name, tmp);
@@ -172,6 +178,7 @@ ObjectNode *op_Define
 
 ObjectNode *op_Alias
     (ExecuteHandler execute, Context *context, Node *node){
+    if (node->childs_length < 2) return newException("Too few args");
     const char *func_name = node->childs[0].name; 
     ObjectNode *tmp = context_get(context, node->childs[1].name); //(char *)newObjectNode(2, &node->childs[1]);
     context_set(context, func_name, tmp);
@@ -180,6 +187,7 @@ ObjectNode *op_Alias
 
 ObjectNode *op_Fn
     (ExecuteHandler execute, Context *context, Node *node){
+    if (node->childs_length < 1) return newException("Too few args");
     FunctionObj *fo = (FunctionObj *)malloc(sizeof(FunctionObj));
     int starts_with = 0;
     if(strcmp(node->childs[0].name, "args") == 0){
@@ -204,6 +212,7 @@ ObjectNode *op_Fn
 
 ObjectNode *op_DefFn
     (ExecuteHandler execute, Context *context, Node *node){
+    if (node->childs_length < 2) return newException("Too few args");
     const char *func_name = node->childs[0].name; 
     FunctionObj *fo = (FunctionObj *)malloc(sizeof(FunctionObj));
     int starts_with = 1;
@@ -231,11 +240,13 @@ ObjectNode *op_DefFn
 
 ObjectNode *op_Quote
     (ExecuteHandler execute, Context *context, Node *node){
+    if (node->childs_length < 1) return newException("Too few args");
     return context_get(context, node->childs[0].name);
 }
 
 ObjectNode *op_If
     (ExecuteHandler execute, Context *context, Node *node){
+    if (node->childs_length < 2) return newException("Too few args");
     ObjectNode *p = execute(context, &node->childs[0]);
     if(p->value != 0)
         return execute(context, &node->childs[1]);

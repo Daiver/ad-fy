@@ -57,6 +57,7 @@ struct TOperation{
 typedef struct TOperation Operation;
 
 struct TException{
+    Stack trace;
     const char *message;
 };
 typedef struct TException Exception;

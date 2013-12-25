@@ -175,3 +175,5 @@ assert
         map (\ (args x) (++ x "!")) (list "Hi" "Hello" "Bonjour")
 
 assertEq "is_exception test" NTYPE_EXCEPTION (type (+ 10 "0" 100))
+
+; assert "PASSED BAD" 0
