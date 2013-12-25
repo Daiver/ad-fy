@@ -75,6 +75,7 @@ void REPL(bool verbose){
     char *source = malloc(n_bytes + 1);
     for(int i = 0;i < n_bytes + 1;i++) source[i] = 0;
     while (1){
+        printf(">>>");
         getline(&source, &n_bytes, stdin);
         //printf("%s\n", source);
         TokenStream ts;

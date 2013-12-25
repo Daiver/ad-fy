@@ -60,7 +60,7 @@ ObjectNode *op_Plus
     bool isDouble = false;
     for(int i = 0; i < node->childs_length; i++){
         ObjectNode *tmp = execute(context, &node->childs[i]);
-        if(tmp->type != NTYPE_INT && tmp->type != NTYPE_INT && tmp->type != NTYPE_BOOL) return newArgException("cannot add not num value", i);
+        if(tmp->type != NTYPE_INT && tmp->type != NTYPE_DOUBLE && tmp->type != NTYPE_BOOL) return newArgException("cannot add not num value", i);
         if(tmp->type == NTYPE_DOUBLE){//TODO Make it better
             isDouble = true;
             res += *(double *)tmp->value;
@@ -77,7 +77,7 @@ ObjectNode *op_Mul
     double res = 1;
     for(int i = 0; i < node->childs_length; i++){
         ObjectNode *tmp = execute(context, &node->childs[i]);
-        if(tmp->type != NTYPE_INT && tmp->type != NTYPE_INT && tmp->type != NTYPE_BOOL) return newArgException("cannot add not num value", i);
+        if(tmp->type != NTYPE_INT && tmp->type != NTYPE_DOUBLE && tmp->type != NTYPE_BOOL) return newArgException("cannot add not num value", i);
         if(tmp->type == NTYPE_DOUBLE){
             isDouble = true;
             res *= *(double *)tmp->value;
@@ -93,7 +93,7 @@ ObjectNode *op_Minus
     bool isDouble = false;
     ObjectNode *tmp = execute(context, &node->childs[0]);
     double res = 0;
-    if(tmp->type != NTYPE_INT && tmp->type != NTYPE_INT && tmp->type != NTYPE_BOOL) return newArgException("cannot add not num value", 0);
+    if(tmp->type != NTYPE_INT && tmp->type != NTYPE_DOUBLE && tmp->type != NTYPE_BOOL) return newArgException("cannot add not num value", 0);
     if(tmp->type == NTYPE_DOUBLE){
         isDouble = true;
         res = *(double *)tmp->value;
@@ -103,7 +103,7 @@ ObjectNode *op_Minus
     }
     for(int i = 1; i < node->childs_length; i++){
         ObjectNode *tmp = execute(context, &node->childs[i]);
-        if(tmp->type != NTYPE_INT && tmp->type != NTYPE_INT && tmp->type != NTYPE_BOOL) return newArgException("cannot add not num value", i);
+        if(tmp->type != NTYPE_INT && tmp->type != NTYPE_DOUBLE && tmp->type != NTYPE_BOOL) return newArgException("cannot add not num value", i);
         if(tmp->type == NTYPE_DOUBLE){
             isDouble = true;
             res -= *(double *)tmp->value;
@@ -137,7 +137,7 @@ ObjectNode *op_Eq
 ObjectNode *op_Div
     (ExecuteHandler execute, Context *context, Node *node){
     ObjectNode *tmp = execute(context, &node->childs[0]);
-    if(tmp->type != NTYPE_INT && tmp->type != NTYPE_INT && tmp->type != NTYPE_BOOL) return newArgException("cannot add not num value", 0);
+    if(tmp->type != NTYPE_INT && tmp->type != NTYPE_DOUBLE && tmp->type != NTYPE_BOOL) return newArgException("cannot add not num value", 0);
     bool isDouble = false;
     double res = 0;
     if(tmp->type == NTYPE_DOUBLE){
@@ -149,7 +149,7 @@ ObjectNode *op_Div
     }
     for(int i = 1; i < node->childs_length; i++){
         tmp = execute(context, &node->childs[i]);
-        if(tmp->type != NTYPE_INT && tmp->type != NTYPE_INT && tmp->type != NTYPE_BOOL) return newArgException("cannot add not num value", i);
+        if(tmp->type != NTYPE_INT && tmp->type != NTYPE_DOUBLE && tmp->type != NTYPE_BOOL) return newArgException("cannot add not num value", i);
         if(tmp->type == NTYPE_DOUBLE){
             isDouble = true;
             res /= *(double *)tmp->value;
@@ -160,12 +160,6 @@ ObjectNode *op_Div
     }
     return setNumType(isDouble, res);
 
-}
-
-ObjectNode *op_Help
-    (ExecuteHandler execute, Context *context, Node *node){
-    printf("\nThis is small lisp like language interpreter by Victor Muzychenko and Kirill Klimov\n");
-    return newObjectNode(NTYPE_NONE, 0);
 }
 
 ObjectNode *op_Define
@@ -393,7 +387,6 @@ void fillOpTable(Context *context){
     addOp(context, "*", &op_Mul);
     addOp(context, "/", &op_Div);
     addOp(context, "==", &op_Eq);
-    addOp(context, "help", &op_Help);
     addOp(context, "define", &op_Define);
     addOp(context, "lambda", &op_Fn);
     addOp(context, "alias", &op_Alias);
