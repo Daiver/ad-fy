@@ -77,6 +77,7 @@ ObjectNode *op_Mul
     double res = 1;
     for(int i = 0; i < node->childs_length; i++){
         ObjectNode *tmp = execute(context, &node->childs[i]);
+        if(tmp->type != NTYPE_INT && tmp->type != NTYPE_INT && tmp->type != NTYPE_BOOL) return newArgException("cannot add not num value", i);
         if(tmp->type == NTYPE_DOUBLE){
             isDouble = true;
             res *= *(double *)tmp->value;
@@ -92,6 +93,7 @@ ObjectNode *op_Minus
     bool isDouble = false;
     ObjectNode *tmp = execute(context, &node->childs[0]);
     double res = 0;
+    if(tmp->type != NTYPE_INT && tmp->type != NTYPE_INT && tmp->type != NTYPE_BOOL) return newArgException("cannot add not num value", 0);
     if(tmp->type == NTYPE_DOUBLE){
         isDouble = true;
         res = *(double *)tmp->value;
@@ -101,6 +103,7 @@ ObjectNode *op_Minus
     }
     for(int i = 1; i < node->childs_length; i++){
         ObjectNode *tmp = execute(context, &node->childs[i]);
+        if(tmp->type != NTYPE_INT && tmp->type != NTYPE_INT && tmp->type != NTYPE_BOOL) return newArgException("cannot add not num value", i);
         if(tmp->type == NTYPE_DOUBLE){
             isDouble = true;
             res -= *(double *)tmp->value;
@@ -134,6 +137,7 @@ ObjectNode *op_Eq
 ObjectNode *op_Div
     (ExecuteHandler execute, Context *context, Node *node){
     ObjectNode *tmp = execute(context, &node->childs[0]);
+    if(tmp->type != NTYPE_INT && tmp->type != NTYPE_INT && tmp->type != NTYPE_BOOL) return newArgException("cannot add not num value", 0);
     bool isDouble = false;
     double res = 0;
     if(tmp->type == NTYPE_DOUBLE){
@@ -145,6 +149,7 @@ ObjectNode *op_Div
     }
     for(int i = 1; i < node->childs_length; i++){
         tmp = execute(context, &node->childs[i]);
+        if(tmp->type != NTYPE_INT && tmp->type != NTYPE_INT && tmp->type != NTYPE_BOOL) return newArgException("cannot add not num value", i);
         if(tmp->type == NTYPE_DOUBLE){
             isDouble = true;
             res /= *(double *)tmp->value;
@@ -372,6 +377,12 @@ ObjectNode *op_Assert
     return newObjectNode(NTYPE_NONE, 0);
 }
 
+ObjectNode *op_Type
+    (ExecuteHandler execute, Context *context, Node *node){
+    ObjectNode *tmp = execute(context, &node->childs[0]);
+    return newObjectNode(NTYPE_INT, tmp->type);
+}
+
 void addOp(Context *context, char *token, OpHandler handler){
     context_set(context, token, (void *) newObjectNode(NTYPE_BUILTIN_FUNC, handler));
 }
@@ -398,4 +409,5 @@ void fillOpTable(Context *context){
     addOp(context, "list", &op_List);
     addOp(context, "comment", &op_Comment);
     addOp(context, "assert", &op_Assert);
+    addOp(context, "type", &op_Type);
 }
