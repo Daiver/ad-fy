@@ -214,3 +214,8 @@ assertEq
     NTYPE_EXCEPTION
     type
         []
+
+assertEq
+    "error test"
+    NTYPE_EXCEPTION
+    type (error "Some err")
