@@ -399,9 +399,19 @@ ObjectNode *op_Type
     return newObjectNode(NTYPE_INT, tmp->type);
 }
 
-ObjectNode *op_Type
+ObjectNode *op_Error
     (ExecuteHandler execute, Context *context, Node *node){
-    
+    if (node->childs_length < 1) return newException("Too few args");
+    ObjectNode *tmp = execute(context, &node->childs[0]);
+    if(tmp->type != NTYPE_STRING)
+        return newArgException("Arg must be string", 0, tmp);
+    ObjectList *li = tmp->value;
+    char *msg = malloc(sizeof(char) * (li->length + 1));
+    for(int i = 0; i < li->length; i++){
+        msg[i] = (char)li->items[i].value;
+    }
+    msg[li->length] = '\0';
+    return newException(msg);
 }
 
 void addOp(Context *context, char *token, OpHandler handler){
@@ -428,6 +438,6 @@ void fillOpTable(Context *context){
     addOp(context, "[]", &op_Elem);
     addOp(context, "list", &op_List);
     addOp(context, "comment", &op_Comment);
-    //addOp(context, "assert", &op_Assert);
     addOp(context, "type", &op_Type);
+    addOp(context, "error", &op_Error);
 }

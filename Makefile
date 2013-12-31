@@ -64,5 +64,8 @@ clean:
 test:
 	bin/./ad-fy tests/test.x
 
+all:
+	make clean ; make ; ./bin/ad-fy tests/test.x
+
 #bin/hashtable_test:
 #	$(CC) --std=gnu99 hashtable_test.c -o bin/hashtable_test
