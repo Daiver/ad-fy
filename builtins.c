@@ -399,6 +399,11 @@ ObjectNode *op_Type
     return newObjectNode(NTYPE_INT, tmp->type);
 }
 
+ObjectNode *op_Type
+    (ExecuteHandler execute, Context *context, Node *node){
+    
+}
+
 void addOp(Context *context, char *token, OpHandler handler){
     context_set(context, token, (void *) newObjectNode(NTYPE_BUILTIN_FUNC, handler));
 }
