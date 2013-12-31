@@ -219,3 +219,23 @@ assertEq
     "error test"
     NTYPE_EXCEPTION
     type (error "Some err")
+
+deffn myDiv 
+    args a b
+    if (== b 0)
+        error "Cannot div zero"
+        / a b
+
+deffn tmp_f
+    args tyu
+    print 
+        ==
+            NTYPE_EXCEPTION
+            type tyu
+
+tmp_f (error "tmp error")
+
+print 
+    tryOr
+        myDiv 1. 0
+        -1

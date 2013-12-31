@@ -132,3 +132,9 @@ deffn assert (args assertion_name assertion_value)
 
 deffn assertEq (args assert_name value1 value2) (assert assert_name (== value2 value1) )
 
+deffn tryOr 
+    args x value
+    ; print x
+    ; print "Type" (type x)
+    0
+
